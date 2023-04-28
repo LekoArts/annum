@@ -1,0 +1,32 @@
+{
+  "name": "trakt-yearly-posters",
+  "version": "1.0.0",
+  "private": true,
+  "description": "trakt-yearly-posters",
+  "author": "LekoArts",
+  "keywords": [
+    "gatsby"
+  ],
+  "scripts": {
+    "develop": "gatsby develop",
+    "start": "gatsby develop",
+    "build": "gatsby build",
+    "serve": "gatsby serve",
+    "clean": "gatsby clean",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@vanilla-extract/css": "^1.11.0",
+    "@vanilla-extract/webpack-plugin": "^2.2.0",
+    "gatsby": "^5.9.0",
+    "gatsby-plugin-vanilla-extract": "^4.0.1",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  },
+  "devDependencies": {
+    "@types/node": "^18.15.13",
+    "@types/react": "^18.0.38",
+    "@types/react-dom": "^18.0.11",
+    "typescript": "^5.0.4"
+  }
+}
