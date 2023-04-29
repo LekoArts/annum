@@ -14,3 +14,17 @@ export function traktGotInstance({ traktClientId }: { traktClientId: string }): 
     },
   })
 }
+
+export function tmdbGotInstance({ apiKey, sessionId, language }: { apiKey: string; sessionId: string; language: string }): Got {
+  return got.extend({
+    method: 'GET',
+    headers: {
+      'user-agent': 'trakt-yearly-posters',
+    },
+    searchParams: {
+      api_key: apiKey,
+      session_id: sessionId,
+      language,
+    },
+  })
+}

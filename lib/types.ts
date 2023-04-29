@@ -80,3 +80,11 @@ export interface TraktShow {
     }
   }
 }
+
+export type TraktMediaType = 'movies' | 'shows'
+
+export interface TmdbItemDetail {
+  id: number
+  poster_path?: string
+  backdrop_path?: string
+}
