@@ -2,31 +2,42 @@
   "name": "trakt-yearly-posters",
   "version": "1.0.0",
   "private": true,
-  "description": "trakt-yearly-posters",
+  "description": "Display yearly posters of your watched movies and shows on Trakt.tv",
   "author": "LekoArts",
-  "keywords": [
-    "gatsby"
-  ],
   "scripts": {
     "develop": "gatsby develop",
     "start": "gatsby develop",
     "build": "gatsby build",
     "serve": "gatsby serve",
     "clean": "gatsby clean",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix"
   },
   "dependencies": {
     "@vanilla-extract/css": "^1.11.0",
     "@vanilla-extract/webpack-plugin": "^2.2.0",
     "gatsby": "^5.9.0",
     "gatsby-plugin-vanilla-extract": "^4.0.1",
+    "got": "^11",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
   },
   "devDependencies": {
+    "@antfu/eslint-config-react": "^0.38.5",
     "@types/node": "^18.15.13",
     "@types/react": "^18.0.38",
     "@types/react-dom": "^18.0.11",
-    "typescript": "^5.0.4"
+    "eslint": "^8.39.0",
+    "lint-staged": "^13.2.2",
+    "simple-git-hooks": "^2.8.1",
+    "typescript": "^5.0.4",
+    "zod": "^3.21.4"
+  },
+  "simple-git-hooks": {
+    "pre-commit": "npx lint-staged"
+  },
+  "lint-staged": {
+    "*": "eslint --fix"
   }
 }

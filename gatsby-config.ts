@@ -1,15 +1,15 @@
-import type { GatsbyConfig } from "gatsby";
+import type { GatsbyConfig } from 'gatsby'
+import 'dotenv/config'
+import { CURRENT_YEAR } from './lib/constants'
 
 const config: GatsbyConfig = {
   siteMetadata: {
-    title: `trakt-yearly-posters`,
-    siteUrl: `https://www.yourdomain.tld`
+    title: `LekoArts: Trakt.tv History of ${CURRENT_YEAR}`,
+    siteUrl: 'https://www.yourdomain.tld',
+    siteDescription: 'Yearly posters of your watched movies & TV shows',
   },
-  // More easily incorporate content into your pages through automatic TypeScript type generation and better GraphQL IntelliSense.
-  // If you use VSCode you can also use the GraphQL plugin
-  // Learn more at: https://gatsby.dev/graphql-typegen
   graphqlTypegen: true,
-  plugins: ["gatsby-plugin-vanilla-extract"]
-};
+  plugins: ['gatsby-plugin-vanilla-extract'],
+}
 
-export default config;
+export default config
