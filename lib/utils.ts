@@ -45,7 +45,7 @@ export function flattenItem(item: TraktMovie | TraktShow) {
 
 export const tmdbItemDetailsUrl = (type: TraktMediaType, tmdb_id: number) => `${TMDB_BASE_URL}/${traktTmdbMediaMap[type]}/${tmdb_id}`
 
-export const tmdbImageUrl = (poster_path: string, size: TmdbPosterSize = 'w342') => `${TMDB_IMAGE_BASE_URL}${TMDB_POSTER_SIZES[size]}${poster_path}`
+export const tmdbImageUrl = (poster_path: string, size: TmdbPosterSize = 'w780') => `${TMDB_IMAGE_BASE_URL}${TMDB_POSTER_SIZES[size]}${poster_path}`
 
 interface TmdbImageArgs {
   gatsbyApi: SourceNodesArgs

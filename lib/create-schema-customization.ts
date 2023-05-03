@@ -1,8 +1,9 @@
 import type { GatsbyNode } from 'gatsby'
+import { TYPE_NAMES } from './constants'
 
 export const createSchemaCustomization: GatsbyNode['createSchemaCustomization'] = ({ actions }) => {
   actions.createTypes(`
-    type Movie implements Node {
+    type ${TYPE_NAMES.movie} implements Node {
       id: ID!
       title: String!
       poster_path: String!
@@ -11,7 +12,7 @@ export const createSchemaCustomization: GatsbyNode['createSchemaCustomization'] 
       tmdb_id: Int!
     }
 
-    type Show implements Node {
+    type ${TYPE_NAMES.show} implements Node {
       id: ID!
       title: String!
       poster_path: String!

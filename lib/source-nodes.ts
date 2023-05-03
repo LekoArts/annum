@@ -3,6 +3,7 @@ import { tmdbGotInstance, traktGotInstance } from './got'
 import { filterForCurrentYear, flattenItem, tmdbImage, traktStatsUrl, traktWatchedUrl } from './utils'
 import type { TraktMovie, TraktShow, TraktStats } from './types'
 import { ENV } from './env'
+import { TYPE_NAMES } from './constants'
 
 export const sourceNodes: GatsbyNode['sourceNodes'] = async (gatsbyApi: SourceNodesArgs) => {
   const { reporter, createNodeId, createContentDigest, actions } = gatsbyApi
@@ -47,9 +48,9 @@ export const sourceNodes: GatsbyNode['sourceNodes'] = async (gatsbyApi: SourceNo
     const nodeMeta = {
       ...movie,
       poster_path,
-      id: createNodeId(`trakt-movie-${movie.tmdb_id}`),
+      id: createNodeId(`trakt-${TYPE_NAMES.movie}-${movie.tmdb_id}`),
       internal: {
-        type: 'Movie',
+        type: TYPE_NAMES.movie,
         contentDigest: createContentDigest(movie),
       },
     } satisfies NodeInput
@@ -69,9 +70,9 @@ export const sourceNodes: GatsbyNode['sourceNodes'] = async (gatsbyApi: SourceNo
     const nodeMeta = {
       ...show,
       poster_path,
-      id: createNodeId(`trakt-show-${show.tmdb_id}`),
+      id: createNodeId(`trakt-${TYPE_NAMES.show}-${show.tmdb_id}`),
       internal: {
-        type: 'Show',
+        type: TYPE_NAMES.show,
         contentDigest: createContentDigest(show),
       },
     } satisfies NodeInput

@@ -1,8 +1,9 @@
 import * as React from 'react'
 import { graphql } from 'gatsby'
+import { img } from './image.css'
 
 export function Image({ src, alt }: { src: string; alt: string }) {
-  return <img src={src} alt={alt} loading="lazy" />
+  return <img className={img} src={src} alt={alt} loading="lazy" />
 }
 
 export const query = graphql`
