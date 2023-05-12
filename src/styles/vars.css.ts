@@ -64,6 +64,7 @@ const fontSize = {
   'xl': '1.25rem',
   '2xl': '1.5rem',
   '3xl': '1.875rem',
+  '4xl': '2.25rem',
 }
 
 const lineHeight = {
@@ -73,6 +74,7 @@ const lineHeight = {
   'xl': '1.75rem',
   '2xl': '2rem',
   '3xl': '2.25rem',
+  '4xl': '2.5rem',
 }
 
 const fontWeight = {
@@ -144,9 +146,10 @@ const borderRadius = {
 export const vars = createGlobalTheme(':root', {
   color: {
     ...palette,
-    primary: palette['rose-600'],
+    primary: palette['rose-500'],
     text: palette['zinc-100'],
     background: `linear-gradient(0deg, ${t(palette['zinc-950']).toRgbString()} 0%, ${t(palette['zinc-800']).toRgbString()} 100%)`,
+    primaryGradient: `linear-gradient(0deg, ${t(palette['rose-900']).toRgbString()} 0%, ${t(palette['rose-600']).toRgbString()} 100%)`,
   },
   spacing,
   maxWidth,

@@ -3,14 +3,14 @@ import type { HeadFC, PageProps } from 'gatsby'
 import { Link } from 'gatsby'
 import { Layout } from '../components/layout'
 import { Seo } from '../components/seo'
+import { notFound } from './404.css'
 
 const NotFoundPage: React.FC<PageProps> = () => {
   return (
-    <Layout>
-      <h1>404: Page Not found</h1>
-      <p>
-        <Link to="/">Go home</Link>
-      </p>
+    <Layout title="404" fh>
+      <div className={notFound}>
+        <Link to="/">Go back to Home</Link>
+      </div>
     </Layout>
   )
 }

@@ -19,6 +19,7 @@ export const filterForCurrentYear = (item: TraktMovie | TraktShow) => new Date(i
 
 export function flattenItem(item: TraktMovie | TraktShow) {
   const last_watched_at = item.last_watched_at
+  const last_watched_at_year = new Date(last_watched_at).getFullYear()
   let title!: string
   let release_year!: number
   let tmdb_id: number | undefined
@@ -37,6 +38,7 @@ export function flattenItem(item: TraktMovie | TraktShow) {
 
   return {
     last_watched_at,
+    last_watched_at_year,
     title,
     release_year,
     tmdb_id,
@@ -52,9 +54,10 @@ interface TmdbImageArgs {
   tmdbGot: Got
   type: TraktMediaType
   tmdb_id: number
+  debugTitle: string
 }
 
-export async function tmdbImage({ gatsbyApi, tmdbGot, type, tmdb_id }: TmdbImageArgs): Promise<string | null> {
+export async function tmdbImage({ gatsbyApi, tmdbGot, type, tmdb_id, debugTitle }: TmdbImageArgs): Promise<string | null> {
   const { cache } = gatsbyApi
 
   const cacheKey = `tmdb-image-${type}-${tmdb_id}`
@@ -63,7 +66,19 @@ export async function tmdbImage({ gatsbyApi, tmdbGot, type, tmdb_id }: TmdbImage
   if (cachedImage)
     return cachedImage
 
-  const metadata: TmdbItemDetail = await tmdbGot(tmdbItemDetailsUrl(type, tmdb_id)).json()
+  let metadata!: TmdbItemDetail
+
+  try {
+    metadata = await tmdbGot(tmdbItemDetailsUrl(type, tmdb_id)).json()
+  }
+  catch (error) {
+    if (error instanceof Error) {
+      gatsbyApi.reporter.warn(`Failed to fetch TMDb metadata for ${traktTmdbMediaMap[type]} "${debugTitle}" (TMDB ID: ${tmdb_id})`)
+      return null
+    }
+
+    return null
+  }
 
   if (!metadata.poster_path)
     return null
