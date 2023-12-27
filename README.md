@@ -1,32 +1,26 @@
-<p align="center">
-  <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="./static/trakt-wide-red-white.svg">
-    <img alt="Trakt.tv Logo" src="./static/trakt-wide-red-black.svg" width="200">
-  </picture>
-</p>
+# create-svelte
 
-<h1 align="center">
-  Trakt.tv Yearly Movie & Show Posters
-</h1>
+Everything you need to build a Svelte project, powered by [`create-svelte`](https://github.com/sveltejs/kit/tree/main/packages/create-svelte).
 
-Get an overview of your watched movies & shows in a poster grid. You can see posters for the current year or all your history.
+## Developing
 
-## Prerequisites
+Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
 
-### TMDb
+```bash
+npm run dev
 
-You'll need an `API Key` and `Session ID` from TMDb.
+# or start the server and open the app in a new browser tab
+npm run dev -- --open
+```
 
-1. [Create your API key](https://developers.themoviedb.org/3/getting-started/introduction)
-1. [Generate a Session ID](https://developers.themoviedb.org/3/authentication/how-do-i-generate-a-session-id)
+## Building
 
-### Trakt
+To create a production version of your app:
 
-1. [Create a new Trakt app](https://trakt.tv/oauth/applications/new).
-1. Save the `Client ID`
+```bash
+npm run build
+```
 
-## Usage
+You can preview the production build with `npm run preview`.
 
-Deploy this starter with one click on [Netlify](https://app.netlify.com/signup):
-
-[<img src="https://www.netlify.com/img/deploy/button.svg" alt="Deploy to Netlify" />](https://app.netlify.com/start/deploy?repository=https://github.com/LekoArts/trakt-yearly-posters)
+> To deploy your app, you may need to install an [adapter](https://kit.svelte.dev/docs/adapters) for your target environment.

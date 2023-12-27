@@ -1,7 +1,0 @@
-[template.environment]
-  TRAKT_CLIENT_ID = "Your Trakt app Client ID"
-  TMDB_API_KEY = "Your TMDB API Key"
-  TMDB_SESSION_ID = "Your TMDB Session ID"
-
-  GATSBY_TRAKT_USERNAME = "Your Trakt username"
-  TMDB_LANGUAGE = "Your preferred language for TMDB, e.g. en-US"
