@@ -9,9 +9,8 @@ import { TRAKT_FETCH_DEFAULTS } from '$lib/server/constants'
 export const GET: RequestHandler = async ({ params, locals, fetch, setHeaders }) => {
 	const session = await locals.getSession()
 
-	if (!session?.user) {
+	if (!session?.user)
 		error(401, 'You must sign in to access this route.')
-	}
 
 	const { id } = params
 
@@ -22,9 +21,8 @@ export const GET: RequestHandler = async ({ params, locals, fetch, setHeaders })
 	try {
 		const res = await fetch(`${TRAKT_BASE_URL}${traktWatchedUrl(id, 'shows')}`, TRAKT_FETCH_DEFAULTS)
 
-		if (!res.ok) {
+		if (!res.ok)
 			throw new Error(`Response not OK: ${res.status}`)
-		}
 
 		const rawShows = await res.json() as Array<TraktWatchedShowsItem>
 		const normalizedShows = rawShows.map(normalizeItem)
@@ -33,7 +31,8 @@ export const GET: RequestHandler = async ({ params, locals, fetch, setHeaders })
 		return json({
 			chunks: showsChunks,
 		})
-	} catch (e) {
+	}
+	catch (e) {
 		error(404, `Failed to fetch Trakt watched shows for user: ${id}. Error: ${e}`)
 	}
 }

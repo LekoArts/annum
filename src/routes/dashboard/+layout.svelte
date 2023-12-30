@@ -1,13 +1,12 @@
-<script lang="ts">
-	import type { LayoutData } from './$types'
+<script lang='ts'>
 	import { signOut } from '@auth/sveltekit/client'
-	import { page } from '$app/stores'
+	import type { LayoutData } from './$types'
 
 	export let data: LayoutData
 </script>
 
-<p>Signed in as {$page.data.session?.user.name}</p>
-<p>User slug: {$page.data.session?.user.id}</p>
+<p>Signed in as {data.session?.user.name}</p>
+<p>User slug: {data.session?.user.id}</p>
 <button on:click={() => signOut({ callbackUrl: '/' })}>Sign out</button>
 
 <slot />

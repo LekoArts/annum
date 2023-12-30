@@ -25,4 +25,4 @@ declare module '@auth/core/types' {
 	}
 }
 
-export {};
+export {}

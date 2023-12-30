@@ -2,7 +2,7 @@ import type { TraktHistoryMovieItem, TraktWatchedShowsItem } from './types'
 
 export const traktTmdbMediaMap = {
 	movies: 'movie',
-	shows: 'tv'
+	shows: 'tv',
 } as const
 
 export function normalizeItem(item: TraktHistoryMovieItem | TraktWatchedShowsItem) {
@@ -39,14 +39,14 @@ export function normalizeItem(item: TraktHistoryMovieItem | TraktWatchedShowsIte
 
 export function chunks<T>(array: Array<T>, n: number): Array<Array<T>> {
 	const result = []
-	for (let i = 0; i < array.length; i += n) {
+	for (let i = 0; i < array.length; i += n)
 		result.push(array.slice(i, i + n))
-	}
+
 	return result
 }
 
 export function getStartAndEndOfYear(y: number | string) {
-	const year = typeof y === 'string' ? parseInt(y) : y
+	const year = typeof y === 'string' ? Number.parseInt(y) : y
 	return {
 		start: new Date(year, 0, 1).toISOString(),
 		end: new Date(year, 11, 31).toISOString(),

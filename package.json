@@ -1,5 +1,6 @@
 {
 	"name": "my-app",
+	"type": "module",
 	"version": "0.0.1",
 	"private": true,
 	"scripts": {
@@ -8,18 +9,18 @@
 		"preview": "vite preview",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
-		"test": "vitest",
-		"lint": "eslint ."
+		"test": "vitest watch",
+		"test:ci": "vitest run",
+		"lint": "eslint .",
+		"lint:fix": "eslint . --fix"
 	},
 	"devDependencies": {
+		"@antfu/eslint-config": "^2.6.1",
 		"@auth/core": "^0.19.0",
 		"@auth/sveltekit": "^0.5.0",
 		"@sveltejs/adapter-auto": "^3.0.0",
 		"@sveltejs/kit": "^2.0.0",
 		"@sveltejs/vite-plugin-svelte": "^3.0.0",
-		"@types/eslint": "8.56.0",
-		"@typescript-eslint/eslint-plugin": "^6.0.0",
-		"@typescript-eslint/parser": "^6.0.0",
 		"eslint": "^8.56.0",
 		"eslint-plugin-svelte": "^2.35.1",
 		"svelte": "^5.0.0-next.1",
@@ -29,6 +30,5 @@
 		"typescript": "^5.3.3",
 		"vite": "^5.0.10",
 		"vitest": "^1.1.0"
-	},
-	"type": "module"
+	}
 }

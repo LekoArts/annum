@@ -1,4 +1,4 @@
-<script lang="ts">
+<script lang='ts'>
 	import { signIn } from '@auth/sveltekit/client'
 </script>
 

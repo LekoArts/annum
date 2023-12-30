@@ -25,5 +25,5 @@ export const TMDB_FETCH_DEFAULTS = {
 } satisfies RequestInit
 
 export const DEFAULT_CACHE_HEADER = {
-	'cache-control': 'max-age=3600'
+	'cache-control': 'max-age=3600',
 } as const

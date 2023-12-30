@@ -21,7 +21,7 @@ async function fetchData(customFetch: typeof fetch, m: TraktHistoryMovieItem): P
 		title: movie.title,
 	}).toString()
 
-	return await customFetch(`/api/tmdb-image?${queryParams}`).then(res => {
+	return await customFetch(`/api/tmdb-image?${queryParams}`).then((res) => {
 		if (!res.ok) {
 			console.warn(`No TMDB ID found for movie "${movie.title}" (TMDB ID: ${movie.tmdb_id})`)
 
@@ -29,10 +29,9 @@ async function fetchData(customFetch: typeof fetch, m: TraktHistoryMovieItem): P
 		}
 
 		return res.json() as Promise<TmdbImageUrlsWithDimensions | null>
-	}).then(tmdb => {
-		if (!tmdb) {
+	}).then((tmdb) => {
+		if (!tmdb)
 			return null
-		}
 
 		return {
 			...movie,
@@ -44,9 +43,8 @@ async function fetchData(customFetch: typeof fetch, m: TraktHistoryMovieItem): P
 export const GET: RequestHandler = async ({ locals, url, fetch, setHeaders }) => {
 	const session = await locals.getSession()
 
-	if (!session?.user) {
+	if (!session?.user)
 		error(401, 'You must sign in to access this route.')
-	}
 
 	setHeaders({
 		...DEFAULT_CACHE_HEADER,
@@ -67,9 +65,8 @@ export const GET: RequestHandler = async ({ locals, url, fetch, setHeaders }) =>
 	try {
 		const res = await fetch(`${TRAKT_BASE_URL}${traktHistoryUrl(session.user.id, 'movies')}?${queryParams}`, TRAKT_FETCH_DEFAULTS)
 
-		if (!res.ok) {
+		if (!res.ok)
 			throw new Error(`Response not OK: ${res.status}`)
-		}
 
 		const pageCount = res.headers.get('x-pagination-page-count') as string
 		const pageLimit = res.headers.get('x-pagination-limit') as string
@@ -78,10 +75,11 @@ export const GET: RequestHandler = async ({ locals, url, fetch, setHeaders }) =>
 		const rawMovies = await res.json() as Array<TraktHistoryMovieItem>
 		const moviesPromises = await Promise.allSettled(rawMovies.map(m => fetchData(fetch, m)))
 
-		const movies = moviesPromises.map(p => {
-			if (p.status === 'fulfilled') {
+		const movies = moviesPromises.map((p) => {
+			if (p.status === 'fulfilled')
 				return p.value
-			}
+
+			return null
 		}).filter(Boolean) as Array<Movie>
 
 		return json({
@@ -91,7 +89,8 @@ export const GET: RequestHandler = async ({ locals, url, fetch, setHeaders }) =>
 			item_count: itemCount,
 			movies,
 		})
-	} catch (e) {
+	}
+	catch (e) {
 		error(404, `Failed to fetch Trakt history for user: ${session.user.id}. Error: ${e}`)
 	}
 }

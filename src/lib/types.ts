@@ -72,7 +72,7 @@ export interface TraktStats {
 	}
 }
 
-type HistoryItemDetails = {
+interface HistoryItemDetails {
 	title: string
 	year: number
 	ids: {
@@ -83,7 +83,7 @@ type HistoryItemDetails = {
 	}
 }
 
-export type TraktHistoryMovieItem = {
+export interface TraktHistoryMovieItem {
 	plays: number
 	watched_at: string
 	type: 'movie'

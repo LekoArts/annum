@@ -1,5 +1,5 @@
-import type { PageServerLoad } from './$types';
-import type { TraktStats } from '$lib/types';
+import type { PageServerLoad } from './$types'
+import type { TraktStats } from '$lib/types'
 
 export const load: PageServerLoad = async ({ locals, fetch }) => {
 	const session = await locals.getSession()
