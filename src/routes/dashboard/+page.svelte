@@ -20,9 +20,16 @@
 	{/each}
 </ul>
 
-<h2>Years</h2>
+<h2>Movies Years</h2>
 <ul>
 	{#each years as year}
 		<li><a href="/dashboard/movies/{year}">{year}</a></li>
+	{/each}
+</ul>
+
+<h2>Shows Years</h2>
+<ul>
+	{#each years as year}
+		<li><a href="/dashboard/shows/{year}">{year}</a></li>
 	{/each}
 </ul>
