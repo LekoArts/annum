@@ -3,10 +3,10 @@ import type { RequestHandler } from './$types'
 import type { TmdbItemDetail, TraktMediaType } from '$lib/types'
 import { traktTmdbMediaMap } from '$lib/utils'
 import { tmdbImageUrlsWithDimensions, tmdbItemDetailsUrl } from '$lib/utils/tmdb'
-import { TMDB_FETCH_DEFAULTS } from '$lib/constants'
+import { DEFAULT_CACHE_HEADER, TMDB_FETCH_DEFAULTS } from '$lib/constants'
 import { TMDB_QUERY_DEFAULTS } from '$lib/server/constants'
 
-export const GET: RequestHandler = async ({ url, locals, fetch }) => {
+export const GET: RequestHandler = async ({ url, locals, fetch, setHeaders }) => {
 	const session = await locals.getSession()
 
 	if (!session?.user) {
@@ -20,6 +20,10 @@ export const GET: RequestHandler = async ({ url, locals, fetch }) => {
 	if (!id || !type || !title) {
 		error(400, 'Missing required query params')
 	}
+
+	setHeaders({
+		...DEFAULT_CACHE_HEADER,
+	})
 
 	try {
 		const res = await fetch(`${tmdbItemDetailsUrl(type, id)}?${TMDB_QUERY_DEFAULTS}`, TMDB_FETCH_DEFAULTS)

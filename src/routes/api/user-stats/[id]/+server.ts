@@ -1,11 +1,11 @@
 import { error, json } from '@sveltejs/kit'
 import type { RequestHandler } from './$types'
 import { traktStatsUrl } from '$lib/utils/trakt'
-import { TRAKT_BASE_URL } from '$lib/constants'
+import { DEFAULT_CACHE_HEADER, TRAKT_BASE_URL } from '$lib/constants'
 import type { TraktStats } from '$lib/types'
 import { TRAKT_FETCH_DEFAULTS } from '$lib/server/constants'
 
-export const GET: RequestHandler = async ({ locals, params, fetch }) => {
+export const GET: RequestHandler = async ({ locals, params, fetch, setHeaders }) => {
 	const session = await locals.getSession()
 
 	if (!session?.user) {
@@ -13,6 +13,10 @@ export const GET: RequestHandler = async ({ locals, params, fetch }) => {
 	}
 
 	const { id } = params
+
+	setHeaders({
+		...DEFAULT_CACHE_HEADER,
+	})
 
 	try {
 		const res = await fetch(`${TRAKT_BASE_URL}${traktStatsUrl(id)}`, TRAKT_FETCH_DEFAULTS)

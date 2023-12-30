@@ -23,3 +23,7 @@ export const TMDB_FETCH_DEFAULTS = {
 		'user-agent': 'trakt-yearly-posters',
 	},
 } satisfies RequestInit
+
+export const DEFAULT_CACHE_HEADER = {
+	'cache-control': 'max-age=3600'
+} as const

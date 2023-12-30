@@ -1,9 +1,9 @@
 import { error, json } from '@sveltejs/kit'
 import type { RequestHandler } from './$types'
-import { TRAKT_BASE_URL } from '$lib/constants'
+import { DEFAULT_CACHE_HEADER, TRAKT_BASE_URL } from '$lib/constants'
 import { normalizeItem } from '$lib/utils'
 import { traktHistoryUrl } from '$lib/utils/trakt'
-import type { Movie, NormalizedItemResponse, TraktHistoryMovieItem } from '$lib/types'
+import type { Movie, NormalizedItemResponse, TmdbImageUrlsWithDimensions, TraktHistoryMovieItem } from '$lib/types'
 import { TRAKT_FETCH_DEFAULTS } from '$lib/server/constants'
 
 async function fetchData(customFetch: typeof fetch, m: TraktHistoryMovieItem): Promise<Movie | null> {
@@ -28,8 +28,12 @@ async function fetchData(customFetch: typeof fetch, m: TraktHistoryMovieItem): P
 			return null
 		}
 
-		return res.json()
+		return res.json() as Promise<TmdbImageUrlsWithDimensions | null>
 	}).then(tmdb => {
+		if (!tmdb) {
+			return null
+		}
+
 		return {
 			...movie,
 			images: tmdb,
@@ -37,12 +41,16 @@ async function fetchData(customFetch: typeof fetch, m: TraktHistoryMovieItem): P
 	})
 }
 
-export const GET: RequestHandler = async ({ locals, url, fetch }) => {
+export const GET: RequestHandler = async ({ locals, url, fetch, setHeaders }) => {
 	const session = await locals.getSession()
 
 	if (!session?.user) {
 		error(401, 'You must sign in to access this route.')
 	}
+
+	setHeaders({
+		...DEFAULT_CACHE_HEADER,
+	})
 
 	const page = url.searchParams.get('page') || '1'
 	const limit = url.searchParams.get('limit') || '12'
