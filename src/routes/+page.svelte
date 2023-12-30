@@ -1,2 +1,8 @@
-<h1>Welcome to SvelteKit 123</h1>
-<p>Visit <a href="https://kit.svelte.dev">kit.svelte.dev</a> to read the documentation</p>
+<script lang="ts">
+	import { page } from '$app/stores'
+	import Homepage from '$lib/pages/homepage.svelte';
+
+	export let isSignedIn = Boolean($page.data.session?.user)
+</script>
+
+<Homepage {isSignedIn} />
