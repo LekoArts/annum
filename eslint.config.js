@@ -26,4 +26,9 @@ export default antfu({
 		],
 		'ts/array-type': ['error', { default: 'generic' }],
 	},
+}, {
+	files: ['**/*.svelte'],
+	rules: {
+		'prefer-const': 'off',
+	},
 })

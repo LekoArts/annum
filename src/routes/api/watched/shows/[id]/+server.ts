@@ -26,9 +26,10 @@ export const GET: RequestHandler = async ({ params, locals, fetch, setHeaders })
 
 		const rawShows = await res.json() as Array<TraktWatchedShowsItem>
 		const normalizedShows = rawShows.map(normalizeItem)
-		const showsChunks = chunks(normalizedShows, 15)
+		const showsChunks = chunks(normalizedShows, 12)
 
 		return json({
+			total_chunks: showsChunks.length,
 			chunks: showsChunks,
 		})
 	}
