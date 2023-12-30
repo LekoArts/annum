@@ -1,15 +1,17 @@
 <script lang="ts">
-	import { page } from '$app/stores'
+	import type { PageData } from './$types';
 	import InfiniteLoading from 'svelte-infinite-loading'
 	import type { InfiniteEvent } from 'svelte-infinite-loading'
 	import type { ApiHistoryMoviesResponse, Movie } from '$lib/types';
 	import { getStartAndEndOfYear } from '$lib/utils';
 	import Image from '$lib/components/image.svelte';
-
+	
 	let p = 1
 	let list: Array<Movie> = []
+	export let data: PageData
 
-	const { start, end } = getStartAndEndOfYear(Number($page.params.year))
+	$: year = data.year
+	$: ({ start, end } = getStartAndEndOfYear(year))
 
 	$: queryParams = new URLSearchParams({
 		page: p.toString(),
@@ -36,17 +38,12 @@
 	}
 </script>
 
-<h1>{$page.params.year}</h1>
+<h1>{year}</h1>
 
 <main class="content">
 	<div class="grid">
 		{#each list as item, index}
 			<div class="grid-item" data-num={index + 1}>
-				
-				<!-- 
-				<h2>{item.title}</h2>
-				<p>{item.last_watched_at}</p>
-			-->
 				<Image images={item.images} alt={item.title} loading={index === 0 ? 'eager' : 'lazy'} />
 			</div>
 		{/each}

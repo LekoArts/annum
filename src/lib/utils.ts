@@ -45,7 +45,8 @@ export function chunks<T>(array: Array<T>, n: number): Array<Array<T>> {
 	return result
 }
 
-export function getStartAndEndOfYear(year: number) {
+export function getStartAndEndOfYear(y: number | string) {
+	const year = typeof y === 'string' ? parseInt(y) : y
 	return {
 		start: new Date(year, 0, 1).toISOString(),
 		end: new Date(year, 11, 31).toISOString(),
