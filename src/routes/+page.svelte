@@ -1,9 +1,16 @@
 <script lang='ts'>
+	import { signIn } from '@auth/sveltekit/client'
 	import { page } from '$app/stores'
-	import Homepage from '$lib/pages/homepage.svelte'
 
 	// eslint-disable-next-line svelte/valid-compile
-	export let isSignedIn = Boolean($page.data.session?.user)
+	let isSignedIn = Boolean($page.data.session?.user)
 </script>
 
-<Homepage {isSignedIn} />
+<h1>Home</h1>
+<p>Welcome to Trakt Yearly Posters</p>
+{#if isSignedIn}
+	<p>Go to <a href='/dashboard'>Dashboard</a></p>
+{:else}
+	<p>Not signed in.</p>
+	<button on:click={() => signIn('trakt', { callbackUrl: '/dashboard' })}>Sign in</button>
+{/if}

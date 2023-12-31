@@ -1,6 +1,6 @@
-import { TMDB_BASE_URL, TMDB_IMAGE_BASE_URL, TMDB_POSTER_SIZES } from '../constants'
 import type { TmdbPosterSize, TraktMediaType } from '../types'
 import { traktTmdbMediaMap } from '../utils'
+import { TMDB_BASE_URL, TMDB_IMAGE_BASE_URL, TMDB_POSTER_SIZES } from '$const'
 
 /**
  * Returns the URL to fetch TMDB details given a type and id

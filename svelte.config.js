@@ -9,6 +9,10 @@ const config = {
 		env: {
 			privatePrefix: 'PRIVATE_',
 		},
+		alias: {
+			$assets: 'src/assets',
+			$const: 'src/const.ts',
+		},
 	},
 }
 

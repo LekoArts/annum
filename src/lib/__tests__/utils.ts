@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { chunks, getStartAndEndOfYear } from '../utils'
+import { chunks, filterForYear, getStartAndEndOfYear } from '../utils'
 
 describe('chunks', () => {
 	it('should split array into chunks', () => {
@@ -31,5 +31,24 @@ describe('getStartAndEndOfYear', () => {
         "start": "2022-12-31T23:00:00.000Z",
       }
     `)
+	})
+})
+
+describe('filterForYear', () => {
+	it('should return true if item matches year', () => {
+		const item: any = {
+			last_watched_at_year: 2020,
+		}
+		const year = 2020
+		const result = filterForYear(item, year)
+		expect(result).toBe(true)
+	})
+	it('should return false if item does not match year', () => {
+		const item: any = {
+			last_watched_at_year: 2020,
+		}
+		const year = 2021
+		const result = filterForYear(item, year)
+		expect(result).toBe(false)
 	})
 })

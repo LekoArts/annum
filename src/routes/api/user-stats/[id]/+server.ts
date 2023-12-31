@@ -1,9 +1,9 @@
 import { error, json } from '@sveltejs/kit'
 import type { RequestHandler } from './$types'
+import { DEFAULT_CACHE_HEADER, TRAKT_BASE_URL } from '$const'
 import { traktStatsUrl } from '$lib/utils/trakt'
-import { DEFAULT_CACHE_HEADER, TRAKT_BASE_URL } from '$lib/constants'
 import type { TraktStats } from '$lib/types'
-import { TRAKT_FETCH_DEFAULTS } from '$lib/server/constants'
+import { TRAKT_FETCH_DEFAULTS } from '$lib/server/const'
 
 export const GET: RequestHandler = async ({ locals, params, fetch, setHeaders }) => {
 	const session = await locals.getSession()

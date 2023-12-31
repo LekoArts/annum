@@ -1,9 +1,10 @@
 <script lang='ts'>
 	import '../app.css'
+	import Footer from './Footer.svelte'
 </script>
 
-<slot />
+<main>
+	<slot />
+</main>
 
-<footer>
-	Copyright by LekoArts. Visit Trakt.tv.
-</footer>
+<Footer />

@@ -1,4 +1,4 @@
-import type { TraktHistoryMovieItem, TraktWatchedShowsItem } from './types'
+import type { NormalizedItemResponse, TraktHistoryMovieItem, TraktWatchedShowsItem } from './types'
 
 export const traktTmdbMediaMap = {
 	movies: 'movie',
@@ -37,7 +37,8 @@ export function normalizeItem(item: TraktHistoryMovieItem | TraktWatchedShowsIte
 	}
 }
 
-export function chunks<T>(array: Array<T>, n: number): Array<Array<T>> {
+export function chunks<T>(array: Array<T>, number: number | string): Array<Array<T>> {
+	const n = typeof number === 'string' ? Number.parseInt(number) : number
 	const result = []
 	for (let i = 0; i < array.length; i += n)
 		result.push(array.slice(i, i + n))
@@ -45,10 +46,15 @@ export function chunks<T>(array: Array<T>, n: number): Array<Array<T>> {
 	return result
 }
 
-export function getStartAndEndOfYear(y: number | string) {
-	const year = typeof y === 'string' ? Number.parseInt(y) : y
+export function getStartAndEndOfYear(year: number | string) {
+	const y = typeof year === 'string' ? Number.parseInt(year) : year
 	return {
-		start: new Date(year, 0, 1).toISOString(),
-		end: new Date(year, 11, 31).toISOString(),
+		start: new Date(y, 0, 1).toISOString(),
+		end: new Date(y, 11, 31).toISOString(),
 	}
+}
+
+export function filterForYear(item: NormalizedItemResponse, year: number | string) {
+	const y = typeof year === 'string' ? Number.parseInt(year) : year
+	return item.last_watched_at_year === y
 }

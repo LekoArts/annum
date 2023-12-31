@@ -1,10 +1,10 @@
 import { error, json } from '@sveltejs/kit'
 import type { RequestHandler } from './$types'
-import { DEFAULT_CACHE_HEADER, TRAKT_BASE_URL } from '$lib/constants'
+import { DEFAULT_CACHE_HEADER, PAGINATION_LIMIT, TRAKT_BASE_URL } from '$const'
 import { normalizeItem } from '$lib/utils'
 import { traktHistoryUrl } from '$lib/utils/trakt'
 import type { Movie, NormalizedItemResponse, TmdbImageUrlsWithDimensions, TraktHistoryMovieItem } from '$lib/types'
-import { TRAKT_FETCH_DEFAULTS } from '$lib/server/constants'
+import { TRAKT_FETCH_DEFAULTS } from '$lib/server/const'
 
 async function fetchData(customFetch: typeof fetch, m: TraktHistoryMovieItem): Promise<Movie | null> {
 	const movie = normalizeItem(m) as NormalizedItemResponse
@@ -51,7 +51,7 @@ export const GET: RequestHandler = async ({ locals, url, fetch, setHeaders }) =>
 	})
 
 	const page = url.searchParams.get('page') || '1'
-	const limit = url.searchParams.get('limit') || '12'
+	const limit = url.searchParams.get('limit') || PAGINATION_LIMIT
 	const start_at = url.searchParams.get('start_at') as string
 	const end_at = url.searchParams.get('end_at') as string
 

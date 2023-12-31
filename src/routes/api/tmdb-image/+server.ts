@@ -1,10 +1,10 @@
 import { error, json } from '@sveltejs/kit'
 import type { RequestHandler } from './$types'
+import { TMDB_FETCH_DEFAULTS } from '$const'
 import type { TmdbItemDetail, TraktMediaType } from '$lib/types'
 import { traktTmdbMediaMap } from '$lib/utils'
 import { tmdbImageUrlsWithDimensions, tmdbItemDetailsUrl } from '$lib/utils/tmdb'
-import { DEFAULT_CACHE_HEADER, TMDB_FETCH_DEFAULTS } from '$lib/constants'
-import { TMDB_QUERY_DEFAULTS } from '$lib/server/constants'
+import { TMDB_QUERY_DEFAULTS } from '$lib/server/const'
 
 export const GET: RequestHandler = async ({ url, locals, fetch, setHeaders }) => {
 	const session = await locals.getSession()
@@ -20,7 +20,7 @@ export const GET: RequestHandler = async ({ url, locals, fetch, setHeaders }) =>
 		error(400, 'Missing required query params')
 
 	setHeaders({
-		...DEFAULT_CACHE_HEADER,
+		'cache-control': 'max-age=31536000',
 	})
 
 	try {

@@ -1,4 +1,4 @@
-import type { TMDB_POSTER_SIZES } from './constants'
+import type { TMDB_POSTER_SIZES } from '$const'
 
 export type TmdbPosterSize = keyof typeof TMDB_POSTER_SIZES
 
@@ -113,8 +113,8 @@ export interface NormalizedItemResponse {
 	last_watched_at_year: number
 	title: string
 	release_year: number
-	tmdb_id: number | undefined
-	plays: number
+	tmdb_id?: number
+	plays?: number
 }
 
 export type TmdbImageUrlsWithDimensions = Record<TmdbPosterSize, { url: string, width: number, height: number }>
@@ -131,4 +131,10 @@ export interface ApiHistoryMoviesResponse {
 	movies: Array<Movie>
 }
 
+export interface ApiWatchedShowsResponse {
+	total_chunks: number
+	chunks: Array<Array<NormalizedItemResponse>>
+}
+
 export type Movie = WithTmdbImages<NormalizedItemResponse>
+export type Show = WithTmdbImages<NormalizedItemResponse>

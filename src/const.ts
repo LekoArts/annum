@@ -1,6 +1,7 @@
 export const TRAKT_BASE_URL = 'https://api.trakt.tv'
 export const TMDB_BASE_URL = 'https://api.themoviedb.org/3/'
 export const TMDB_IMAGE_BASE_URL = 'https://image.tmdb.org/t/p/'
+export const GITHUB_REPO_URL = 'https://github.com/LekoArts/trakt-yearly-posters'
 export const CURRENT_YEAR = new Date().getFullYear()
 
 export const TYPE_NAMES = {
@@ -27,3 +28,5 @@ export const TMDB_FETCH_DEFAULTS = {
 export const DEFAULT_CACHE_HEADER = {
 	'cache-control': 'max-age=3600',
 } as const
+
+export const PAGINATION_LIMIT = '12'
