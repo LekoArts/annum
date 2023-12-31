@@ -3,6 +3,7 @@ export const TMDB_BASE_URL = 'https://api.themoviedb.org/3/'
 export const TMDB_IMAGE_BASE_URL = 'https://image.tmdb.org/t/p/'
 export const GITHUB_REPO_URL = 'https://github.com/LekoArts/trakt-yearly-posters'
 export const CURRENT_YEAR = new Date().getFullYear()
+export const SKIP_TO_CONTENT_ID = 'skip-to-content'
 
 export const TYPE_NAMES = {
 	movie: 'Movie',
