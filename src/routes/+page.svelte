@@ -2,8 +2,7 @@
 	import { signIn } from '@auth/sveltekit/client'
 	import { page } from '$app/stores'
 
-	// eslint-disable-next-line svelte/valid-compile
-	let isSignedIn = Boolean($page.data.session?.user)
+	let isSignedIn = Boolean($page.data.session.user)
 </script>
 
 <h1>Home</h1>

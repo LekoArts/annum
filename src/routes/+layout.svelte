@@ -1,10 +1,18 @@
-<script lang='ts'>
-	import '../app.css'
-	import Footer from './Footer.svelte'
+<script lang="ts">
+	import "../app.pcss";
+    import Footer from './Footer.svelte'
+    import Content from '$lib/skip-to-content/Content.svelte'
+    import SkipToContent from '$lib/skip-to-content/Nav.svelte'
+    import Meta from '$lib/Meta.svelte'
+    import './style.css'
 </script>
 
-<main>
-	<slot />
-</main>
+<Meta></Meta>
 
-<Footer />
+<SkipToContent></SkipToContent>
+
+<Content>
+	<slot></slot>
+</Content>
+
+<Footer></Footer>

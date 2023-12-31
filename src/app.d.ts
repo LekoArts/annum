@@ -6,7 +6,14 @@ declare global {
 		interface Locals {
 			session: import('@auth/core/types').Session
 		}
-		// interface PageData {}
+		interface PageData {
+			year?: string
+			meta?: {
+				title: string
+				description: string
+			}
+			session: import('@auth/core/types').Session
+		}
 		// interface PageState {}
 		// interface Platform {}
 	}
