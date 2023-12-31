@@ -1,5 +1,5 @@
 import type { TmdbPosterSize, TraktMediaType } from '../types'
-import { traktTmdbMediaMap } from '../utils'
+import { traktTmdbMediaMap } from './index'
 import { TMDB_BASE_URL, TMDB_IMAGE_BASE_URL, TMDB_POSTER_SIZES } from '$const'
 
 /**

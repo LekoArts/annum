@@ -1,4 +1,4 @@
-import type { NormalizedItemResponse, TraktHistoryMovieItem, TraktWatchedShowsItem } from './types'
+import type { NormalizedItemResponse, TraktHistoryMovieItem, TraktWatchedShowsItem } from '../types'
 
 export const traktTmdbMediaMap = {
 	movies: 'movie',
