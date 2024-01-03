@@ -20,21 +20,21 @@
     overflow: hidden;
     position: absolute;
     clip: rect(0 0 0 0);
-  }
 
-  .skip-to-content-nav:focus {
-    padding: 1rem;
-    position: fixed;
-    top: 10px;
-    left: 10px;
-    background: white;
-    color: black;
-    border: 2px solid black;
-    text-decoration: none;
-    border-radius: 5px;
-    z-index: 1000;
-    width: auto;
-    height: auto;
-    clip: auto;
+    &:focus {
+      padding: 1rem;
+      position: fixed;
+      top: 10px;
+      left: 10px;
+      background: white;
+      color: black;
+      border: 2px solid black;
+      text-decoration: none;
+      border-radius: 5px;
+      z-index: 1000;
+      width: auto;
+      height: auto;
+      clip: auto;
+    }
   }
 </style>
