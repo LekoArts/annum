@@ -78,6 +78,13 @@
 
 	.navigation {
 		gap: var(--grid-gutter);
+		flex-wrap: wrap;
+		justify-content: center;
+		flex-grow: 1;
+
+		@media (--sm) {
+			flex-grow: initial;
+		}
 	}
 
 	.breadcrumb {

@@ -3,10 +3,10 @@ import type { RequestHandler } from './$types'
 import { DEFAULT_CACHE_HEADER, PAGINATION_LIMIT, TRAKT_BASE_URL } from '$const'
 import { normalizeItem } from '$lib/utils'
 import { traktHistoryUrl } from '$lib/utils/trakt'
-import type { Movie, NormalizedItemResponse, TmdbImageUrlsWithDimensions, TraktHistoryMovieItem } from '$lib/types'
+import type { Language, Movie, NormalizedItemResponse, TmdbImageUrlsWithDimensions, TraktHistoryMovieItem } from '$lib/types'
 import { TRAKT_FETCH_DEFAULTS } from '$lib/server/const'
 
-async function fetchData(customFetch: typeof fetch, m: TraktHistoryMovieItem): Promise<Movie | null> {
+async function fetchData(customFetch: typeof fetch, m: TraktHistoryMovieItem, lang: Language): Promise<Movie | null> {
 	const movie = normalizeItem(m) as NormalizedItemResponse
 
 	if (!movie.tmdb_id) {
@@ -19,6 +19,7 @@ async function fetchData(customFetch: typeof fetch, m: TraktHistoryMovieItem): P
 		id: movie.tmdb_id.toString(),
 		type: 'movies',
 		title: movie.title,
+		lang,
 	}).toString()
 
 	return await customFetch(`/api/tmdb-image?${queryParams}`).then((res) => {
@@ -54,6 +55,7 @@ export const GET: RequestHandler = async ({ locals, url, fetch, setHeaders }) =>
 	const limit = url.searchParams.get('limit') || PAGINATION_LIMIT
 	const start_at = url.searchParams.get('start_at') as string
 	const end_at = url.searchParams.get('end_at') as string
+	const lang = url.searchParams.get('lang') as Language
 
 	const queryParams = new URLSearchParams({
 		start_at,
@@ -73,7 +75,7 @@ export const GET: RequestHandler = async ({ locals, url, fetch, setHeaders }) =>
 		const itemCount = res.headers.get('x-pagination-item-count') as string
 
 		const rawMovies = await res.json() as Array<TraktHistoryMovieItem>
-		const moviesPromises = await Promise.allSettled(rawMovies.map(m => fetchData(fetch, m)))
+		const moviesPromises = await Promise.allSettled(rawMovies.map(m => fetchData(fetch, m, lang)))
 
 		const movies = moviesPromises.map((p) => {
 			if (p.status === 'fulfilled')

@@ -34,60 +34,60 @@ export const PAGINATION_LIMIT = '10'
 
 export const LANGUAGES = [
 	{
-		id: 'en',
-		name: 'English',
-	},
-	{
-		id: 'fr',
-		name: 'Français',
-	},
-	{
-		id: 'ja',
-		name: '日本語',
-	},
-	{
-		id: 'pt',
-		name: 'Português',
-	},
-	{
 		id: 'ar',
 		name: 'العربية',
-	},
-	{
-		id: 'it',
-		name: 'Italiano',
-	},
-	{
-		id: 'ru',
-		name: 'Pусский',
-	},
-	{
-		id: 'pl',
-		name: 'Polski',
-	},
-	{
-		id: 'uk',
-		name: 'Український',
 	},
 	{
 		id: 'cn',
 		name: '广州话 / 廣州話',
 	},
 	{
+		id: 'de',
+		name: 'Deutsch',
+	},
+	{
 		id: 'el',
 		name: 'ελληνικά',
 	},
 	{
-		id: 'de',
-		name: 'Deutsch',
+		id: 'en',
+		name: 'English',
 	},
 	{
 		id: 'es',
 		name: 'Español',
 	},
 	{
+		id: 'fr',
+		name: 'Français',
+	},
+	{
+		id: 'it',
+		name: 'Italiano',
+	},
+	{
+		id: 'ja',
+		name: '日本語',
+	},
+	{
 		id: 'ko',
 		name: '한국어/조선말',
+	},
+	{
+		id: 'pl',
+		name: 'Polski',
+	},
+	{
+		id: 'pt',
+		name: 'Português',
+	},
+	{
+		id: 'ru',
+		name: 'Pусский',
+	},
+	{
+		id: 'uk',
+		name: 'Український',
 	},
 	{
 		id: 'zh',

@@ -5,6 +5,7 @@
 	import Image from '$lib/Image.svelte'
 	import Grid from '$lib/grid/Grid.svelte'
 	import GridItem from '$lib/grid/Item.svelte'
+	import { settings } from '$lib/store/settings'
 
 	let c = 1
 	let total_chunks = 1
@@ -29,6 +30,7 @@
 			id: show.tmdb_id.toString(),
 			type: 'shows',
 			title: show.title,
+			lang: $settings?.lang,
 		}).toString()
 
 		return await fetch(`/api/tmdb-image?${queryParams}`).then((res) => {
@@ -92,7 +94,7 @@
 
 <h1 class='visually-hidden'>Shows from {year}</h1>
 
-<Grid>
+<Grid screenshotMode={$settings.screenshotMode} columns={$settings.columns}>
 	{#each list as { images, title }, index}
 		<GridItem {index}>
 			<Image {images} alt={title} loading={index === 0 ? 'eager' : 'lazy'} />

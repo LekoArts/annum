@@ -1,11 +1,11 @@
 import { persisted } from './persisted'
-import type { Languages } from '$lib/types'
+import type { Language } from '$lib/types'
 
 interface Settings {
 	hue: number
 	screenshotMode: boolean
 	columns: number
-	lang: Languages
+	lang: Language
 }
 
 export const settings = persisted<Settings>('trakt-yearly-posters-settings', {

@@ -14,15 +14,15 @@
 	<div class='container'>
 		<div class='wrapper flex'>
 			<div class='title text-md-lg font-semibold'>
-				Trakt Yearly Posters
+				{#if $page.url.pathname.includes('/dashboard')}
+					Trakt Yearly Posters
+				{:else}
+					<a class='title-link' href='/' aria-label='Back to homepage'>Trakt Yearly Posters</a>
+				{/if}
 			</div>
 			<div class='cta flex align-center'>
 				{#if isSignedIn}
-					{#if $page.url.pathname === '/'}
-						<Primary type='link' href='/dashboard'>
-							Dashboard
-						</Primary>
-					{:else}
+					{#if $page.url.pathname.includes('/dashboard')}
 						<div class='profile text-sm-base box'>
 							{#if stats}
 								<div class='stats' aria-label='User statistics and information'>
@@ -38,6 +38,10 @@
 						</div>
 						<Primary type='text' on:click={() => signOut({ callbackUrl: '/' })}>
 							Sign Out
+						</Primary>
+					{:else}
+						<Primary type='link' href='/dashboard'>
+							Dashboard
 						</Primary>
 					{/if}
 				{:else}
@@ -79,8 +83,16 @@
     }
   }
 
+  .title-link {
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+
   .cta {
-    gap: var(--space-s-l);
+    gap: var(--space-s-m);
     line-height: 1.25;
     justify-content: space-between;
     flex-grow: 1;

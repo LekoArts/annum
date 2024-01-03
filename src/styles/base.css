@@ -49,6 +49,7 @@ h4, h5, h6, p, li {
   border: 1px solid var(--color-2);
   padding: var(--space-3xs) var(--space-xs);
   border-radius: var(--space-2xs);
+  box-shadow: var(--shadow-elevation-low);
 }
 
 a {
@@ -71,11 +72,15 @@ code {
 }
 
 .prose {
-  max-width: 65ch;
+  max-width: 70ch;
 
   & svg {
     display: inline-block;
     vertical-align: middle;
     --icon-color: var(--color-3);
+  }
+
+  & p {
+    margin-bottom: var(--space-xs);
   }
 }

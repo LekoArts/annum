@@ -1,7 +1,7 @@
 import type { LANGUAGES, TMDB_POSTER_SIZES } from '$const'
 
 export type TmdbPosterSize = keyof typeof TMDB_POSTER_SIZES
-export type Languages = typeof LANGUAGES[number]['id']
+export type Language = typeof LANGUAGES[number]['id']
 
 export interface TraktProfile {
 	username: string

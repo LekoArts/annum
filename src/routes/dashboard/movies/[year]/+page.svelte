@@ -19,6 +19,7 @@
 		page: p.toString(),
 		start_at: start,
 		end_at: end,
+		lang: $settings?.lang,
 	}).toString()
 
 	function infiniteHandler({ detail: { loaded, complete, error } }: InfiniteEvent) {

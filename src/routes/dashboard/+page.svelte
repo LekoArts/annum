@@ -1,32 +1,35 @@
 <script lang='ts'>
 	import type { PageData } from './$types'
 	import { settings } from '$lib/store/settings'
-	import { GITHUB_REPO_URL, LANGUAGES } from '$const'
+	import { CURRENT_YEAR, LANGUAGES } from '$const'
 	import Spacer from '$lib/Spacer.svelte'
 	import Svg from '$lib/Svg.svelte'
+	import Secondary from '$lib/button/Secondary.svelte'
 
 	export let data: PageData
 
-	let years = [2024, 2023, 2022, 2021, 2020]
+	let years = [CURRENT_YEAR, CURRENT_YEAR - 1]
 </script>
 
 <h1 class='visually-hidden'>Dashboard</h1>
 
 <div class='prose'>
 	<p class='welcome'>Welcome to your Dashboard 👋🏻</p>
-	<p>So far you watched <Svg id='movie' /> {data.stats.movies.watched} movies and <Svg id='tv' /> {data.stats.shows.watched} shows.</p>
+	<p>So far you watched <code><Svg id='movie' /> {data.stats.movies.watched} movies</code> and <code><Svg id='tv' /> {data.stats.shows.watched} shows</code>. You can use this app to view your movies and shows year by year in a poster grid. Here are some quick links to the current and previous year:</p>
 </div>
 
-<ul>
+<div class='flex quicklinks'>
 	{#each years as year}
-		<li>
-			<a href={`/dashboard/movies/${year}`}>Movies {year}</a>
-		</li>
-		<li>
-			<a href={`/dashboard/shows/${year}`}>Shows {year}</a>
-		</li>
+		<Secondary type='link' href={`/dashboard/movies/${year}`}>Movies {year}</Secondary>
+		<Secondary type='link' href={`/dashboard/shows/${year}`}>Shows {year}</Secondary>
 	{/each}
-</ul>
+</div>
+
+<Spacer axis='vertical' size='xs' />
+
+<div class='prose'>
+	<p>On each page you will find a <code>Previous</code> and <code>Next</code> button to switch years. You can also manually change the year in the URL as the format is always the same, for example: <code>/dashboard/movies/{CURRENT_YEAR}</code>.</p>
+</div>
 
 <Spacer axis='vertical' size='m' />
 
@@ -36,36 +39,30 @@
 	<div class='settings-wrapper'>
 		<div class='box'>
 			<p class='title'>Color Hue</p>
-			<p>Red is at <code>0deg</code>, yellow is at <code>60deg</code>, lime is at <code>120deg</code>, cyan is at <code>180deg</code>, blue is at <code>240deg</code>, and magenta is at <code>300deg</code>.</p>
+			<p>Red is at <code>0deg</code>, yellow is at <code>60deg</code>, lime is at <code>120deg</code>, cyan is at <code>180deg</code>, blue is at <code>240deg</code>, and magenta is at <code>300deg</code>. Choose a color hue to change the website's appearance.</p>
 			<Spacer axis='vertical' size='xs' />
 			<div class='range-wrapper'>
-				<label for='hue'>Choose a color hue:</label>
+				<label for='hue'>Color hue:</label>
 				<input id='hue' type='range' min='0' max='360' step='1' bind:value={$settings.hue} on:input={e => settings.set({ ...$settings, hue: Number.parseInt((e.target as HTMLInputElement).value) })} />
 			</div>
 		</div>
 		<div class='box'>
 			<p class='title'>Language</p>
-			<p>this is a text blabla</p>
+			<p>By default, all posters are in English. You can choose another language below.</p>
 			<div class='lang-wrapper'>
-				<label for='lang'>Choose a language for your posters:</label>
-				<select id='lang' name='lang'>
+				<label for='lang'>Language:</label>
+				<select id='lang' name='lang' bind:value={$settings.lang} on:change={(e) => {
+					// @ts-expect-error - TODO: Fix this
+					settings.set({ ...$settings, lang: (e.target as HTMLSelectElement).value })
+				}}>
 					{#each LANGUAGES as lang}
-						<option value={lang.id}>{lang.name}</option>
+						<option value={lang.id} selected={$settings.lang ? lang.id === $settings.lang : lang.id === 'en'}>{lang.name}</option>
 					{/each}
 				</select>
 			</div>
 		</div>
 	</div>
 </section>
-
-<Spacer axis='vertical' size='m' />
-
-<h2>Background information</h2>
-<Spacer axis='vertical' size='xs' />
-<div class='prose'>
-	<p>All colors on this website are authored in the <a href='https://developer.mozilla.org/en-US/docs/Web/CSS/color_value/oklch'>Oklch Color Space</a>. The color wheel is the representation of the <a href='https://developer.mozilla.org/en-US/docs/Web/CSS/hue'>color hue angle</a>. By changing the color hue you can change the color scheme of the whole website.</p>
-	<p>Trakt itself doesn't host any images (like posters) but instead provides metadata to for APIs like <a href='https://www.themoviedb.org/'>TMDB</a>. So all posters you can see on this website are sourced from TMDB. TMDB allows to fetch images in different languages, but as it's a community-led effort in most cases only the most popular languages have individual images. Thus the language selector below only contains a subset of languages (if you're absolutely missing your language, please <a href={GITHUB_REPO_URL}>open an issue</a>).</p>
-</div>
 
 <style lang='postcss'>
 	.settings-wrapper {
@@ -78,5 +75,10 @@
 		font-weight: 600;
 		font-size: var(--step-1);
 		margin-bottom: var(--space-2xs);
+	}
+
+	.quicklinks {
+		flex-wrap: wrap;
+		gap: var(--space-2xs-xs);
 	}
 </style>
