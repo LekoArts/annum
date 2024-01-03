@@ -1,7 +1,7 @@
 <script lang='ts'>
 	import { page } from '$app/stores'
 
-	let title = 'Trakt.tv Yearly Posters'
+	let title = 'Trakt Yearly Posters'
 
 	$: meta = {
 		description: 'Get an overview of your watched movies & shows on Trakt.tv in a poster grid',
@@ -25,4 +25,5 @@
 	<meta name='twitter:card' content='summary_large_image' />
 	<meta name='twitter:title' content={generateTitle(meta.title)} />
 	<meta name='twitter:description' content={meta.description} />
+	<link rel='preload' href='/icons.svg' as='image' type='image/svg+xml' />
 </svelte:head>
