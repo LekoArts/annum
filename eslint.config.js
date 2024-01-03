@@ -25,6 +25,7 @@ export default antfu({
 			},
 		],
 		'ts/array-type': ['error', { default: 'generic' }],
+		'svelte/valid-compile': 'warn',
 	},
 }, {
 	files: ['**/*.svelte'],
