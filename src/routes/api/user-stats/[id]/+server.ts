@@ -30,6 +30,6 @@ export const GET: RequestHandler = async ({ locals, params, fetch, setHeaders })
 		})
 	}
 	catch (e) {
-		error(404, `Failed to fetch Trakt stats for user: ${id}. Error: ${e}`)
+		error(404, `Failed to fetch Trakt stats for user: ${id}. ${e}`)
 	}
 }

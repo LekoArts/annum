@@ -91,6 +91,6 @@ export const GET: RequestHandler = async ({ locals, url, fetch, setHeaders }) =>
 		})
 	}
 	catch (e) {
-		error(404, `Failed to fetch Trakt history for user: ${session.user.id}. Error: ${e}`)
+		error(404, `Failed to fetch Trakt history for user: ${session.user.id}. ${e}`)
 	}
 }

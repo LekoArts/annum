@@ -35,6 +35,6 @@ export const GET: RequestHandler = async ({ url, locals, fetch, setHeaders }) =>
 		})
 	}
 	catch (e) {
-		error(404, `Failed to fetch Trakt watched shows for user: ${id}. Error: ${e}`)
+		error(404, `Failed to fetch Trakt watched shows for user: ${id}. ${e}`)
 	}
 }
