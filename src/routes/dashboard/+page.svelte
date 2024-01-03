@@ -1,15 +1,21 @@
 <script lang='ts'>
 	import type { PageData } from './$types'
+	import VisuallyHidden from '$lib/VisuallyHidden.svelte'
 
 	export let data: PageData
 
 	export let navigation = [
 		{ name: 'Home', href: '/dashboard' },
-		{ name: 'All Movies', href: '/dashboard/movies/all' },
 	]
 
-	export let years = [2023, 2022, 2021, 2020]
+	export let years = [2024, 2023, 2022, 2021, 2020]
 </script>
+
+<VisuallyHidden>
+	<h1>Dashboard</h1>
+</VisuallyHidden>
+
+<p>Welcome to your Dashboard 👋🏻</p>
 
 <p>You watched {data.stats.movies.watched} movies & {data.stats.shows.watched} shows (with {data.stats.episodes.watched} episodes)</p>
 

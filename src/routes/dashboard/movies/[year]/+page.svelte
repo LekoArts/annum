@@ -4,6 +4,9 @@
 	import type { ApiHistoryMoviesResponse, Movie } from '$lib/types'
 	import { getStartAndEndOfYear } from '$lib/utils'
 	import Image from '$lib/Image.svelte'
+	import VisuallyHidden from '$lib/VisuallyHidden.svelte'
+	import Grid from '$lib/grid/Grid.svelte'
+	import GridItem from '$lib/grid/Item.svelte'
 
 	let p = 1
 	let list: Array<Movie> = []
@@ -19,7 +22,7 @@
 	}).toString()
 
 	function infiniteHandler({ detail: { loaded, complete, error } }: InfiniteEvent) {
-		fetch(`/api/history/movies/?${queryParams}`)
+		fetch(`/api/history/movies?${queryParams}`)
 			.then<ApiHistoryMoviesResponse>(res => res.json())
 			.then((data) => {
 				if (p > Number(data.total_pages)) {
@@ -38,19 +41,24 @@
 	}
 </script>
 
-<h1>{year}</h1>
+<VisuallyHidden>
+	<h1>Movies from {year}</h1>
+</VisuallyHidden>
 
-<div class='grid'>
-	{#each list as item, index}
-		<div class='grid-item' data-num={index + 1}>
-			<Image images={item.images} alt={item.title} loading={index === 0 ? 'eager' : 'lazy'} />
-		</div>
+<Grid>
+	{#each list as { images, title }, index}
+		<GridItem {index}>
+			<Image {images} alt={title} loading={index === 0 ? 'eager' : 'lazy'} />
+		</GridItem>
 	{/each}
-</div>
+</Grid>
 <InfiniteLoading on:infinite={infiniteHandler} spinner='circles'>
 	<span slot='noMore'></span>
 	<span slot='error' let:attemptLoad>
 		Something went wrong. <button on:click={attemptLoad}>Retry</button>
+	</span>
+	<span slot='noResults'>
+		No results found. Start watching! 🥳
 	</span>
 </InfiniteLoading>
 
