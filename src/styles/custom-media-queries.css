@@ -1,0 +1,15 @@
+/*
+My custom media query breakpoints:
+
+sm: 640px
+md: 768px
+lg: 1024px
+xl: 1280px
+
+Using min-width media queries, so that base styles are "mobile-first"
+*/
+
+@custom-media --sm (min-width: 640px);
+@custom-media --md (min-width: 768px);
+@custom-media --lg (min-width: 1024px);
+@custom-media --xl (min-width: 1350px);

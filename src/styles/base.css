@@ -1,0 +1,50 @@
+html {
+  font-family: var(--body-font);
+}
+
+body {
+  background: linear-gradient(0deg, var(--color-11) 0%, var(--color-bg) 25%, var(--color-bg) 75%, var(--color-13) 100%);
+  color: rgb(233, 233, 233);
+  font-size: var(--step-0);
+  line-height: 1.5;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  margin-block: 0.2em;
+  text-wrap: balance;
+  --color-alpha: 1;
+  color: var(--color-2);
+}
+
+h1 {
+  font-size: var(--step-4);
+}
+
+h2 {
+  font-size: var(--step-3);
+}
+
+h3 {
+  font-size: var(--step-2);
+}
+
+h4 {
+  font-size: var(--step-1);
+}
+
+h5, h6, p, li {
+  font-size: var(--step-0);
+}
+
+.container {
+  max-width: var(--grid-max-width);
+  padding-inline: var(--grid-gutter);
+  margin-inline: auto;
+}
+
+a {
+  --color-alpha: 1;
+  color: var(--color-0);
+}
