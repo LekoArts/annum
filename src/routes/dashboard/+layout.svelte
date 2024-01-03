@@ -1,70 +1,95 @@
 <script lang='ts'>
+	import { slide } from 'svelte/transition'
 	import { page } from '$app/stores'
 	import Spacer from '$lib/Spacer.svelte'
 	import Svg from '$lib/Svg.svelte'
+	import Switch from '$lib/Switch.svelte'
 	import { style } from '$lib/actions'
 	import { settings } from '$lib/store/settings'
+	import Secondary from '$lib/button/Secondary.svelte'
+	import { CURRENT_YEAR } from '$const'
 
 	$: segments = $page.url.pathname.slice(1).split('/')
-	let value = $settings.hue
+	$: isDashboard = segments.length === 1
+	$: isDetailsPage = segments.length > 1
+	$: isMovie = segments[1] === 'movies'
+	$: isShow = segments[1] === 'shows'
+	$: year = Number.parseInt(segments[2])
 </script>
 
 <div class='wrapper flex'>
-	<nav aria-label='Breadcrumb' class='breadcrumb flex align-center box'>
-		<ol>
-			<li>
-				<Svg id='home' />
-				<a href='/dashboard' aria-current={segments.length === 1 ? 'page' : null}>Home</a>
-			</li>
-			{#if segments.length > 1}
+	<div class='flex align-center navigation'>
+		<nav aria-label='Breadcrumb' class='breadcrumb flex align-center box'>
+			<ol role='list'>
 				<li>
-					<Svg id='chevron-right' />
-					{#if segments[1] === 'movies'}
-						<span>Movies</span>
-					{:else if segments[1] === 'shows'}
-						<span>Shows</span>
-					{/if}
+					<Svg id='home' />
+					<a href='/dashboard' aria-current={isDashboard ? 'page' : null}>Home</a>
 				</li>
-				<li>
-					<Svg id='chevron-right' />
-					<a href={$page.url.pathname} aria-current='page'>{segments[2]}</a>
-				</li>
-			{/if}
-		</ol>
-	</nav>
-	<div class='box'>
-		<input id='hue' type='range' min='0' max='360' step='1' bind:value on:change={(e) => {
-			const target = e.target as HTMLInputElement
-			if (target)
-				settings.set({ hue: Number.parseInt(target.value) })
-		}} />
+				{#if isDetailsPage}
+					<li>
+						<Svg id='chevron-right' />
+						{#if isMovie}
+							<span>Movies</span>
+						{:else if isShow}
+							<span>Shows</span>
+						{/if}
+					</li>
+					<li>
+						<Svg id='chevron-right' />
+						<a href={$page.url.pathname} aria-current='page'>{year}</a>
+					</li>
+				{/if}
+			</ol>
+		</nav>
+		{#if isDetailsPage}
+			<div class='prev-next'>
+				<Secondary data-sveltekit-reload type='link' href={`/dashboard/${segments[1]}/${year - 1}`}>Previous</Secondary>
+				{#if !(year === CURRENT_YEAR)}
+					<Secondary data-sveltekit-reload type='link' href={`/dashboard/${segments[1]}/${year + 1}`}>Next</Secondary>
+				{/if}
+			</div>
+		{/if}
 	</div>
+	{#if segments.length > 1}
+		<div class='box flex align-center screenshot-mode'>
+			{#if $settings.screenshotMode}
+				<div class='flex align-center' transition:slide={{ axis: 'x' }}>
+					<label for='grid-columns'>Columns</label>
+					<input id='grid-columns' type='number' min='1' max='100' step='1' bind:value={$settings.columns} on:input={e => settings.set({ ...$settings, columns: Number.parseInt((e.target as HTMLInputElement).value) })} />
+				</div>
+			{/if}
+			<Switch label='Screenshot Mode' bind:value={$settings.screenshotMode} />
+		</div>
+	{/if}
 </div>
 
 <Spacer axis='vertical' size='m' />
 
 <slot />
 
-<svelte:body use:style={`--color-hue: ${value}`} />
+<svelte:body use:style={`--color-hue: ${$settings.hue}`} />
 
 <style lang='postcss'>
 	.wrapper {
 		justify-content: space-between;
+		flex-wrap: wrap;
+		gap: var(--grid-gutter);
 	}
 
-	.box {
-		--color-alpha: 0.25;
-    gap: var(--space-xs-s);
-    background: var(--color-4);
-    border: 1px solid var(--color-2);
-    padding: var(--space-3xs) var(--space-xs);
-    border-radius: var(--space-2xs);
+	.navigation {
+		gap: var(--grid-gutter);
 	}
 
 	.breadcrumb {
+		flex-grow: 1;
+		justify-content: center;
+
+		@media (--sm) {
+			flex-grow: initial;
+		}
 
 		& ol {
-			list-style: none;
+			list-style-type: "";
 			padding-left: 0;
 			margin: 0;
 			display: inline-flex;
@@ -88,6 +113,27 @@
 			&:hover {
 				text-decoration: underline;
 			}
+		}
+	}
+
+	.screenshot-mode {
+		flex-grow: 1;
+		justify-content: center;
+
+		@media (--sm) {
+			flex-grow: initial;
+		}
+
+		& input[type="number"] {
+			--color-alpha: 1;
+			width: var(--space-xl);
+			height: var(--space-m);
+			position: relative;
+			background: var(--color-0);
+			border: none;
+			border-radius: var(--space-3xs);
+			margin-left: var(--space-2xs);
+			padding-left: var(--space-2xs);
 		}
 	}
 </style>

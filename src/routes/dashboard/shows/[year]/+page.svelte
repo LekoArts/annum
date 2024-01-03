@@ -3,7 +3,6 @@
 	import type { PageData } from './$types'
 	import type { ApiWatchedShowsResponse, NormalizedItemResponse, Show, TmdbImageUrlsWithDimensions } from '$lib/types'
 	import Image from '$lib/Image.svelte'
-	import VisuallyHidden from '$lib/VisuallyHidden.svelte'
 	import Grid from '$lib/grid/Grid.svelte'
 	import GridItem from '$lib/grid/Item.svelte'
 
@@ -91,9 +90,7 @@
 	}
 </script>
 
-<VisuallyHidden>
-	<h1>Shows from {year}</h1>
-</VisuallyHidden>
+<h1 class='visually-hidden'>Shows from {year}</h1>
 
 <Grid>
 	{#each list as { images, title }, index}

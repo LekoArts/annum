@@ -1,6 +1,7 @@
-import type { TMDB_POSTER_SIZES } from '$const'
+import type { LANGUAGES, TMDB_POSTER_SIZES } from '$const'
 
 export type TmdbPosterSize = keyof typeof TMDB_POSTER_SIZES
+export type Languages = typeof LANGUAGES[number]['id']
 
 export interface TraktProfile {
 	username: string
@@ -102,10 +103,25 @@ export type TraktMediaType = 'movies' | 'shows'
 
 export type TraktHistoryType = 'movies' | 'episodes'
 
-export interface TmdbItemDetail {
+export interface TmdbImagesDetail {
+	aspect_ratio: number
+	height: number
+	iso_639_1: string
+	file_path: string
+	vote_average: number
+	vote_count: number
+	width: number
+}
+export interface TmdbImagesResponse {
+	backdrops: Array<TmdbImagesDetail>
+	posters: Array<TmdbImagesDetail>
+	logos: Array<TmdbImagesDetail>
+}
+
+export interface TmdbItemDetails {
 	id: number
 	poster_path?: string
-	backdrop_path?: string
+	images?: TmdbImagesResponse
 }
 
 export interface NormalizedItemResponse {

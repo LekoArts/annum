@@ -4,11 +4,11 @@
 </script>
 
 {#if type === 'text'}
-	<button class='button-primary' on:click>
+	<button class='button-primary' on:click {...$$restProps}>
 		<slot />
 	</button>
 {:else}
-	<a {href} class='button-primary'>
+	<a {href} class='button-primary' {...$$restProps}>
 		<slot />
 	</a>
 {/if}

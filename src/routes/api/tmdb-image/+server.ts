@@ -1,7 +1,7 @@
 import { error, json } from '@sveltejs/kit'
 import type { RequestHandler } from './$types'
 import { TMDB_FETCH_DEFAULTS } from '$const'
-import type { TmdbItemDetail, TraktMediaType } from '$lib/types'
+import type { TmdbItemDetails, TraktMediaType } from '$lib/types'
 import { traktTmdbMediaMap } from '$lib/utils'
 import { tmdbImageUrlsWithDimensions, tmdbItemDetailsUrl } from '$lib/utils/tmdb'
 import { TMDB_QUERY_DEFAULTS } from '$lib/server/const'
@@ -15,6 +15,7 @@ export const GET: RequestHandler = async ({ url, locals, fetch, setHeaders }) =>
 	const id = url.searchParams.get('id')
 	const type = url.searchParams.get('type') as TraktMediaType | null
 	const title = url.searchParams.get('title')
+	const lang = url.searchParams.get('lang')
 
 	if (!id || !type || !title)
 		error(400, 'Missing required query params')
@@ -24,23 +25,35 @@ export const GET: RequestHandler = async ({ url, locals, fetch, setHeaders }) =>
 	})
 
 	try {
-		const res = await fetch(`${tmdbItemDetailsUrl(type, id)}?${TMDB_QUERY_DEFAULTS}`, TMDB_FETCH_DEFAULTS)
+		let additionalQueryParams = ''
+		if (lang)
+			additionalQueryParams = `&append_to_response=images&include_image_language=${lang}`
+
+		const res = await fetch(`${tmdbItemDetailsUrl(type, id)}?${TMDB_QUERY_DEFAULTS}${additionalQueryParams}`, TMDB_FETCH_DEFAULTS)
 
 		if (!res.ok)
 			throw new Error(`Response not OK: ${res.status}`)
 
-		const meta = await res.json() as TmdbItemDetail
+		const meta = await res.json() as TmdbItemDetails
 
 		if (!meta.poster_path)
-			throw new Error('No poster path found')
+			throw new Error('No poster found')
 
-		const images = tmdbImageUrlsWithDimensions(meta.poster_path)
+		let poster_path = meta.poster_path
+
+		// If an additional language was requested (because the user set a different language than English in the settings), the meta will have the "images" key on the response. If there are images in the language, use the first one
+		if (meta.images?.posters?.length) {
+			const topRatedLocalizedImg = meta.images.posters[0]
+			poster_path = topRatedLocalizedImg.file_path
+		}
+
+		const images = tmdbImageUrlsWithDimensions(poster_path)
 
 		return json({
 			...images,
 		})
 	}
 	catch (e) {
-		error(404, `Failed to fetch TMDB metadata for ${traktTmdbMediaMap[type]} "${title}" (TMDB ID: ${id}). Error: ${e}`)
+		error(404, `Failed to fetch TMDB image for ${traktTmdbMediaMap[type]} "${title}" (TMDB ID: ${id}). ${e}`)
 	}
 }

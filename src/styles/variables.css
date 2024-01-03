@@ -2,6 +2,7 @@
   /* Colors */
   --color-hue-default: 240;
   --color-alpha-default: 1;
+  
   --color-0: oklch(99% .03 var(--color-hue, var(--color-hue-default)) / var(--color-alpha, var(--color-alpha-default)));
   --color-1: oklch(95% .06 var(--color-hue, var(--color-hue-default)) / var(--color-alpha, var(--color-alpha-default)));
   --color-2: oklch(88% .12 var(--color-hue, var(--color-hue-default)) / var(--color-alpha, var(--color-alpha-default)));
@@ -37,7 +38,7 @@
 
   --body-font: -apple-system, BlinkMacSystemFont, avenir next, avenir, segoe ui, helvetica neue, helvetica, Cantarell, Ubuntu, roboto, noto, arial, sans-serif;
 
-  /* @link https://utopia.fyi/type/calculator?c=326,18,1.2,1350,20,1.25,5,0,&s=0.75|0.5,1.5|2|3|4|6,&g=xs,m,2xl,12 */
+  /* @link https://utopia.fyi/type/calculator?c=326,18,1.2,1350,20,1.25,5,1,&s=0.75|0.5,1.5|2|3|4|6,s-l&g=xs,m,2xl,12 */
   --step--1: clamp(0.9375rem, 0.9176rem + 0.0977vw, 1rem);
   --step-0: clamp(1.125rem, 1.0852rem + 0.1953vw, 1.25rem);
   --step-1: clamp(1.35rem, 1.2823rem + 0.332vw, 1.5625rem);
@@ -45,6 +46,7 @@
   --step-3: clamp(1.9438rem, 1.7854rem + 0.7773vw, 2.4413rem);
   --step-4: clamp(2.3325rem, 2.1035rem + 1.124vw, 3.0519rem);
   --step-5: clamp(2.7994rem, 2.476rem + 1.5869vw, 3.815rem);
+  --step-form-input: clamp(1rem, 0.9602rem + 0.1953vw, 1.125rem);
 
   /* @link https://utopia.fyi/space/calculator?c=326,18,1.2,1350,20,1.25,5,0,&s=0.75|0.5,1.5|2|3|4|6,&g=xs,m,2xl,12 */
   --space-3xs: clamp(0.3125rem, 0.3125rem + 0vw, 0.3125rem);

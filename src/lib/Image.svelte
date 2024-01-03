@@ -1,5 +1,6 @@
 <script lang='ts'>
 	import type { HTMLImgAttributes } from 'svelte/elements'
+	import { fade } from 'svelte/transition'
 	import type { TmdbImageUrlsWithDimensions } from '$lib/types'
 
 	export let alt: string
@@ -19,4 +20,4 @@
 	let style = `object-fit: cover; max-width: ${maxWidth}px; max-height: ${maxHeight}px; aspect-ratio: 1 / 1.5; width: 100%;`
 </script>
 
-<img {alt} {loading} decoding='async' {sizes} {srcset} {style} {src} />
+<img transition:fade {alt} {loading} decoding='async' {sizes} {srcset} {style} {src} />

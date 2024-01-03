@@ -23,7 +23,7 @@
 							Dashboard
 						</Primary>
 					{:else}
-						<div class='profile text-sm-base'>
+						<div class='profile text-sm-base box'>
 							{#if stats}
 								<div class='stats' aria-label='User statistics and information'>
 									<div class='stats-item'>
@@ -68,10 +68,11 @@
   }
 
   .title {
+    --color-alpha: 1;
     flex-grow: 1;
     min-width: 100%;
-    --color-alpha: 1;
     color: var(--color-1);
+    letter-spacing: -0.02em;
     @media (--sm) {
       flex-grow: initial;
       min-width: initial;
@@ -94,16 +95,6 @@
     color: var(--color-0);
     position: relative;
     top: -1px;
-  }
-
-  .profile {
-    --color-alpha: 0.25;
-    gap: var(--space-xs-s);
-    background: var(--color-4);
-    border: 1px solid var(--color-2);
-    padding: var(--space-3xs) var(--space-xs);
-    border-radius: var(--space-2xs);
-    box-shadow: var(--shadow-elevation-low);
   }
 
   .profile, .stats, .stats-item {

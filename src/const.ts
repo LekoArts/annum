@@ -30,4 +30,67 @@ export const DEFAULT_CACHE_HEADER = {
 	'cache-control': 'max-age=3600',
 } as const
 
-export const PAGINATION_LIMIT = '12'
+export const PAGINATION_LIMIT = '10'
+
+export const LANGUAGES = [
+	{
+		id: 'en',
+		name: 'English',
+	},
+	{
+		id: 'fr',
+		name: 'Français',
+	},
+	{
+		id: 'ja',
+		name: '日本語',
+	},
+	{
+		id: 'pt',
+		name: 'Português',
+	},
+	{
+		id: 'ar',
+		name: 'العربية',
+	},
+	{
+		id: 'it',
+		name: 'Italiano',
+	},
+	{
+		id: 'ru',
+		name: 'Pусский',
+	},
+	{
+		id: 'pl',
+		name: 'Polski',
+	},
+	{
+		id: 'uk',
+		name: 'Український',
+	},
+	{
+		id: 'cn',
+		name: '广州话 / 廣州話',
+	},
+	{
+		id: 'el',
+		name: 'ελληνικά',
+	},
+	{
+		id: 'de',
+		name: 'Deutsch',
+	},
+	{
+		id: 'es',
+		name: 'Español',
+	},
+	{
+		id: 'ko',
+		name: '한국어/조선말',
+	},
+	{
+		id: 'zh',
+		name: '普通话',
+	},
+] as const

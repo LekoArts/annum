@@ -4,15 +4,15 @@
 	import type { ApiHistoryMoviesResponse, Movie } from '$lib/types'
 	import { getStartAndEndOfYear } from '$lib/utils'
 	import Image from '$lib/Image.svelte'
-	import VisuallyHidden from '$lib/VisuallyHidden.svelte'
 	import Grid from '$lib/grid/Grid.svelte'
 	import GridItem from '$lib/grid/Item.svelte'
+	import { settings } from '$lib/store/settings'
 
 	let p = 1
 	let list: Array<Movie> = []
 	export let data: PageData
 
-	$: year = data.year
+	$: ({ year } = data)
 	$: ({ start, end } = getStartAndEndOfYear(year))
 
 	$: queryParams = new URLSearchParams({
@@ -41,11 +41,9 @@
 	}
 </script>
 
-<VisuallyHidden>
-	<h1>Movies from {year}</h1>
-</VisuallyHidden>
+<h1 class='visually-hidden'>Movies from {year}</h1>
 
-<Grid>
+<Grid screenshotMode={$settings.screenshotMode} columns={$settings.columns}>
 	{#each list as { images, title }, index}
 		<GridItem {index}>
 			<Image {images} alt={title} loading={index === 0 ? 'eager' : 'lazy'} />
@@ -61,11 +59,3 @@
 		No results found. Start watching! 🥳
 	</span>
 </InfiniteLoading>
-
-<style>
-	.grid {
-		display: grid;
-		grid-template-columns: repeat(6, 1fr);
-		grid-gap: 1rem;
-	}
-</style>
