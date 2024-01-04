@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { calculateSizeWithRatio, tmdbImageUrlsWithDimensions } from '../tmdb'
+import { calculateSizeWithRatio, tmdbImageUrl, tmdbImageUrlsWithDimensions, tmdbItemDetailsUrl } from '../tmdb'
 
 describe('calculateSizeWithRatio', () => {
 	it('should calculate size with ratio', () => {
@@ -46,5 +46,23 @@ describe('tmdbImageUrlsWithDimensions', () => {
 				height: 1170,
 			},
 		})
+	})
+})
+
+describe('tmdbImageUrl', () => {
+	it('should return image URL', () => {
+		const result = tmdbImageUrl('/abc.jpg', 'w780')
+		expect(result).toBe('https://image.tmdb.org/t/p/w780/abc.jpg')
+	})
+})
+
+describe('tmdbItemDetailsUrl', () => {
+	it('should return item details URL for movies', () => {
+		const result = tmdbItemDetailsUrl('movies', '123')
+		expect(result).toBe('https://api.themoviedb.org/3/movie/123')
+	})
+	it('should return item details URL for shows', () => {
+		const result = tmdbItemDetailsUrl('shows', '123')
+		expect(result).toBe('https://api.themoviedb.org/3/tv/123')
 	})
 })

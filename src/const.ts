@@ -30,7 +30,7 @@ export const DEFAULT_CACHE_HEADER = {
 	'cache-control': 'max-age=3600',
 } as const
 
-export const PAGINATION_LIMIT = '10'
+export const PAGINATION_LIMIT = 15
 
 export const LANGUAGES = [
 	{

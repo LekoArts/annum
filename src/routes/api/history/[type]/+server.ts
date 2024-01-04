@@ -2,29 +2,27 @@ import { error, json } from '@sveltejs/kit'
 import type { RequestHandler } from './$types'
 import { DEFAULT_CACHE_HEADER, PAGINATION_LIMIT, TRAKT_BASE_URL } from '$const'
 import { normalizeItem } from '$lib/utils'
-import { traktHistoryUrl } from '$lib/utils/trakt'
-import type { Language, Movie, NormalizedItemResponse, TmdbImageUrlsWithDimensions, TraktHistoryMovieItem } from '$lib/types'
+import { filterUniqueShowsFromHistory, traktHistoryUrl } from '$lib/utils/trakt'
+import type { Item, Language, NormalizedItemResponse, TmdbImageUrlsWithDimensions, TraktHistoryItem, TraktMediaType } from '$lib/types'
 import { TRAKT_FETCH_DEFAULTS } from '$lib/server/const'
 
-async function fetchData(customFetch: typeof fetch, m: TraktHistoryMovieItem, lang: Language): Promise<Movie | null> {
-	const movie = normalizeItem(m) as NormalizedItemResponse
-
-	if (!movie.tmdb_id) {
-		console.warn(`No TMDB ID found for movie "${movie.title}" (TMDB ID: ${movie.tmdb_id})`)
+async function fetchData(customFetch: typeof fetch, item: NormalizedItemResponse, lang: Language, type: TraktMediaType): Promise<Item | null> {
+	if (!item.tmdb_id) {
+		console.warn(`No TMDB ID found for movie "${item.title}" (TMDB ID: ${item.tmdb_id})`)
 
 		return null
 	}
 
 	const queryParams = new URLSearchParams({
-		id: movie.tmdb_id.toString(),
-		type: 'movies',
-		title: movie.title,
+		id: item.tmdb_id.toString(),
+		type,
+		title: item.title,
 		lang,
 	}).toString()
 
 	return await customFetch(`/api/tmdb-image?${queryParams}`).then((res) => {
 		if (!res.ok) {
-			console.warn(`No TMDB ID found for movie "${movie.title}" (TMDB ID: ${movie.tmdb_id})`)
+			console.warn(`No TMDB ID found for movie "${item.title}" (TMDB ID: ${item.tmdb_id})`)
 
 			return null
 		}
@@ -35,13 +33,13 @@ async function fetchData(customFetch: typeof fetch, m: TraktHistoryMovieItem, la
 			return null
 
 		return {
-			...movie,
+			...item,
 			images: tmdb,
 		}
 	})
 }
 
-export const GET: RequestHandler = async ({ locals, url, fetch, setHeaders }) => {
+export const GET: RequestHandler = async ({ locals, url, fetch, setHeaders, params }) => {
 	const session = await locals.getSession()
 
 	if (!session?.user)
@@ -51,8 +49,11 @@ export const GET: RequestHandler = async ({ locals, url, fetch, setHeaders }) =>
 		...DEFAULT_CACHE_HEADER,
 	})
 
+	const type = params.type as TraktMediaType
+	const defaultLimit = type === 'shows' ? '100' : PAGINATION_LIMIT.toString()
+
 	const page = url.searchParams.get('page') || '1'
-	const limit = url.searchParams.get('limit') || PAGINATION_LIMIT
+	const limit = url.searchParams.get('limit') || defaultLimit
 	const start_at = url.searchParams.get('start_at') as string
 	const end_at = url.searchParams.get('end_at') as string
 	const lang = url.searchParams.get('lang') as Language
@@ -65,7 +66,7 @@ export const GET: RequestHandler = async ({ locals, url, fetch, setHeaders }) =>
 	}).toString()
 
 	try {
-		const res = await fetch(`${TRAKT_BASE_URL}${traktHistoryUrl(session.user.id, 'movies')}?${queryParams}`, TRAKT_FETCH_DEFAULTS)
+		const res = await fetch(`${TRAKT_BASE_URL}${traktHistoryUrl(session.user.id, type)}?${queryParams}`, TRAKT_FETCH_DEFAULTS)
 
 		if (!res.ok)
 			throw new Error(`Response not OK: ${res.status}`)
@@ -74,22 +75,25 @@ export const GET: RequestHandler = async ({ locals, url, fetch, setHeaders }) =>
 		const pageLimit = res.headers.get('x-pagination-limit') as string
 		const itemCount = res.headers.get('x-pagination-item-count') as string
 
-		const rawMovies = await res.json() as Array<TraktHistoryMovieItem>
-		const moviesPromises = await Promise.allSettled(rawMovies.map(m => fetchData(fetch, m, lang)))
+		const rawItems = await res.json() as Array<TraktHistoryItem>
+		const normalizedItems = rawItems.map(normalizeItem)
+		const uniqueItems = filterUniqueShowsFromHistory(normalizedItems)
 
-		const movies = moviesPromises.map((p) => {
+		const itemsPromises = await Promise.allSettled(uniqueItems.map(i => fetchData(fetch, i, lang, type)))
+
+		const items = itemsPromises.map((p) => {
 			if (p.status === 'fulfilled')
 				return p.value
 
 			return null
-		}).filter(Boolean) as Array<Movie>
+		}).filter(Boolean) as Array<Item>
 
 		return json({
 			page,
 			total_pages: pageCount,
 			page_limit: pageLimit,
 			item_count: itemCount,
-			movies,
+			items,
 		})
 	}
 	catch (e) {

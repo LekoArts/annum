@@ -2,13 +2,13 @@ import type { TmdbPosterSize, TraktMediaType } from '../types'
 import { traktTmdbMediaMap } from './index'
 import { TMDB_BASE_URL, TMDB_IMAGE_BASE_URL, TMDB_POSTER_SIZES } from '$const'
 
-/**
- * Returns the URL to fetch TMDB details given a type and id
- */
 export function tmdbItemDetailsUrl(type: TraktMediaType, tmdb_id: string) {
-	return `${TMDB_BASE_URL}/${traktTmdbMediaMap[type]}/${tmdb_id}`
+	return `${TMDB_BASE_URL}${traktTmdbMediaMap[type]}/${tmdb_id}`
 }
 
+/**
+ * Calculate the width and height given a TMDB poster size + ratio
+ */
 export function calculateSizeWithRatio(width: TmdbPosterSize, ratio = 1.5) {
 	const w = Number.parseInt(width.slice(1))
 	const h = w * ratio

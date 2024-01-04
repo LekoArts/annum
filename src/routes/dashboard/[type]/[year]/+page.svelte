@@ -1,18 +1,19 @@
 <script lang='ts'>
 	import InfiniteLoading, { type InfiniteEvent } from 'svelte-infinite-loading'
 	import type { PageData } from './$types'
-	import type { ApiHistoryMoviesResponse, Movie } from '$lib/types'
+	import type { ApiHistoryResponse, Item } from '$lib/types'
 	import { getStartAndEndOfYear } from '$lib/utils'
 	import Image from '$lib/Image.svelte'
 	import Grid from '$lib/grid/Grid.svelte'
 	import GridItem from '$lib/grid/Item.svelte'
 	import { settings } from '$lib/store/settings'
+	import { filterUniqueShowsFromHistory } from '$lib/utils/trakt'
 
 	let p = 1
-	let list: Array<Movie> = []
+	let list: Array<Item> = []
 	export let data: PageData
 
-	$: ({ year } = data)
+	$: ({ year, type } = data)
 	$: ({ start, end } = getStartAndEndOfYear(year))
 
 	$: queryParams = new URLSearchParams({
@@ -23,15 +24,22 @@
 	}).toString()
 
 	function infiniteHandler({ detail: { loaded, complete, error } }: InfiniteEvent) {
-		fetch(`/api/history/movies?${queryParams}`)
-			.then<ApiHistoryMoviesResponse>(res => res.json())
+		fetch(`/api/history/${type}?${queryParams}`)
+			.then<ApiHistoryResponse>(res => res.json())
 			.then((data) => {
-				if (p > Number(data.total_pages)) {
+				if (p > Number(data.total_pages) || data.items.length === 0) {
 					complete()
 				}
 				else {
 					p++
-					list = [...list, ...data.movies]
+
+					// The /history/shows endpoint returns normalized episodes, not shows. So we need to deduplicate the list to only have unique shows.
+					if (type === 'shows')
+						list = filterUniqueShowsFromHistory([...list, ...data.items])
+
+					else
+						list = [...list, ...data.items]
+
 					loaded()
 				}
 			})
@@ -51,12 +59,13 @@
 		</GridItem>
 	{/each}
 </Grid>
+
 <InfiniteLoading on:infinite={infiniteHandler} spinner='circles'>
 	<span slot='noMore'></span>
 	<span slot='error' let:attemptLoad>
-		Something went wrong. <button on:click={attemptLoad}>Retry</button>
+		Something went wrong 😢 <button on:click={attemptLoad}>Retry</button>
 	</span>
-	<span slot='noResults'>
-		No results found. Start watching! 🥳
+	<span slot='noResults' class='infinite-no-results'>
+		No results found. Start watching and track your progress on Trakt! 🥳
 	</span>
 </InfiniteLoading>

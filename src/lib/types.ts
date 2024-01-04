@@ -2,6 +2,7 @@ import type { LANGUAGES, TMDB_POSTER_SIZES } from '$const'
 
 export type TmdbPosterSize = keyof typeof TMDB_POSTER_SIZES
 export type Language = typeof LANGUAGES[number]['id']
+export type TraktMediaType = 'movies' | 'shows'
 
 export interface TraktProfile {
 	username: string
@@ -73,7 +74,7 @@ export interface TraktStats {
 	}
 }
 
-interface HistoryItemDetails {
+interface ItemMeta {
 	title: string
 	year: number
 	ids: {
@@ -84,24 +85,53 @@ interface HistoryItemDetails {
 	}
 }
 
-export interface TraktHistoryMovieItem {
-	plays: number
-	watched_at: string
-	type: 'movie'
-	movie: HistoryItemDetails
+interface EpisodeMeta {
+	season: number
+	number: number
+	title: string
+	ids: {
+		trakt: number
+		tvdb?: number
+		imdb?: string
+		tmdb?: number
+		tvrage?: number
+	}
 }
 
-export interface TraktWatchedShowsItem {
+interface TraktWatchedItemBase {
 	plays: number
 	last_watched_at: string
 	last_updated_at: string
-	reset_at: string
-	show: HistoryItemDetails
 }
 
-export type TraktMediaType = 'movies' | 'shows'
+export interface TraktWatchedMovieItem extends TraktWatchedItemBase {
+	movie: ItemMeta
+}
 
-export type TraktHistoryType = 'movies' | 'episodes'
+export interface TraktWatchedShowItem extends TraktWatchedItemBase {
+	show: ItemMeta
+}
+
+export type TraktWatchedItem = TraktWatchedMovieItem | TraktWatchedShowItem
+
+interface TraktHistoryItemBase {
+	id: number
+	watched_at: string
+	action: 'watch' | 'scrobble' | 'checkin'
+}
+
+export interface TraktHistoryMovieItem extends TraktHistoryItemBase {
+	type: 'movie'
+	movie: ItemMeta
+}
+
+export interface TraktHistoryEpisodeItem extends TraktHistoryItemBase {
+	type: 'episode'
+	episode: EpisodeMeta
+	show: ItemMeta
+}
+
+export type TraktHistoryItem = TraktHistoryMovieItem | TraktHistoryEpisodeItem
 
 export interface TmdbImagesDetail {
 	aspect_ratio: number
@@ -129,28 +159,21 @@ export interface NormalizedItemResponse {
 	last_watched_at_year: number
 	title: string
 	release_year: number
+	trakt_id: number
 	tmdb_id?: number
 	plays?: number
 }
 
 export type TmdbImageUrlsWithDimensions = Record<TmdbPosterSize, { url: string, width: number, height: number }>
 
-export type WithTmdbImages<T> = T & {
+export interface Item extends NormalizedItemResponse {
 	images: TmdbImageUrlsWithDimensions
 }
 
-export interface ApiHistoryMoviesResponse {
+export interface ApiHistoryResponse {
 	page: string
 	total_pages: string
 	page_limit: string
 	item_count: string
-	movies: Array<Movie>
+	items: Array<Item>
 }
-
-export interface ApiWatchedShowsResponse {
-	total_chunks: number
-	chunks: Array<Array<NormalizedItemResponse>>
-}
-
-export type Movie = WithTmdbImages<NormalizedItemResponse>
-export type Show = WithTmdbImages<NormalizedItemResponse>
