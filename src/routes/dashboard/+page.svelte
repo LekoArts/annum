@@ -5,6 +5,7 @@
 	import Spacer from '$lib/Spacer.svelte'
 	import Svg from '$lib/Svg.svelte'
 	import Secondary from '$lib/button/Secondary.svelte'
+	import Switch from '$lib/Switch.svelte'
 
 	export let data: PageData
 
@@ -15,7 +16,7 @@
 
 <div class='prose'>
 	<p class='welcome'>Welcome to your Dashboard 👋🏻</p>
-	<p>So far you watched <code><Svg id='movie' /> {data.stats.movies.watched} movies</code> and <code><Svg id='tv' /> {data.stats.shows.watched} shows</code>. You can use this app to view your movies and shows year by year in a poster grid. Here are some quick links to the current and previous year:</p>
+	<p>In total you watched <code><Svg id='movie' /> {data.stats.movies.watched} movies</code> and <code><Svg id='tv' /> {data.stats.shows.watched} shows</code>. You can use this app to view your movies and shows year by year in a poster grid. Here are some quick links to the current and previous year:</p>
 </div>
 
 <div class='flex quicklinks'>
@@ -39,19 +40,27 @@
 	<div class='settings-wrapper'>
 		<div class='box'>
 			<p class='title'>Color Hue</p>
-			<p>Red is at <code>0deg</code>, yellow is at <code>60deg</code>, lime is at <code>120deg</code>, cyan is at <code>180deg</code>, blue is at <code>240deg</code>, and magenta is at <code>300deg</code>. Choose a color hue to change the website's appearance.</p>
+			<p>Choose a color hue between <code>0deg</code> and <code>360deg</code> to change the appearance. Default is <code>240deg</code>.</p>
 			<Spacer axis='vertical' size='xs' />
 			<div class='range-wrapper flex align-center'>
-				<label for='hue'>Color hue:</label>
-				<input id='hue' type='range' min='0' max='360' step='1' bind:value={$settings.hue} on:input={e => settings.set({ ...$settings, hue: Number.parseInt((e.target as HTMLInputElement).value) })} />
+				<label for='hue'>Color hue</label>
+				<div class='current-color-hue'>{$settings.hue}</div>
+				<input id='hue' type='range' min='0' max='360' step='1' list='markers' bind:value={$settings.hue} on:input={e => settings.set({ ...$settings, hue: Number.parseInt((e.target as HTMLInputElement).value) })} />
+				<datalist id='markers'>
+					{#each [0, 60, 120, 180, 240, 300, 360] as marker}
+						<option value={marker} label={marker.toString()}></option>
+					{/each}
+				</datalist>
 			</div>
+			<Spacer axis='vertical' size='xs' />
+			<Switch label='Grayscale Mode' bind:value={$settings.grayscaleMode} />
 		</div>
 		<div class='box'>
 			<p class='title'>Language</p>
 			<p>By default, all posters are in English. You can choose another language below.</p>
 			<Spacer axis='vertical' size='xs' />
-			<div class='lang-wrapper'>
-				<label for='lang'>Language:</label>
+			<div class='lang-wrapper flex align-center'>
+				<label for='lang'>Poster Language</label>
 				<select id='lang' name='lang' bind:value={$settings.lang} on:change={(e) => {
 					// @ts-expect-error - TODO: Fix this
 					settings.set({ ...$settings, lang: (e.target as HTMLSelectElement).value })
@@ -91,6 +100,23 @@
 		gap: var(--space-s);
 		& input {
 			flex-grow: 1;
+			accent-color: white;
 		}
+	}
+
+	.lang-wrapper {
+		gap: var(--space-s);
+	}
+
+	.current-color-hue {
+		--color-alpha: 1;
+		min-width: 5ch;
+		font-weight: 600;
+		border: 2px solid var(--color-6);
+		padding: var(--space-3xs) var(--space-2xs);
+		line-height: 1;
+		border-radius: var(--space-2xs);
+		box-shadow: 0 0 8px var(--color-5);
+		text-align: center;
 	}
 </style>

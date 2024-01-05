@@ -56,3 +56,14 @@ export const style: Action<HTMLElement, string> = (
 		destroy: unset,
 	}
 }
+
+export const classList: Action<Element, string | Array<string>> = (node, classes) => {
+	const tokens = Array.isArray(classes) ? classes : [classes]
+	node.classList.add(...tokens)
+
+	return {
+		destroy() {
+			node.classList.remove(...tokens)
+		},
+	}
+}

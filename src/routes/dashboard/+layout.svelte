@@ -19,7 +19,7 @@
 
 <div class='wrapper flex'>
 	<div class='flex align-center navigation'>
-		<nav aria-label='Breadcrumb' class='breadcrumb flex align-center box'>
+		<nav aria-label='Breadcrumbs' class='breadcrumb flex align-center box' lang='en-US' dir='ltr'>
 			<ol role='list'>
 				<li>
 					<Svg id='home' />
@@ -36,16 +36,16 @@
 					</li>
 					<li>
 						<Svg id='chevron-right' />
-						<a href={$page.url.pathname} aria-current='page'>{year}</a>
+						<span class='font-semibold' aria-current='page'>{year}</span>
 					</li>
 				{/if}
 			</ol>
 		</nav>
 		{#if isDetailsPage}
 			<div class='prev-next'>
-				<Secondary data-sveltekit-reload type='link' href={`/dashboard/${segments[1]}/${year - 1}`}>Previous</Secondary>
+				<Secondary data-sveltekit-reload type='link' href={`/dashboard/${segments[1]}/${year - 1}`} aria-label='Navigate to previous year'>Previous</Secondary>
 				{#if !(year === CURRENT_YEAR)}
-					<Secondary data-sveltekit-reload type='link' href={`/dashboard/${segments[1]}/${year + 1}`}>Next</Secondary>
+					<Secondary data-sveltekit-reload type='link' href={`/dashboard/${segments[1]}/${year + 1}`} aria-label='Navigate to next year'>Next</Secondary>
 				{/if}
 			</div>
 		{/if}
@@ -67,7 +67,7 @@
 
 <slot />
 
-<svelte:body use:style={`--color-hue: ${$settings.hue}`} />
+<svelte:body use:style={`--color-hue: ${$settings.hue};${$settings.grayscaleMode ? ' --color-chroma: 0;' : ''}`} />
 
 <style lang='postcss'>
 	.wrapper {

@@ -6,6 +6,7 @@ interface Settings {
 	screenshotMode: boolean
 	columns: number
 	lang: Language
+	grayscaleMode: boolean
 }
 
 export const settings = persisted<Settings>('trakt-yearly-posters-settings', {
@@ -13,4 +14,5 @@ export const settings = persisted<Settings>('trakt-yearly-posters-settings', {
 	screenshotMode: false,
 	columns: 5,
 	lang: 'en',
+	grayscaleMode: false,
 })
