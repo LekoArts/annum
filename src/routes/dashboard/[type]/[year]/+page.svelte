@@ -27,7 +27,7 @@
 		fetch(`/api/history/${type}?${queryParams}`)
 			.then<ApiHistoryResponse>(res => res.json())
 			.then((data) => {
-				if (p > Number(data.total_pages) || data.items.length === 0) {
+				if (p > Number(data.total_pages) || data.items?.length === 0) {
 					complete()
 				}
 				else {

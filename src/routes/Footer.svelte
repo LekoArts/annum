@@ -1,10 +1,10 @@
 <script lang='ts'>
-	import { CURRENT_YEAR } from '$const'
+	import { CURRENT_YEAR, GITHUB_REPO_URL } from '$const'
 	import Spacer from '$lib/Spacer.svelte'
 	import Svg from '$lib/Svg.svelte'
 </script>
 <footer class='container'>
-	<p>&copy; {CURRENT_YEAR} by <a href='https://www.lekoarts.de?utm_source=trakt-yearly-posters'>LekoArts</a> • <a href='/about'>About</a></p>
+	<p>&copy; {CURRENT_YEAR} by <a href='https://www.lekoarts.de?utm_source=trakt-yearly-posters'>LekoArts</a> • <a href='/about'>About</a> • <a href={GITHUB_REPO_URL}>Source Code</a></p>
 	<Spacer axis='vertical' size='xs' />
 	<div class='logos flex align-center'>
 		Powered by <Svg id='trakt' aria-label='Trakt' /> and <Svg id='tmdb' aria-label='TMDB' />

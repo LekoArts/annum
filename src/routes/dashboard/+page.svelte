@@ -41,7 +41,7 @@
 			<p class='title'>Color Hue</p>
 			<p>Red is at <code>0deg</code>, yellow is at <code>60deg</code>, lime is at <code>120deg</code>, cyan is at <code>180deg</code>, blue is at <code>240deg</code>, and magenta is at <code>300deg</code>. Choose a color hue to change the website's appearance.</p>
 			<Spacer axis='vertical' size='xs' />
-			<div class='range-wrapper'>
+			<div class='range-wrapper flex align-center'>
 				<label for='hue'>Color hue:</label>
 				<input id='hue' type='range' min='0' max='360' step='1' bind:value={$settings.hue} on:input={e => settings.set({ ...$settings, hue: Number.parseInt((e.target as HTMLInputElement).value) })} />
 			</div>
@@ -49,6 +49,7 @@
 		<div class='box'>
 			<p class='title'>Language</p>
 			<p>By default, all posters are in English. You can choose another language below.</p>
+			<Spacer axis='vertical' size='xs' />
 			<div class='lang-wrapper'>
 				<label for='lang'>Language:</label>
 				<select id='lang' name='lang' bind:value={$settings.lang} on:change={(e) => {
@@ -68,7 +69,11 @@
 	.settings-wrapper {
 		display: grid;
 		gap: var(--grid-gutter);
-		grid-template-columns: repeat(auto-fill, minmax(calc(var(--grid-max-width) / 3), 1fr));
+		grid-template-columns: 1;
+
+		@media (--md) {
+			grid-template-columns: repeat(2, 1fr);
+		}
 	}
 
 	.title, .welcome {
@@ -80,5 +85,12 @@
 	.quicklinks {
 		flex-wrap: wrap;
 		gap: var(--space-2xs-xs);
+	}
+
+	.range-wrapper {
+		gap: var(--space-s);
+		& input {
+			flex-grow: 1;
+		}
 	}
 </style>
