@@ -7,7 +7,7 @@
 	<p>&copy; {CURRENT_YEAR} by <a href='https://www.lekoarts.de?utm_source=trakt-yearly-posters'>LekoArts</a> • <a href='/about'>About</a> • <a href={GITHUB_REPO_URL}>Source Code</a></p>
 	<Spacer axis='vertical' size='xs' />
 	<div class='logos flex align-center'>
-		Powered by <Svg id='trakt' aria-label='Trakt' /> and <Svg id='tmdb' aria-label='TMDB' />
+		Powered by <div class='svg-wrapper'><Svg id='trakt' aria-label='Trakt' /></div> and <div class='svg-wrapper'><Svg id='tmdb' aria-label='TMDB' /></div>
 	</div>
 	<Spacer axis='vertical' size='xs' />
 	<div class='attribution'>
@@ -28,10 +28,27 @@
 	}
 
 	.logos :global(svg) {
-		margin: 0 var(--space-2xs);
 		height: var(--space-s-m);
 		width: var(--space-s-m);
-		color: var(--color-2);
+	}
+
+	.logos :global(svg[data-icon-name='trakt']) {
+		color: #ED2225;
+	}
+
+	.logos :global(svg[data-icon-name='tmdb']) {
+		color: #0d253f;
+	}
+
+	.svg-wrapper {
+		margin: 0 var(--space-2xs);
+		background: var(--color-1);
+		box-shadow: 0 0 0 2px var(--color-1);
+		border-radius: 100%;
+
+		@media (--sm) {
+			box-shadow: 0 0 0 4px var(--color-1);
+		}
 	}
 
 	.attribution {
@@ -41,3 +58,5 @@
 		}
 	}
 </style>
+
+<!-- <linearGradient xmlns="http://www.w3.org/2000/svg" id="linear-gradient" y1="40.76" x2="190.24" y2="40.76" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#90cea1"/><stop offset="0.56" stop-color="#3cbec9"/><stop offset="1" stop-color="#00b3e5"/></linearGradient> -->

@@ -4,7 +4,7 @@
 	export let id: SvgIconNames
 </script>
 
-<svg aria-hidden focusable='false' class='icon' {...$$restProps}>
+<svg aria-hidden focusable='false' class='icon' data-icon-name={id} {...$$restProps}>
 	<use href={`/icons.svg#${id}`} />
 </svg>
 
