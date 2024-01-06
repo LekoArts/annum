@@ -1,0 +1,80 @@
+:where(*) {
+  /* Colors */
+  --color-hue-default: 240;
+  --color-alpha-default: 1;
+  
+  --color-0: oklch(99% var(--color-chroma, .03) var(--color-hue, var(--color-hue-default)) / var(--color-alpha, var(--color-alpha-default)));
+  --color-1: oklch(95% var(--color-chroma, .06) var(--color-hue, var(--color-hue-default)) / var(--color-alpha, var(--color-alpha-default)));
+  --color-2: oklch(88% var(--color-chroma, .12) var(--color-hue, var(--color-hue-default)) / var(--color-alpha, var(--color-alpha-default)));
+  --color-3: oklch(80% var(--color-chroma, .14) var(--color-hue, var(--color-hue-default)) / var(--color-alpha, var(--color-alpha-default)));
+  --color-4: oklch(74% var(--color-chroma, .16) var(--color-hue, var(--color-hue-default)) / var(--color-alpha, var(--color-alpha-default)));
+  --color-5: oklch(68% var(--color-chroma, .19) var(--color-hue, var(--color-hue-default)) / var(--color-alpha, var(--color-alpha-default)));
+  --color-6: oklch(63% var(--color-chroma, .20) var(--color-hue, var(--color-hue-default)) / var(--color-alpha, var(--color-alpha-default)));
+  --color-7: oklch(58% var(--color-chroma, .21) var(--color-hue, var(--color-hue-default)) / var(--color-alpha, var(--color-alpha-default)));
+  --color-8: oklch(53% var(--color-chroma, .20) var(--color-hue, var(--color-hue-default)) / var(--color-alpha, var(--color-alpha-default)));
+  --color-9: oklch(49% var(--color-chroma, .19) var(--color-hue, var(--color-hue-default)) / var(--color-alpha, var(--color-alpha-default)));
+  --color-10: oklch(42% var(--color-chroma, .17) var(--color-hue, var(--color-hue-default)) / var(--color-alpha, var(--color-alpha-default)));
+  --color-11: oklch(35% var(--color-chroma, .15) var(--color-hue, var(--color-hue-default)) / var(--color-alpha, var(--color-alpha-default)));
+  --color-12: oklch(27% var(--color-chroma, .12) var(--color-hue, var(--color-hue-default)) / var(--color-alpha, var(--color-alpha-default)));
+  --color-13: oklch(20% var(--color-chroma, .09) var(--color-hue, var(--color-hue-default)) / var(--color-alpha, var(--color-alpha-default)));
+  --color-14: oklch(14% var(--color-chroma, .07) var(--color-hue, var(--color-hue-default)) / var(--color-alpha, var(--color-alpha-default)));
+  --color-15: oklch(11% var(--color-chroma, .05) var(--color-hue, var(--color-hue-default)) / var(--color-alpha, var(--color-alpha-default)));
+  --color-bright: oklch(65% var(--color-chroma, .3) var(--color-hue, var(--color-hue-default)) / var(--color-alpha, var(--color-alpha-default)));
+  --color-bg: var(--color-12);
+
+  --shadow-elevation-low:
+    0px 0.8px 1.1px var(--color-14),
+    0px 1.7px 2.3px -0.5px var(--color-13),
+    0px 3.8px 5.1px -1px var(--color-12);
+  --shadow-elevation-medium:
+    0px 0.8px 1.1px var(--color-14),
+    0px 3.9px 5.3px -0.3px var(--color-13),
+    0px 8.7px 11.7px -0.7px var(--color-13),
+    0px 19.1px 25.8px -1px var(--color-12);
+}
+
+:root {
+  /* Typography */
+
+  --body-font: -apple-system, BlinkMacSystemFont, avenir next, avenir, segoe ui, helvetica neue, helvetica, Cantarell, Ubuntu, roboto, noto, arial, sans-serif;
+
+  /* @link https://utopia.fyi/type/calculator?c=326,18,1.2,1350,20,1.25,5,1,&s=0.75|0.5,1.5|2|3|4|6,s-l&g=xs,m,2xl,12 */
+  --step--1: clamp(0.9375rem, 0.9176rem + 0.0977vw, 1rem);
+  --step-0: clamp(1.125rem, 1.0852rem + 0.1953vw, 1.25rem);
+  --step-1: clamp(1.35rem, 1.2823rem + 0.332vw, 1.5625rem);
+  --step-2: clamp(1.62rem, 1.5139rem + 0.5205vw, 1.9531rem);
+  --step-3: clamp(1.9438rem, 1.7854rem + 0.7773vw, 2.4413rem);
+  --step-4: clamp(2.3325rem, 2.1035rem + 1.124vw, 3.0519rem);
+  --step-5: clamp(2.7994rem, 2.476rem + 1.5869vw, 3.815rem);
+  --step-form-input: clamp(1rem, 0.9602rem + 0.1953vw, 1.125rem);
+
+  /* @link https://utopia.fyi/space/calculator?c=326,18,1.2,1350,20,1.25,5,0,&s=0.75|0.5,1.5|2|3|4|6,&g=xs,m,2xl,12 */
+  --space-3xs: clamp(0.3125rem, 0.3125rem + 0vw, 0.3125rem);
+  --space-2xs: clamp(0.5625rem, 0.5426rem + 0.0977vw, 0.625rem);
+  --space-xs: clamp(0.875rem, 0.8551rem + 0.0977vw, 0.9375rem);
+  --space-s: clamp(1.125rem, 1.0852rem + 0.1953vw, 1.25rem);
+  --space-m: clamp(1.6875rem, 1.6278rem + 0.293vw, 1.875rem);
+  --space-l: clamp(2.25rem, 2.1704rem + 0.3906vw, 2.5rem);
+  --space-xl: clamp(3.375rem, 3.2556rem + 0.5859vw, 3.75rem);
+  --space-2xl: clamp(4.5rem, 4.3408rem + 0.7813vw, 5rem);
+  --space-3xl: clamp(6.75rem, 6.5112rem + 1.1719vw, 7.5rem);
+
+  /* One-up pairs */
+  --space-3xs-2xs: clamp(0.3125rem, 0.213rem + 0.4883vw, 0.625rem);
+  --space-2xs-xs: clamp(0.5625rem, 0.4431rem + 0.5859vw, 0.9375rem);
+  --space-xs-s: clamp(0.875rem, 0.7556rem + 0.5859vw, 1.25rem);
+  --space-s-m: clamp(1.125rem, 0.8862rem + 1.1719vw, 1.875rem);
+  --space-m-l: clamp(1.6875rem, 1.4288rem + 1.2695vw, 2.5rem);
+  --space-l-xl: clamp(2.25rem, 1.7725rem + 2.3438vw, 3.75rem);
+  --space-xl-2xl: clamp(3.375rem, 2.8577rem + 2.5391vw, 5rem);
+  --space-2xl-3xl: clamp(4.5rem, 3.5449rem + 4.6875vw, 7.5rem);
+
+  /* Custom pairs */
+  --space-xs-m: clamp(0.875rem, 0.5566rem + 1.5625vw, 1.875rem);
+  --space-s-l: clamp(1.125rem, 0.6873rem + 2.1484vw, 2.5rem);
+
+  /* @link https://utopia.fyi/grid/calculator?c=326,18,1.2,1350,20,1.25,5,0,&s=0.75|0.5,1.5|2|3|4|6,&g=xs,m,2xl,12 */
+  --grid-max-width: 84.38rem;
+  --grid-gutter: var(--space-xs-m, clamp(0.875rem, 0.5566rem + 1.5625vw, 1.875rem));
+  --grid-columns: 12;
+}

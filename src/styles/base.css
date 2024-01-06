@@ -1,0 +1,118 @@
+html {
+  font-family: var(--body-font);
+}
+
+body {
+  background: linear-gradient(0deg, var(--color-11) 0%, var(--color-bg) 25%, var(--color-bg) 75%, var(--color-13) 100%);
+  color: rgb(233, 233, 233);
+  font-size: var(--step-0);
+  line-height: 1.5;
+  font-variant-numeric: tabular-nums;
+  min-height: 100dvh;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  margin-block: 0.2em;
+  text-wrap: balance;
+  --color-alpha: 1;
+  color: var(--color-2);
+}
+
+h1 {
+  font-size: var(--step-3);
+}
+
+h2 {
+  font-size: var(--step-2);
+}
+
+h3 {
+  font-size: var(--step-1);
+}
+
+h4, h5, h6, p, li {
+  font-size: var(--step-0);
+}
+
+.container {
+  max-width: var(--grid-max-width);
+  padding-inline: var(--grid-gutter);
+  margin-inline: auto;
+}
+
+.box {
+  --color-alpha: 0.25;
+  gap: var(--space-xs-s);
+  background: var(--color-4);
+  border: 1px solid var(--color-2);
+  padding: var(--space-3xs) var(--space-xs);
+  border-radius: var(--space-2xs);
+  box-shadow: var(--shadow-elevation-low);
+}
+
+a {
+  --color-alpha: 1;
+  color: var(--color-0);
+  text-decoration: underline;
+
+  &:hover {
+    text-decoration: none;
+  }
+}
+
+code {
+  --color-alpha: 1;
+  font-size: var(--step--1);
+  background: var(--color-11);
+  padding: var(--space-3xs) var(--space-3xs);
+  border-radius: var(--space-3xs);
+  color: var(--color-2);
+}
+
+.prose {
+  max-width: 70ch;
+
+  & svg {
+    display: inline-block;
+    vertical-align: middle;
+    --icon-color: var(--color-3);
+  }
+
+  & p {
+    margin-bottom: var(--space-xs);
+  }
+}
+
+.infinite-status-prompt {
+  --color-alpha: 0.5;
+  text-shadow: 0px 2px 10px var(--color-2);
+  padding: var(--space-xs) 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  & button {
+    --color-alpha: 1;
+    margin-left: var(--space-xs);
+    background: none;
+    border: 1px solid var(--color-6);
+    padding: var(--space-3xs) var(--space-xs);
+    border-radius: var(--space-2xs);
+    color: var(--color-0);
+    box-shadow: var(--shadow-elevation-low);
+    appearance: none;
+    user-select: none;
+    position: relative;
+    line-height: 1.25;
+    transition: background .3s cubic-bezier(.73,.26,.42,1.24), border .3s cubic-bezier(.73,.26,.42,1.24);
+    text-shadow: 0px 2px 6px var(--color-5);
+  
+    &:hover {
+      background: var(--color-8);
+      cursor: pointer;
+      border: 1px solid var(--color-4);
+    }
+  }
+}
