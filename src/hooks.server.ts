@@ -24,6 +24,7 @@ export const handle: Handle = sequence(
 	SvelteKitAuth({
 		providers: [Trakt({ clientId: PRIVATE_TRAKT_CLIENT_ID, clientSecret: PRIVATE_TRAKT_CLIENT_SECRET })],
 		secret: PRIVATE_AUTH_SECRET,
+		trustHost: true,
 		callbacks: {
 			jwt: async ({ token, profile }) => {
 				if (profile) {
