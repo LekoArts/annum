@@ -95,8 +95,8 @@ export function chunks<T>(array: Array<T>, number: number | string): Array<Array
 export function getStartAndEndOfYear(year: number | string) {
 	const y = typeof year === 'string' ? Number.parseInt(year) : year
 	return {
-		start: new Date(y, 0, 1).toISOString(),
-		end: new Date(y, 11, 31).toISOString(),
+		start: new Date(Date.UTC(y, 0, 1)).toISOString(),
+		end: new Date(Date.UTC(y, 11, 31)).toISOString(),
 	}
 }
 

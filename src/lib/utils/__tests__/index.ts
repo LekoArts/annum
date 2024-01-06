@@ -28,8 +28,8 @@ describe('getStartAndEndOfYear', () => {
 		const result = getStartAndEndOfYear(2023)
 		expect(result).toMatchInlineSnapshot(`
       {
-        "end": "2023-12-30T23:00:00.000Z",
-        "start": "2022-12-31T23:00:00.000Z",
+        "end": "2023-12-31T00:00:00.000Z",
+        "start": "2023-01-01T00:00:00.000Z",
       }
     `)
 	})
