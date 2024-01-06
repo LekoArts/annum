@@ -4,6 +4,7 @@
 	import Svg from '$lib/Svg.svelte'
 	import Primary from '$lib/button/Primary.svelte'
 	import type { TraktStats } from '$lib/types'
+	import { TITLE } from '$const'
 
 	$: stats = $page.data?.stats as TraktStats | undefined
 	$: user = $page.data?.session?.user
@@ -15,9 +16,9 @@
 		<div class='wrapper flex'>
 			<div class='title text-md-lg font-semibold'>
 				{#if $page.url.pathname.includes('/dashboard')}
-					Trakt Yearly Posters
+					{TITLE}
 				{:else}
-					<a class='title-link' href='/' aria-label='Back to homepage'>Trakt Yearly Posters</a>
+					<a class='title-link' href='/' aria-label='Back to homepage'>{TITLE}</a>
 				{/if}
 			</div>
 			<div class='cta flex align-center'>

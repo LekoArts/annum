@@ -4,7 +4,7 @@
 	import Svg from '$lib/Svg.svelte'
 </script>
 <footer class='container'>
-	<p>&copy; {CURRENT_YEAR} by <a href='https://www.lekoarts.de?utm_source=trakt-yearly-posters'>LekoArts</a> • <a href='/about'>About</a> • <a href={GITHUB_REPO_URL}>Source Code</a></p>
+	<p>&copy; {CURRENT_YEAR} by <a href='https://www.lekoarts.de?utm_source=annuus'>LekoArts</a> • <a href='/about'>About</a> • <a href={GITHUB_REPO_URL}>Source Code</a></p>
 	<Spacer axis='vertical' size='xs' />
 	<div class='logos flex align-center'>
 		Powered by <div class='svg-wrapper'><Svg id='trakt' aria-label='Trakt' /></div> and <div class='svg-wrapper'><Svg id='tmdb' aria-label='TMDB' /></div>

@@ -9,7 +9,7 @@ interface Settings {
 	grayscaleMode: boolean
 }
 
-export const settings = persisted<Settings>('trakt-yearly-posters-settings', {
+export const settings = persisted<Settings>('annuus-settings', {
 	hue: 240,
 	screenshotMode: false,
 	columns: 5,

@@ -1,5 +1,5 @@
 <script lang='ts'>
-	type SvgIconNames = 'movie' | 'tv' | 'home' | 'chevron-right' | 'tmdb' | 'trakt'
+	type SvgIconNames = 'movie' | 'tv' | 'home' | 'chevron-right' | 'tmdb' | 'trakt' | 'arrow-right'
 
 	export let id: SvgIconNames
 </script>

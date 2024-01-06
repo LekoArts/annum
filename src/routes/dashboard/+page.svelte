@@ -15,8 +15,8 @@
 <h1 class='visually-hidden'>Dashboard</h1>
 
 <div class='prose'>
-	<p class='welcome'>Welcome to your Dashboard 👋🏻</p>
-	<p>In total you watched <code><Svg id='movie' /> {data.stats.movies.watched} movies</code> and <code><Svg id='tv' /> {data.stats.shows.watched} shows</code>. You can use this app to view your movies and shows year by year in a poster grid. Here are some quick links to the current and previous year:</p>
+	<p class='welcome'>Hello {data.session?.user.username} 👋🏻</p>
+	<p>In total, you watched <code><Svg id='movie' /> {data.stats.movies.watched} movies</code> and <code><Svg id='tv' /> {data.stats.shows.watched} shows</code>. You can use this app to view your movies and shows year by year in a poster grid. Here are some quick links to the current and previous year:</p>
 </div>
 
 <div class='flex quicklinks'>
@@ -54,6 +54,7 @@
 			</div>
 			<Spacer axis='vertical' size='xs' />
 			<Switch label='Grayscale Mode' bind:value={$settings.grayscaleMode} />
+			<Spacer axis='vertical' size='2xs' />
 		</div>
 		<div class='box'>
 			<p class='title'>Language</p>

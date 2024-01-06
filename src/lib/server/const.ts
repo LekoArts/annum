@@ -3,7 +3,7 @@ import { PRIVATE_TMDB_API_KEY, PRIVATE_TRAKT_CLIENT_ID } from '$env/static/priva
 export const TRAKT_FETCH_DEFAULTS = {
 	method: 'GET',
 	headers: {
-		'user-agent': 'trakt-yearly-posters',
+		'user-agent': 'annuus',
 		'Content-Type': 'application/json',
 		'trakt-api-key': PRIVATE_TRAKT_CLIENT_ID,
 		'trakt-api-version': '2',
