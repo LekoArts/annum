@@ -5,9 +5,7 @@ import { vitePreprocess } from '@sveltejs/vite-plugin-svelte'
 const config = {
 	preprocess: vitePreprocess(),
 	kit: {
-		adapter: adapter({
-			split: true,
-		}),
+		adapter: adapter(),
 		env: {
 			privatePrefix: 'PRIVATE_',
 		},
