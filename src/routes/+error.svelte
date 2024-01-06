@@ -1,6 +1,15 @@
 <script lang='ts'>
+	import { pa } from '@accuser/svelte-plausible-analytics'
 	import { page } from '$app/stores'
 	import { GITHUB_REPO_URL } from '$const'
+
+	if ($page.status === 404) {
+		pa.addEvent('404', {
+			props: {
+				path: $page.url.pathname,
+			},
+		})
+	}
 </script>
 
 <div class='error-page'>

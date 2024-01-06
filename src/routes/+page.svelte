@@ -1,5 +1,6 @@
 <script lang='ts'>
 	import { signIn } from '@auth/sveltekit/client'
+	import { pa } from '@accuser/svelte-plausible-analytics'
 	import Spacer from '$lib/Spacer.svelte'
 	import { classList } from '$lib/actions'
 	import Primary from '$lib/button/Primary.svelte'
@@ -23,7 +24,10 @@
 				Show me my Poster Grid <Svg id='arrow-right' />
 			</Primary>
 		{:else}
-			<Primary type='text' on:click={() => signIn('trakt', { callbackUrl: '/dashboard' })}>
+			<Primary type='text' on:click={() => {
+				pa.addEvent('login', { props: { position: 'hero' } })
+				signIn('trakt', { callbackUrl: '/dashboard' })
+			}}>
 				Show me my Poster Grid <Svg id='arrow-right' />
 			</Primary>
 		{/if}

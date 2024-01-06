@@ -1,5 +1,6 @@
 <script lang='ts'>
 	import { signIn, signOut } from '@auth/sveltekit/client'
+	import { pa } from '@accuser/svelte-plausible-analytics'
 	import { page } from '$app/stores'
 	import Svg from '$lib/Svg.svelte'
 	import Primary from '$lib/button/Primary.svelte'
@@ -37,7 +38,10 @@
 							{/if}
 							<div class='font-semibold username'>{user.username}</div>
 						</div>
-						<Primary type='text' on:click={() => signOut({ callbackUrl: '/' })}>
+						<Primary type='text' on:click={() => {
+							pa.addEvent('logout', { props: { position: 'header' } })
+							signOut({ callbackUrl: '/' })
+						}}>
 							Sign Out
 						</Primary>
 					{:else}
@@ -46,7 +50,10 @@
 						</Primary>
 					{/if}
 				{:else}
-					<Primary type='text' on:click={() => signIn('trakt', { callbackUrl: '/dashboard' })}>
+					<Primary type='text' on:click={() => {
+						pa.addEvent('login', { props: { position: 'header' } })
+						signIn('trakt', { callbackUrl: '/dashboard' })
+					}}>
 						Sign In With Trakt
 					</Primary>
 				{/if}
