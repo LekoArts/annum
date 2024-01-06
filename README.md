@@ -1,8 +1,27 @@
-# annum
+<h1 align="center">annum</h1>
 
-Display your watched movies and shows in a poster grid. Easily switch between years and get an overview of all your history.
+<p align="center">
+  <strong>
+    Visualize Your Trakt.tv History
+  </strong>
+</p>
 
-[Show me my Poster Grid](https://www.annum.app) 🎬
+<p align="center">
+  Display your watched movies and shows in a poster grid. Easily switch between years and get an overview of all your history. Powered by:
+</p>
+
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="./.github/assets/trakt-wide-red-white.svg">
+    <img alt="Trakt.tv Logo" src="./.github/assets/trakt-wide-red-black.svg" width="125">
+  </picture>
+</p>
+
+<h2 align="center">
+  <a href="https://www.annum.app">🍿 Website</a>
+</h2>
+
+This website was created by [LekoArts](https://www.lekoarts.de?utm_source=annum_readme) as a christmas project to try out SvelteKit. LekoArts loves watching movies and shows ⸺ so why not have a great overview? You can also follow me on [Trakt](https://trakt.tv/users/arsaurea) if you want.
 
 ## Development
 
