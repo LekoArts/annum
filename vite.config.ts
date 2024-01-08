@@ -9,5 +9,8 @@ export default defineConfig({
 	],
 	test: {
 		include: ['src/**/__tests__/*.ts'],
+		coverage: {
+			include: ['src/lib/utils/*.ts'],
+		},
 	},
 })

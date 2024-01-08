@@ -21,6 +21,12 @@ describe('chunks', () => {
 		const result = chunks(array, n)
 		expect(result).toEqual([])
 	})
+	it('should handle n as string', () => {
+		const array = [1, 2, 3, 4, 5]
+		const n = '2'
+		const result = chunks(array, n)
+		expect(result).toEqual([[1, 2], [3, 4], [5]])
+	})
 })
 
 describe('getStartAndEndOfYear', () => {
@@ -32,6 +38,15 @@ describe('getStartAndEndOfYear', () => {
         "start": "2023-01-01T00:00:00.000Z",
       }
     `)
+	})
+	it('handles year as string', () => {
+		const result = getStartAndEndOfYear('2023')
+		expect(result).toMatchInlineSnapshot(`
+			{
+			  "end": "2023-12-31T00:00:00.000Z",
+			  "start": "2023-01-01T00:00:00.000Z",
+			}
+		`)
 	})
 })
 
@@ -51,6 +66,14 @@ describe('filterForYear', () => {
 		const year = 2021
 		const result = filterForYear(item, year)
 		expect(result).toBe(false)
+	})
+	it('should handle year as string', () => {
+		const item: any = {
+			last_watched_at_year: 2020,
+		}
+		const year = '2020'
+		const result = filterForYear(item, year)
+		expect(result).toBe(true)
 	})
 })
 
