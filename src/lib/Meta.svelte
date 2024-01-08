@@ -13,7 +13,7 @@
 
 	function generateTitle(t: string) {
 		if (t === title)
-			return t
+			return `${t} - Visualize your Trakt.tv history`
 		return `${t} | ${title}`
 	}
 </script>
