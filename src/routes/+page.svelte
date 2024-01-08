@@ -66,8 +66,8 @@
 	<h2 class='text-xl'>Screenshots</h2>
 	<Spacer axis='vertical' size='m' />
 	<div class='screenshots-img'>
-		<enhanced:img src='../assets/color-modes.png' sizes='(min-width: 768px) 768px, 100vw' alt='TODO' loading='lazy' />
-		<enhanced:img src='../assets/screenshot-mode.png' sizes='(min-width: 768px) 768px, 100vw' alt='TODO' loading='lazy' />
+		<enhanced:img src='../assets/color-modes.png' sizes='(min-width: 768px) 768px, 100vw' alt='Screenshot of the dashboard divided into 4 equal columns. Each column shows the dashboard in a different color (the first one is grayscale) to highlight that you can change the color mode for the whole app.' loading='lazy' />
+		<enhanced:img src='../assets/screenshot-mode.png' sizes='(min-width: 768px) 768px, 100vw' alt='Showcasing the "Screenshot Mode". The gutters from the poster grid are removed and you can choose how many columns you want to display.' loading='lazy' />
 	</div>
 </section>
 
