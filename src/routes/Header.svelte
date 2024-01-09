@@ -29,10 +29,10 @@
 							{#if stats}
 								<div class='stats' aria-label='User statistics and information'>
 									<div class='stats-item'>
-										<Svg id='movie' aria-label='Movies' /> {stats.movies.watched}
+										<Svg id='movie' aria-label='Movies' /> {stats?.movies?.watched}
 									</div>
 									<div class='stats-item'>
-										<Svg id='tv' aria-label='Shows' /> {stats.shows.watched}
+										<Svg id='tv' aria-label='Shows' /> {stats?.shows?.watched}
 									</div>
 								</div>
 							{/if}
