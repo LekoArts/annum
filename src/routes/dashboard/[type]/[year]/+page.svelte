@@ -1,13 +1,14 @@
 <script lang='ts'>
-	import InfiniteLoading, { type InfiniteEvent } from 'svelte-infinite-loading'
 	import type { PageData } from './$types'
-	import type { ApiHistoryResponse, Item } from '$lib/types'
+	import InfiniteLoading from '$lib/InfiniteLoading.svelte'
+	import type { ApiHistoryResponse, InfiniteEvent, Item } from '$lib/types'
 	import { getStartAndEndOfYear } from '$lib/utils'
 	import Image from '$lib/Image.svelte'
 	import Grid from '$lib/grid/Grid.svelte'
 	import GridItem from '$lib/grid/Item.svelte'
 	import { settings } from '$lib/store/settings'
 	import { filterUniqueShowsFromHistory } from '$lib/utils/trakt'
+	import { stats } from '$lib/store/stats'
 
 	let p = 1
 	let list: Array<Item> = []
@@ -34,11 +35,14 @@
 					p++
 
 					// The /history/shows endpoint returns normalized episodes, not shows. So we need to deduplicate the list to only have unique shows.
-					if (type === 'shows')
+					if (type === 'shows') {
 						list = filterUniqueShowsFromHistory([...list, ...data.items])
-
-					else
+						stats.setShows(list.length)
+					}
+					else {
 						list = [...list, ...data.items]
+						stats.setMovies(Number.parseInt(data.item_count))
+					}
 
 					loaded()
 				}

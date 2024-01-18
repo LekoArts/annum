@@ -5,11 +5,14 @@
 	import Svg from '$lib/Svg.svelte'
 	import Primary from '$lib/button/Primary.svelte'
 	import type { TraktStats } from '$lib/types'
-	import { TITLE } from '$const'
+	import { CURRENT_YEAR, TITLE } from '$const'
+	import Spacer from '$lib/Spacer.svelte'
+	import { stats } from '$lib/store/stats'
 
-	$: stats = $page.data?.stats as TraktStats | undefined
+	$: traktStats = $page.data?.stats as TraktStats | undefined
 	$: user = $page.data?.session?.user
 	$: isSignedIn = Boolean(user)
+	$: isDetailPage = $page.url.pathname.includes('/movies') || $page.url.pathname.includes('/shows')
 </script>
 
 <header>
@@ -26,14 +29,18 @@
 				{#if isSignedIn}
 					{#if $page.url.pathname.includes('/dashboard')}
 						<div class='profile text-sm-base box'>
-							{#if stats}
+							{#if traktStats && isDetailPage}
 								<div class='stats' aria-label='User statistics and information'>
-									<div class='stats-item'>
-										<Svg id='movie' aria-label='Movies' /> {stats?.movies?.watched}
-									</div>
-									<div class='stats-item'>
-										<Svg id='tv' aria-label='Shows' /> {stats?.shows?.watched}
-									</div>
+									{#if $page.url.pathname.includes('/movies')}
+										<div class='stats-item'>
+											<Svg id='movie' /> {$stats.movies > 0 ? $stats.movies : null} <span class='visually-hidden'>movies in {CURRENT_YEAR}</span><Spacer axis='horizontal' size='3xs' />({traktStats?.movies?.watched} <span class='visually-hidden'>movies in total</span>)
+										</div>
+									{/if}
+									{#if $page.url.pathname.includes('/shows')}
+										<div class='stats-item'>
+											<Svg id='tv' /> {$stats.shows > 0 ? $stats.shows : null} <span class='visually-hidden'>shows in {CURRENT_YEAR}</span><Spacer axis='horizontal' size='3xs' />({traktStats?.shows?.watched} <span class='visually-hidden'>shows in total</span>)
+										</div>
+									{/if}
 								</div>
 							{/if}
 							<div class='font-semibold username'>{user.username}</div>
@@ -130,8 +137,11 @@
   }
 
   .stats-item {
-    gap: var(--space-2xs);
     --icon-color: var(--color-1);
     --color-alpha: 0.75;
   }
+
+	.stats-item :global(svg) {
+		margin-right: var(--space-2xs);
+	}
 </style>
