@@ -224,7 +224,7 @@
 	}
 
 	// Attempt to trigger load
-	async function attemptLoad(isContinuousCall) {
+	async function attemptLoad(isContinuousCall = false) {
 		if (status !== STATUS.COMPLETE && isVisible(thisElement) && getCurrentDistance() <= distance) {
 			status = STATUS.LOADING
 
@@ -244,6 +244,20 @@
 		}
 		else if (status === STATUS.LOADING) {
 			status = STATUS.READY
+		}
+	}
+
+	function pause() {
+		return new Promise<void>(resolve => setTimeout(() => {
+			resolve()
+		}, THROTTLE_LIMIT))
+	}
+
+	// Load all data without scrolling at once
+	export async function loadAll() {
+		while (status !== STATUS.COMPLETE) {
+			await pause()
+			await attemptLoad()
 		}
 	}
 

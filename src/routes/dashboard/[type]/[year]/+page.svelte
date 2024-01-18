@@ -109,7 +109,10 @@
 					<input id='grid-columns' type='number' min='1' max='100' step='1' bind:value={$settings.columns} on:input={e => settings.set({ ...$settings, columns: Number.parseInt((e.target as HTMLInputElement).value) })} />
 				</div>
 			{/if}
-			<Switch label='Screenshot Mode' bind:value={$settings.screenshotMode} />
+			<Switch label='Screenshot Mode' bind:value={$settings.screenshotMode} onClickWithValue={(value) => {
+				if (value)
+					loadAll()
+			}} />
 		</div>
 	{/if}
 </div>

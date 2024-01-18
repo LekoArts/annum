@@ -6,15 +6,17 @@
 
 	export let label: string
 	export let value: boolean = false
+	export let onClickWithValue: (value: boolean) => void = () => {}
 
 	const uniqueID = Math.floor(Math.random() * 100)
 
-	// @ts-expect-error - TODO: Fix this
-	function handleClick({ target }) {
-		const state = target.getAttribute('aria-checked') as 'true' | 'false'
+	function handleClick(event: MouseEvent & { currentTarget: EventTarget & HTMLButtonElement }) {
+		const state = (event.target as HTMLButtonElement).getAttribute('aria-checked') as 'true' | 'false'
 		value = state !== 'true'
-	}
 
+		if (onClickWithValue)
+			onClickWithValue(value)
+	}
 </script>
 
 <div class='switch flex align-center'>
