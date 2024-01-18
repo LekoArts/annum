@@ -16,7 +16,7 @@
 
 <div class='prose'>
 	<p class='welcome'>Hello {data.session?.user.username} 👋🏻</p>
-	<p>In total, you watched <code><Svg id='movie' /> {data.stats?.movies?.watched} movies</code> and <code><Svg id='tv' /> {data.stats?.shows?.watched} shows</code>. You can use this app to view your movies and shows year by year in a poster grid. Here are some quick links to the current and previous year:</p>
+	<p>In total, you watched <Svg id='movie' /> <strong>{data.stats?.movies?.watched} movies</strong> and <strong><Svg id='tv' /> {data.stats?.shows?.watched} shows</strong>. You can use this app to view your movies and shows year by year in a poster grid. Here are some quick links to the current and previous year:</p>
 </div>
 
 <div class='flex quicklinks'>
@@ -71,6 +71,7 @@
 					{/each}
 				</select>
 			</div>
+			<Spacer axis='vertical' size='2xs' />
 		</div>
 	</div>
 </section>

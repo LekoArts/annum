@@ -76,7 +76,7 @@ code {
 
   & svg {
     display: inline-block;
-    vertical-align: middle;
+    vertical-align: text-bottom;
     --icon-color: var(--color-3);
   }
 
