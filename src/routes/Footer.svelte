@@ -58,5 +58,3 @@
 		}
 	}
 </style>
-
-<!-- <linearGradient xmlns="http://www.w3.org/2000/svg" id="linear-gradient" y1="40.76" x2="190.24" y2="40.76" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#90cea1"/><stop offset="0.56" stop-color="#3cbec9"/><stop offset="1" stop-color="#00b3e5"/></linearGradient> -->

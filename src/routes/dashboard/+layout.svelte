@@ -22,7 +22,6 @@
 		<nav aria-label='Breadcrumbs' class='breadcrumb flex align-center box' lang='en-US' dir='ltr'>
 			<ol role='list'>
 				<li>
-					<Svg id='home' />
 					<a href='/dashboard' aria-current={isDashboard ? 'page' : null}>Home</a>
 				</li>
 				{#if isDetailsPage}
@@ -108,7 +107,7 @@
 				--color-alpha: 0.75;
 				--icon-color: var(--color-1);
 
-				& a, span {
+				& span {
 					padding-left: var(--space-3xs);
 				}
 			}

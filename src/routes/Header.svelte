@@ -17,7 +17,7 @@
 		<div class='wrapper flex'>
 			<div class='title text-md-lg font-semibold'>
 				{#if $page.url.pathname.includes('/dashboard')}
-					{TITLE}
+					<a class='title-link' href='/dashboard' aria-label='Back to dashboard overview'>{TITLE}</a>
 				{:else}
 					<a class='title-link' href='/' aria-label='Back to homepage'>{TITLE}</a>
 				{/if}
