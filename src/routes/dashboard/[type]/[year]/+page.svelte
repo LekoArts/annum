@@ -60,12 +60,138 @@
 	{/each}
 </Grid>
 
-<InfiniteLoading on:infinite={infiniteHandler} spinner='circles'>
+<InfiniteLoading on:infinite={infiniteHandler}>
 	<span slot='noMore'></span>
-	<span slot='error' let:attemptLoad>
+	<div slot='error' let:attemptLoad>
 		Something went wrong 😢 <button on:click={attemptLoad}>Retry</button>
-	</span>
-	<span slot='noResults' class='infinite-no-results'>
+	</div>
+	<div slot='noResults' class='infinite-no-results'>
 		No results found. Start watching and track your progress on Trakt! 🥳
-	</span>
+	</div>
+	<div slot='spinner'>
+		<span class='loading-circles'>
+			<span class='circle-item'></span>
+			<span class='circle-item'></span>
+			<span class='circle-item'></span>
+			<span class='circle-item'></span>
+			<span class='circle-item'></span>
+			<span class='circle-item'></span>
+			<span class='circle-item'></span>
+			<span class='circle-item'></span>
+		</span>
+	</div>
 </InfiniteLoading>
+
+<style lang='postcss'>
+	.loading-circles {
+		--size: 7px;
+		--radius: 14px;
+		--delay: 0.093s;
+		--duration: 0.75s;
+		--outer-size: 28px;
+		--color-alpha: 1;
+
+		display: inline-block;
+		margin: 5px 0;
+		width: var(--outer-size);
+		height: var(--outer-size);
+		font-size: var(--outer-size);
+		line-height: var(--outer-size);
+		border-radius: 50%;
+		position: relative;
+	}
+
+	.loading-circles .circle-item {
+		width: var(--size);
+		height: var(--size);
+		animation: loading-circles linear var(--duration) infinite;
+	}
+
+	.loading-circles .circle-item:first-child {
+		margin-top: calc((-1 * var(--size) / 2) - var(--radius));
+		margin-left: calc(-1 * var(--size) / 2);
+	}
+
+	.loading-circles .circle-item:nth-child(2) {
+		margin-top: calc((-1 * var(--size) / 2) + (-1 * var(--radius)) * 0.73);
+		margin-left: calc((-1 * var(--size) / 2) + var(--radius) * 0.73);
+	}
+
+	.loading-circles .circle-item:nth-child(3) {
+		margin-top: calc(-1 * var(--size) / 2);
+		margin-left: calc((-1 * var(--size) / 2) + var(--radius));
+	}
+
+	.loading-circles .circle-item:nth-child(4) {
+		margin-top: calc((-1 * var(--size) / 2) + var(--radius) * 0.73);
+		margin-left: calc((-1 * var(--size) / 2) + var(--radius) * 0.73);
+	}
+
+	.loading-circles .circle-item:nth-child(5) {
+		margin-top: calc((-1 * var(--size) / 2) + var(--radius));
+		margin-left: calc(-1 * var(--size) / 2);
+	}
+
+	.loading-circles .circle-item:nth-child(6) {
+		margin-top: calc((-1 * var(--size) / 2) + var(--radius) * 0.73);
+		margin-left: calc((-1 * var(--size) / 2) + (-1 * var(--radius)) * 0.73);
+	}
+
+	.loading-circles .circle-item:nth-child(7) {
+		margin-top: calc(-1 * var(--size) / 2);
+		margin-left: calc((-1 * var(--size) / 2) + (-1 * var(--radius)));
+	}
+
+	.loading-circles .circle-item:last-child {
+		margin-top: calc((-1 * var(--size) / 2) + (-1 * var(--radius)) * 0.73);
+		margin-left: calc((-1 * var(--size) / 2) + (-1 * var(--radius)) * 0.73);
+	}
+
+	@keyframes loading-circles {
+		0% {
+			background: var(--color-4);
+		}
+		90% {
+			background: var(--color-12);
+		}
+		100% {
+			background: var(--color-bright);
+		}
+	}
+
+	.loading-circles .circle-item {
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		display: inline-block;
+		border-radius: 50%;
+	}
+
+	.loading-circles .circle-item:nth-child(2) {
+		animation-delay: var(--delay);
+	}
+
+	.loading-circles .circle-item:nth-child(3) {
+		animation-delay: calc(var(--delay) * 2);
+	}
+
+	.loading-circles .circle-item:nth-child(4) {
+		animation-delay: calc(var(--delay) * 3);
+	}
+
+	.loading-circles .circle-item:nth-child(5) {
+		animation-delay: calc(var(--delay) * 4);
+	}
+
+	.loading-circles .circle-item:nth-child(6) {
+		animation-delay: calc(var(--delay) * 5);
+	}
+
+	.loading-circles .circle-item:nth-child(7) {
+		animation-delay: calc(var(--delay) * 6);
+	}
+
+	.loading-circles .circle-item:last-child{
+		animation-delay: calc(var(--delay) * 7);
+	}
+</style>
