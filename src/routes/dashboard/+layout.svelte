@@ -126,6 +126,7 @@
 	.screenshot-mode {
 		flex-grow: 1;
 		justify-content: center;
+		flex-wrap: wrap;
 
 		@media (--sm) {
 			flex-grow: initial;
