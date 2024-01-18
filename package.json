@@ -19,7 +19,6 @@
 		"typecheck": "tsc --noEmit"
 	},
 	"devDependencies": {
-		"@accuser/svelte-plausible-analytics": "^1.0.0",
 		"@antfu/eslint-config": "^2.6.1",
 		"@auth/core": "^0.19.1",
 		"@auth/sveltekit": "^0.5.1",

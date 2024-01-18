@@ -1,6 +1,6 @@
 <script lang='ts'>
 	import { signIn } from '@auth/sveltekit/client'
-	import { pa } from '@accuser/svelte-plausible-analytics'
+	import { pa } from '$lib/store/plausible'
 	import Spacer from '$lib/Spacer.svelte'
 	import { classList } from '$lib/actions'
 	import Primary from '$lib/button/Primary.svelte'

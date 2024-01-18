@@ -1,5 +1,5 @@
 <script lang='ts'>
-	import { pa } from '@accuser/svelte-plausible-analytics'
+	import { pa } from '$lib/store/plausible'
 	import { page } from '$app/stores'
 	import { GITHUB_REPO_URL } from '$const'
 

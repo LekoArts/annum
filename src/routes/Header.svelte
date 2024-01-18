@@ -1,6 +1,6 @@
 <script lang='ts'>
 	import { signIn, signOut } from '@auth/sveltekit/client'
-	import { pa } from '@accuser/svelte-plausible-analytics'
+	import { pa } from '$lib/store/plausible'
 	import { page } from '$app/stores'
 	import Svg from '$lib/Svg.svelte'
 	import Primary from '$lib/button/Primary.svelte'

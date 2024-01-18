@@ -5,9 +5,6 @@ settings:
   excludeLinksFromLockfile: false
 
 devDependencies:
-  '@accuser/svelte-plausible-analytics':
-    specifier: ^1.0.0
-    version: 1.0.0(@sveltejs/kit@2.0.6)(svelte@5.0.0-next.29)
   '@antfu/eslint-config':
     specifier: ^2.6.1
     version: 2.6.1(@vue/compiler-sfc@3.4.5)(eslint-plugin-svelte@2.35.1)(eslint@8.56.0)(svelte@5.0.0-next.29)(typescript@5.3.3)(vitest@1.1.3)
@@ -80,16 +77,6 @@ packages:
   /@aashutoshrathi/word-wrap@1.2.6:
     resolution: {integrity: sha512-1Yjs2SvM8TflER/OD3cOjhWWOZb58A2t7wpE2S9XfBYTiIl+XFhQG2bjy4Pu1I+EAlCNUzRDYDdFwFYUKvXcIA==}
     engines: {node: '>=0.10.0'}
-    dev: true
-
-  /@accuser/svelte-plausible-analytics@1.0.0(@sveltejs/kit@2.0.6)(svelte@5.0.0-next.29):
-    resolution: {integrity: sha512-wZegJmMt3UGmTMo1KXEDL7pKjK/GyKfFAociujHsCKkCuzNIIfUhydancxnettLZVfBaOJe6xT6OrPpo/kfBYg==}
-    peerDependencies:
-      '@sveltejs/kit': ^1.30.3 || ^2.0.0
-      svelte: ^4.2.8
-    dependencies:
-      '@sveltejs/kit': 2.0.6(@sveltejs/vite-plugin-svelte@3.0.1)(svelte@5.0.0-next.29)(vite@5.0.11)
-      svelte: 5.0.0-next.29
     dev: true
 
   /@ampproject/remapping@2.2.1:
