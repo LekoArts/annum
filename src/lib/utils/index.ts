@@ -110,3 +110,7 @@ export function filterForYear(item: NormalizedItemResponse, year: number | strin
 	const y = typeof year === 'string' ? Number.parseInt(year) : year
 	return item.last_watched_at_year === y
 }
+
+export function capitalize(str: string): string {
+	return str.slice(0, 1).toUpperCase() + str.slice(1)
+}
