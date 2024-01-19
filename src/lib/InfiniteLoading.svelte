@@ -156,6 +156,7 @@
 	export let identifier = +new Date()
 
 	let isFirstLoad = true // save the current loading whether it is the first loading
+	let isManualReset = false
 	let status = STATUS.READY
 	let mounted = false
 	let thisElement
@@ -163,7 +164,7 @@
 
 	$: showSpinner = status === STATUS.LOADING
 	$: showError = status === STATUS.ERROR
-	$: showNoResults = status === STATUS.COMPLETE && isFirstLoad
+	$: showNoResults = status === STATUS.COMPLETE && isFirstLoad && !isManualReset
 	$: showNoMore = status === STATUS.COMPLETE && !isFirstLoad
 
 	const stateChanger = {
@@ -247,18 +248,21 @@
 		}
 	}
 
-	function pause() {
-		return new Promise<void>(resolve => setTimeout(() => {
-			resolve()
-		}, THROTTLE_LIMIT))
-	}
+	// Reset the state of the component (same code as stateChanger)
+	export async function reset() {
+		status = STATUS.READY
+		isFirstLoad = true
+		isManualReset = true
 
-	// Load all data without scrolling at once
-	export async function loadAll() {
-		while (status !== STATUS.COMPLETE) {
-			await pause()
-			await attemptLoad()
-		}
+		scrollBarStorage.remove(scrollParent)
+
+		scrollParent.addEventListener('scroll', scrollHandler, thirdEventArg)
+
+		// wait for list to be empty and the empty action may trigger a scroll event
+		setTimeout(() => {
+			throttler.reset()
+			scrollHandler()
+		}, 1)
 	}
 
 	// Get current distance from the specified direction

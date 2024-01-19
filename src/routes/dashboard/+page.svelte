@@ -29,7 +29,7 @@
 <Spacer axis='vertical' size='xs' />
 
 <div class='prose'>
-	<p>On each page you will find a <code>Previous</code> and <code>Next</code> button to switch years. In the top right corner you'll see the count for the current year and total count in parentheses. You can also manually change the year in the URL as the format is always the same, for example: <code>/dashboard/movies/{CURRENT_YEAR}</code>.</p>
+	<p>On each page you will find a <code>Previous</code> and <code>Next</code> button to switch years. Next to the "Sign Out" button you'll see the count for the current year and total count in parentheses. You can also manually change the year in the URL as the format is always the same, for example: <code>/dashboard/movies/{CURRENT_YEAR}</code>.</p>
 </div>
 
 <Spacer axis='vertical' size='m' />

@@ -17,7 +17,7 @@
 	import Secondary from '$lib/button/Secondary.svelte'
 	import { CURRENT_YEAR } from '$const'
 
-	let loadAll: () => Promise<void>
+	let reset: () => Promise<void>
 
 	let p = 1
 	let list: Array<Item> = []
@@ -109,7 +109,10 @@
 					<input id='grid-columns' type='number' min='1' max='100' step='1' bind:value={$settings.columns} on:input={e => settings.set({ ...$settings, columns: Number.parseInt((e.target as HTMLInputElement).value) })} />
 				</div>
 			{/if}
-			<Switch label='Screenshot Mode' bind:value={$settings.screenshotMode} />
+			<Switch label='Screenshot Mode' bind:value={$settings.screenshotMode} onClickWithValue={(value) => {
+				if (value)
+					reset()
+			}} />
 		</div>
 	{/if}
 </div>
@@ -126,7 +129,7 @@
 	{/each}
 </Grid>
 
-<InfiniteLoading bind:loadAll={loadAll} on:infinite={infiniteHandler}>
+<InfiniteLoading bind:reset={reset} on:infinite={infiniteHandler}>
 	<span slot='noMore'></span>
 	<div slot='error' let:attemptLoad>
 		Something went wrong 😢 <button on:click={() => attemptLoad()}>Retry</button>
