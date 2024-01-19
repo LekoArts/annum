@@ -1,8 +1,5 @@
 import type { PageServerLoad } from './$types'
-
-function capitalize(str: string) {
-	return str[0].toUpperCase() + str.slice(1)
-}
+import { capitalize } from '$lib/utils'
 
 export const load: PageServerLoad = ({ params }) => {
 	return {

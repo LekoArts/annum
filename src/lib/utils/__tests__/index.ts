@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { chunks, filterForYear, getStartAndEndOfYear, normalizeItem } from '../index'
+import { capitalize, chunks, filterForYear, getStartAndEndOfYear, normalizeItem } from '../index'
 import { historyMovies, historyShows, watchedMovies, watchedShows } from './__fixtures__/normalize'
 
 describe('chunks', () => {
@@ -138,5 +138,20 @@ describe('normalizeItem', () => {
 			}
 		`)
 		expect(result.title).toBe(historyShows.show.title)
+	})
+})
+
+describe('capitalize', () => {
+	it('should capitalize a string', () => {
+		const result = capitalize('hello')
+		expect(result).toBe('Hello')
+	})
+	it('should handle empty string', () => {
+		const result = capitalize('')
+		expect(result).toBe('')
+	})
+	it('should leave rest of string untouched', () => {
+		const result = capitalize('hello world')
+		expect(result).toBe('Hello world')
 	})
 })
