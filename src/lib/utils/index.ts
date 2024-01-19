@@ -18,6 +18,13 @@ function isTraktWatchedItem(item: TraktHistoryItem | TraktWatchedItem): item is 
 }
 
 /**
+ * Extract the full year from a date string
+ */
+export function lastWatchedYear(date: string): number {
+	return new Date(date).getFullYear()
+}
+
+/**
  * Normalize an incoming item (either from /history or /watched endpoint) to a common format since they are slightly different in what data they hold.
  * This function's response is used on the frontend.
  * @example normalizeItem({ movie: { ... }}) => { title: '...', ... }
@@ -33,7 +40,7 @@ export function normalizeItem(item: TraktHistoryItem | TraktWatchedItem): Normal
 			result.trakt_id = item.movie.ids.trakt
 			result.tmdb_id = item.movie.ids?.tmdb
 			result.last_watched_at = item.last_watched_at
-			result.last_watched_at_year = new Date(item.last_watched_at).getFullYear()
+			result.last_watched_at_year = lastWatchedYear(item.last_watched_at)
 		}
 
 		if ('show' in item) {
@@ -42,7 +49,7 @@ export function normalizeItem(item: TraktHistoryItem | TraktWatchedItem): Normal
 			result.trakt_id = item.show.ids.trakt
 			result.tmdb_id = item.show.ids?.tmdb
 			result.last_watched_at = item.last_watched_at
-			result.last_watched_at_year = new Date(item.last_watched_at).getFullYear()
+			result.last_watched_at_year = lastWatchedYear(item.last_watched_at)
 			result.plays = item.plays
 		}
 	}
@@ -55,7 +62,7 @@ export function normalizeItem(item: TraktHistoryItem | TraktWatchedItem): Normal
 				result.trakt_id = item.movie.ids.trakt
 				result.tmdb_id = item.movie.ids?.tmdb
 				result.last_watched_at = item.watched_at
-				result.last_watched_at_year = new Date(item.watched_at).getFullYear()
+				result.last_watched_at_year = lastWatchedYear(item.watched_at)
 
 				break
 			}
@@ -65,7 +72,7 @@ export function normalizeItem(item: TraktHistoryItem | TraktWatchedItem): Normal
 				result.trakt_id = item.show.ids.trakt
 				result.tmdb_id = item.show.ids?.tmdb
 				result.last_watched_at = item.watched_at
-				result.last_watched_at_year = new Date(item.watched_at).getFullYear()
+				result.last_watched_at_year = lastWatchedYear(item.watched_at)
 
 				break
 			}

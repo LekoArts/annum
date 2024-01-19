@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { capitalize, chunks, filterForYear, getStartAndEndOfYear, normalizeItem } from '../index'
+import { capitalize, chunks, filterForYear, getStartAndEndOfYear, lastWatchedYear, normalizeItem } from '../index'
 import { historyMovies, historyShows, watchedMovies, watchedShows } from './__fixtures__/normalize'
 
 describe('chunks', () => {
@@ -153,5 +153,23 @@ describe('capitalize', () => {
 	it('should leave rest of string untouched', () => {
 		const result = capitalize('hello world')
 		expect(result).toBe('Hello world')
+	})
+})
+
+describe('lastWatchedYear', () => {
+	it('should return the correct year', () => {
+		const year = lastWatchedYear('2022-01-01')
+		expect(year).toBe(2022)
+	})
+	it('should handle different date formats', () => {
+		const year = lastWatchedYear('12/31/2021')
+		expect(year).toBe(2021)
+
+		const year2 = lastWatchedYear('2023-12-30T21:42:56.000Z')
+		expect(year2).toBe(2023)
+	})
+	it('should handle invalid dates', () => {
+		const year = lastWatchedYear('invalid date')
+		expect(year).toBeNaN()
 	})
 })
