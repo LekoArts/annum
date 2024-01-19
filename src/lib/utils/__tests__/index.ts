@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { capitalize, chunks, filterForYear, getStartAndEndOfYear, lastWatchedYear, normalizeItem } from '../index'
+import { capitalize, chunks, filterForYear, getStartAndEndOfYear, lastWatchedMonth, lastWatchedYear, normalizeItem } from '../index'
 import { historyMovies, historyShows, watchedMovies, watchedShows } from './__fixtures__/normalize'
 
 describe('chunks', () => {
@@ -165,11 +165,29 @@ describe('lastWatchedYear', () => {
 		const year = lastWatchedYear('12/31/2021')
 		expect(year).toBe(2021)
 
-		const year2 = lastWatchedYear('2023-12-30T21:42:56.000Z')
+		const year2 = lastWatchedYear('2023-11-30T21:42:56.000Z')
 		expect(year2).toBe(2023)
 	})
 	it('should handle invalid dates', () => {
 		const year = lastWatchedYear('invalid date')
 		expect(year).toBeNaN()
+	})
+})
+
+describe('lastWatchedMonth', () => {
+	it('should return the correct year', () => {
+		const year = lastWatchedMonth('2022-01-01')
+		expect(year).toBe('January')
+	})
+	it('should handle different date formats', () => {
+		const year = lastWatchedMonth('12/31/2021')
+		expect(year).toBe('December')
+
+		const year2 = lastWatchedMonth('2023-11-30T21:42:56.000Z')
+		expect(year2).toBe('November')
+	})
+	it('should handle invalid dates', () => {
+		const year = lastWatchedMonth('invalid date')
+		expect(year).toBe('Invalid Date')
 	})
 })

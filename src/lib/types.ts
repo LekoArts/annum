@@ -158,6 +158,7 @@ export interface TmdbItemDetails {
 export interface NormalizedItemResponse {
 	last_watched_at: string
 	last_watched_at_year: number
+	last_wathed_at_month: string
 	title: string
 	release_year: number
 	trakt_id: number

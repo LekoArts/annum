@@ -19,9 +19,18 @@ function isTraktWatchedItem(item: TraktHistoryItem | TraktWatchedItem): item is 
 
 /**
  * Extract the full year from a date string
+ * @example lastWatchedYear('2020-01-01') => 2020
  */
 export function lastWatchedYear(date: string): number {
 	return new Date(date).getFullYear()
+}
+
+/**
+ * Extract the month from a date string and return the name
+ * @example lastWatchedMonth('2020-01-01') => 'January'
+ */
+export function lastWatchedMonth(date: string): string {
+	return new Date(date).toLocaleString('en-US', { month: 'long' })
 }
 
 /**
@@ -41,6 +50,7 @@ export function normalizeItem(item: TraktHistoryItem | TraktWatchedItem): Normal
 			result.tmdb_id = item.movie.ids?.tmdb
 			result.last_watched_at = item.last_watched_at
 			result.last_watched_at_year = lastWatchedYear(item.last_watched_at)
+			result.last_wathed_at_month = lastWatchedMonth(item.last_watched_at)
 		}
 
 		if ('show' in item) {
@@ -50,6 +60,7 @@ export function normalizeItem(item: TraktHistoryItem | TraktWatchedItem): Normal
 			result.tmdb_id = item.show.ids?.tmdb
 			result.last_watched_at = item.last_watched_at
 			result.last_watched_at_year = lastWatchedYear(item.last_watched_at)
+			result.last_wathed_at_month = lastWatchedMonth(item.last_watched_at)
 			result.plays = item.plays
 		}
 	}
@@ -63,6 +74,7 @@ export function normalizeItem(item: TraktHistoryItem | TraktWatchedItem): Normal
 				result.tmdb_id = item.movie.ids?.tmdb
 				result.last_watched_at = item.watched_at
 				result.last_watched_at_year = lastWatchedYear(item.watched_at)
+				result.last_wathed_at_month = lastWatchedMonth(item.watched_at)
 
 				break
 			}
@@ -73,6 +85,7 @@ export function normalizeItem(item: TraktHistoryItem | TraktWatchedItem): Normal
 				result.tmdb_id = item.show.ids?.tmdb
 				result.last_watched_at = item.watched_at
 				result.last_watched_at_year = lastWatchedYear(item.watched_at)
+				result.last_wathed_at_month = lastWatchedMonth(item.watched_at)
 
 				break
 			}
