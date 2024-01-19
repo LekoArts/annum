@@ -3,7 +3,7 @@
 	import type { PageData } from './$types'
 	import InfiniteLoading from '$lib/InfiniteLoading.svelte'
 	import type { ApiHistoryResponse, InfiniteEvent, Item } from '$lib/types'
-	import { capitalize, getStartAndEndOfYear } from '$lib/utils'
+	import { capitalize, getStartAndEndOfYear, groupBy } from '$lib/utils'
 	import Image from '$lib/Image.svelte'
 	import Grid from '$lib/grid/Grid.svelte'
 	import GridItem from '$lib/grid/Item.svelte'
@@ -67,6 +67,7 @@
 	$: isDetailsPage = segments.length > 1
 	$: isMovie = segments[1] === 'movies'
 	$: isShow = segments[1] === 'shows'
+	$: listGroupedByMonth = groupBy(list, 'last_wathed_at_month')
 </script>
 
 <div class='wrapper flex'>
@@ -122,11 +123,22 @@
 <h1 class='visually-hidden'>{capitalize(type)} from {year}</h1>
 
 <Grid screenshotMode={$settings.screenshotMode} columns={$settings.columns}>
-	{#each list as { images, title }, index}
-		<GridItem {index}>
-			<Image {images} alt={title} loading={index === 0 ? 'eager' : 'lazy'} />
-		</GridItem>
-	{/each}
+	{#if $settings.groupByMonth}
+		{#each Object.entries(listGroupedByMonth) as [month, items]}
+			<h2 class='month-heading'>{month}</h2>
+			{#each items as { images, title }, index}
+				<GridItem {index}>
+					<Image {images} alt={title} loading={index === 0 ? 'eager' : 'lazy'} />
+				</GridItem>
+			{/each}
+		{/each}
+	{:else}
+		{#each list as { images, title }, index}
+			<GridItem {index}>
+				<Image {images} alt={title} loading={index === 0 ? 'eager' : 'lazy'} />
+			</GridItem>
+		{/each}
+	{/if}
 </Grid>
 
 <InfiniteLoading bind:reset={reset} on:infinite={infiniteHandler}>
@@ -225,6 +237,10 @@
 			margin-left: var(--space-2xs);
 			padding-left: var(--space-2xs);
 		}
+	}
+
+	.month-heading {
+		grid-column: 1 / -1;
 	}
 
 	.loading-circles {

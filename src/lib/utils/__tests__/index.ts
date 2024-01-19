@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { capitalize, chunks, filterForYear, getStartAndEndOfYear, lastWatchedMonth, lastWatchedYear, normalizeItem } from '../index'
+import { capitalize, chunks, filterForYear, getStartAndEndOfYear, groupBy, lastWatchedMonth, lastWatchedYear, normalizeItem } from '../index'
 import { historyMovies, historyShows, watchedMovies, watchedShows } from './__fixtures__/normalize'
 
 describe('chunks', () => {
@@ -88,6 +88,7 @@ describe('normalizeItem', () => {
 			{
 			  "last_watched_at": "2024-01-04T10:51:27.000Z",
 			  "last_watched_at_year": 2024,
+			  "last_wathed_at_month": "January",
 			  "plays": 45,
 			  "release_year": 2022,
 			  "title": "Jet Lag: The Game",
@@ -103,6 +104,7 @@ describe('normalizeItem', () => {
 			{
 			  "last_watched_at": "2019-12-22T13:25:00.000Z",
 			  "last_watched_at_year": 2019,
+			  "last_wathed_at_month": "December",
 			  "release_year": 2001,
 			  "title": "Harry Potter and the Philosopher's Stone",
 			  "tmdb_id": 671,
@@ -117,6 +119,7 @@ describe('normalizeItem', () => {
 			{
 			  "last_watched_at": "2023-12-30T21:42:56.000Z",
 			  "last_watched_at_year": 2023,
+			  "last_wathed_at_month": "December",
 			  "release_year": 1983,
 			  "title": "Scarface",
 			  "tmdb_id": 111,
@@ -131,6 +134,7 @@ describe('normalizeItem', () => {
 			{
 			  "last_watched_at": "2023-12-30T19:13:09.000Z",
 			  "last_watched_at_year": 2023,
+			  "last_wathed_at_month": "December",
 			  "release_year": 2023,
 			  "title": "Frieren: Beyond Journey's End",
 			  "tmdb_id": 209867,
@@ -189,5 +193,51 @@ describe('lastWatchedMonth', () => {
 	it('should handle invalid dates', () => {
 		const year = lastWatchedMonth('invalid date')
 		expect(year).toBe('Invalid Date')
+	})
+})
+
+describe('groupBy', () => {
+	it('should group array elements by the specified key', () => {
+		const arr = [
+			{ id: 1, name: 'John' },
+			{ id: 2, name: 'Jane' },
+			{ id: 3, name: 'John' },
+			{ id: 4, name: 'Jane' },
+		]
+
+		const result = groupBy(arr, 'name')
+
+		expect(result).toEqual({
+			John: [
+				{ id: 1, name: 'John' },
+				{ id: 3, name: 'John' },
+			],
+			Jane: [
+				{ id: 2, name: 'Jane' },
+				{ id: 4, name: 'Jane' },
+			],
+		})
+	})
+	it('should return an empty object if the array is empty', () => {
+		const arr: Array<any> = []
+		const result = groupBy(arr, 'name')
+		expect(result).toEqual({})
+	})
+	it('should handle arrays with duplicate keys', () => {
+		const arr = [
+			{ id: 1, name: 'John' },
+			{ id: 2, name: 'John' },
+			{ id: 3, name: 'John' },
+		]
+
+		const result = groupBy(arr, 'name')
+
+		expect(result).toEqual({
+			John: [
+				{ id: 1, name: 'John' },
+				{ id: 2, name: 'John' },
+				{ id: 3, name: 'John' },
+			],
+		})
 	})
 })

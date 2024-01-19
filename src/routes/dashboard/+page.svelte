@@ -73,6 +73,13 @@
 			</div>
 			<Spacer axis='vertical' size='2xs' />
 		</div>
+		<div class='box'>
+			<p class='title'>Grouping</p>
+			<p>Posters will be grouped by month indicated by individual headings.</p>
+			<Spacer axis='vertical' size='xs' />
+			<Switch label='Group by month' bind:value={$settings.groupByMonth} />
+			<Spacer axis='vertical' size='2xs' />
+		</div>
 	</div>
 </section>
 

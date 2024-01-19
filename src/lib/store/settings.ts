@@ -7,6 +7,7 @@ interface Settings {
 	columns: number
 	lang: Language
 	grayscaleMode: boolean
+	groupByMonth: boolean
 }
 
 export const settings = persisted<Settings>('annum-settings', {
@@ -15,4 +16,5 @@ export const settings = persisted<Settings>('annum-settings', {
 	columns: 5,
 	lang: 'en',
 	grayscaleMode: false,
+	groupByMonth: false,
 })
