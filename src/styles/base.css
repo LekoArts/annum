@@ -1,9 +1,12 @@
 html {
   font-family: var(--body-font);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 body {
-  background: linear-gradient(0deg, var(--color-11) 0%, var(--color-bg) 25%, var(--color-bg) 75%, var(--color-13) 100%);
+  background: linear-gradient(0deg, var(--color-11) 0%, var(--color-bg) 25%, var(--color-bg) 75%, var(--color-13) 100%), url('../assets/noise.png');
+  background-blend-mode: hard-light;
   color: rgb(233, 233, 233);
   font-size: var(--step-0);
   line-height: 1.5;
@@ -76,7 +79,7 @@ code {
 
   & svg {
     display: inline-block;
-    vertical-align: text-bottom;
+    vertical-align: middle;
     --icon-color: var(--color-3);
   }
 
