@@ -48,7 +48,7 @@ h4, h5, h6, p, li {
 .box {
   --color-alpha: 0.25;
   gap: var(--space-xs-s);
-  background: var(--color-4);
+  background: linear-gradient(0deg, var(--color-2) 0%, var(--color-4) 10%, var(--color-4) 90%, var(--color-7) 100%);
   border: 1px solid var(--color-2);
   padding: var(--space-3xs) var(--space-xs);
   border-radius: var(--space-2xs);

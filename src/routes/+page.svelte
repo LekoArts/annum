@@ -90,7 +90,7 @@
     transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
-  :global(.hero button:hover svg[data-icon-name='arrow-right']) {
+  :global(.hero .button-primary:hover svg[data-icon-name='arrow-right']) {
     transform: translateX(3px);
   }
 
@@ -140,7 +140,7 @@
     & > div {
       --color-alpha: 0.5;
       border: 1px solid var(--color-9);
-      background: var(--color-13);
+      background: linear-gradient(0deg, var(--color-12) 0%, var(--color-13) 8%, var(--color-13) 92%, var(--color-14) 100%);
       padding: var(--space-s);
       border-radius: var(--space-xs);
       box-shadow: var(--shadow-elevation-medium);
