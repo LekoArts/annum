@@ -15,8 +15,8 @@ const stores: Stores = {
 }
 
 export interface Serializer<T> {
-	parse(text: string): T
-	stringify(object: T): string
+	parse: (text: string) => T
+	stringify: (object: T) => string
 }
 
 export type StorageType = 'local' | 'session'

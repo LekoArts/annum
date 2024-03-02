@@ -1,4 +1,3 @@
-import { SvelteComponent } from 'svelte'
 import type { LANGUAGES, TMDB_POSTER_SIZES } from '$const'
 
 export type TmdbPosterSize = keyof typeof TMDB_POSTER_SIZES
@@ -61,16 +60,16 @@ export interface TraktStats {
 	ratings: {
 		total: number
 		distribution: {
-			'1': number
-			'2': number
-			'3': number
-			'4': number
-			'5': number
-			'6': number
-			'7': number
-			'8': number
-			'9': number
-			'10': number
+			1: number
+			2: number
+			3: number
+			4: number
+			5: number
+			6: number
+			7: number
+			8: number
+			9: number
+			10: number
 		}
 	}
 }
@@ -185,24 +184,24 @@ export interface StateChanger {
 	 * Inform the component that this loading has been successful. The infinite event will be fired again if the first screen was not be
 	 * filled up, otherwise, the component will hide the loading animation and continue to listen to scroll events.
 	 */
-	loaded(): void
+	loaded: () => void
 
 	/**
 	 * Inform the component that all the data has been loaded successfully. If the InfiniteEvent.details.loaded method has not
 	 * been called before this, the content of the noResults slot will be
 	 * displayed, otherwise, the content of the noMore slot will be displayed.
 	 */
-	complete(): void
+	complete: () => void
 
 	/**
 	 * Inform the component that loading the data has failed. The content of the error slot will be displayed.
 	 */
-	error(): void
+	error: () => void
 
 	/**
 	 * Reset the component. Same as changing the identifier property.
 	 */
-	reset(): void
+	reset: () => void
 }
 export interface InfiniteEvent extends CustomEvent<StateChanger> {
 }
