@@ -1,5 +1,5 @@
 import { uniqBy } from 'lodash-es'
-import type { NormalizedItemResponse, TraktHistoryEpisodeItem, TraktHistoryItem, TraktMediaType } from '../types'
+import type { NormalizedItemResponse, TraktMediaType } from '../types'
 
 export function traktUserUrl(id: string) {
 	return `/users/${id}`
