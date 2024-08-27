@@ -28,10 +28,10 @@
 		"@sveltejs/kit": "^2.5.2",
 		"@sveltejs/vite-plugin-svelte": "^3.0.2",
 		"@types/lodash-es": "^4.17.12",
-		"@vitest/coverage-v8": "^1.6.0",
+		"@vitest/coverage-v8": "^2.0.5",
 		"eslint": "^8.57.0",
 		"eslint-plugin-svelte": "^2.43.0",
-		"happy-dom": "^12.10.3",
+		"happy-dom": "^15.0.0",
 		"lodash-es": "^4.17.21",
 		"postcss-preset-env": "^9.6.0",
 		"svelte": "5.0.0-next.70",
@@ -39,6 +39,6 @@
 		"tslib": "^2.7.0",
 		"typescript": "^5.5.4",
 		"vite": "^5.4.2",
-		"vitest": "^1.6.0"
+		"vitest": "^2.0.5"
 	}
 }
