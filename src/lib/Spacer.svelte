@@ -6,4 +6,4 @@
 	const height = axis === 'horizontal' ? '1px' : `var(--space-${size})`
 </script>
 
-<span style:width={width} style:height={height} style:min-width={width} style:min-height={height} style:display='block' {...$$restProps} />
+<span style:width={width} style:height={height} style:min-width={width} style:min-height={height} style:display='block' {...$$restProps}></span>
