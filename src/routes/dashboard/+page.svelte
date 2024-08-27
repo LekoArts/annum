@@ -9,7 +9,7 @@
 
 	export let data: PageData
 
-	let years = [CURRENT_YEAR, CURRENT_YEAR - 1]
+	const years = [CURRENT_YEAR, CURRENT_YEAR - 1]
 </script>
 
 <h1 class='visually-hidden'>Dashboard</h1>

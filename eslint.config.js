@@ -9,27 +9,21 @@ export default antfu({
 	svelte: true,
 	typescript: true,
 	rules: {
-		'ts/ban-types': [
-			'error',
-			{
-				extendDefaults: true,
-				types: {
-					'{}': {
-						fixWith: 'Record<string, unknown>',
-					},
-					'object': {
-						fixWith: 'Record<string, unknown>',
-					},
-					'Function': false,
+		'ts/no-restricted-types': ['error', {
+			types: {
+				'{}': {
+					fixWith: 'Record<string, unknown>',
+				},
+				'object': {
+					fixWith: 'Record<string, unknown>',
 				},
 			},
-		],
+		}],
+		'ts/no-empty-object-type': ['error', { allowInterfaces: 'with-single-extends' }],
+		'ts/no-unsafe-function-type': 'error',
+		'ts/no-wrapper-object-types': 'error',
 		'ts/array-type': ['error', { default: 'generic' }],
 		'svelte/valid-compile': 'warn',
-	},
-}, {
-	files: ['**/*.svelte'],
-	rules: {
-		'prefer-const': 'off',
+		'svelte/mustache-spacing': 'off',
 	},
 })

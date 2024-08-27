@@ -2,7 +2,7 @@
 	import { page } from '$app/stores'
 	import { TITLE } from '$const'
 
-	let title = TITLE
+	const title = TITLE
 
 	$: meta = {
 		description: 'Visualize your Trakt.tv history. Display your watched movies and shows in a poster grid. Easily switch between years and get an overview of all your history.',
