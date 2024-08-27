@@ -1,5 +1,4 @@
 <script context='module' lang='ts'>
-
 	/**
 	 * Adapted from https://github.com/skayo/svelte-infinite-loading/blob/master/src/InfiniteLoading.svelte
 	 * LICENSE: MIT
@@ -31,7 +30,7 @@
 			// @ts-expect-error
 			window.removeEventListener('testPassive', null, opts)
 		}
-		catch (e) {
+		catch (_e) {
 		//
 		}
 
