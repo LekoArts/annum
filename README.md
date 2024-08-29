@@ -29,7 +29,7 @@ This [SvelteKit](https://kit.svelte.dev/) project was bootstrapped with [`create
 
 ### Prerequisites
 
-1. [Install Node.js](https://nodejs.org/en/learn/getting-started/how-to-install-nodejs) 18 or later
+1. [Install Node.js](https://nodejs.org/en/learn/getting-started/how-to-install-nodejs) 20 or later
 1. [Install pnpm](https://pnpm.io/installation)
 
 ### Repository setup

@@ -3,7 +3,7 @@ import type { TraktStats } from '$lib/types'
 import { DEFAULT_CACHE_HEADER } from '$const'
 
 export const load: LayoutServerLoad = async ({ locals, fetch, setHeaders }) => {
-	const session = await locals.getSession()
+	const session = await locals.auth()
 	const id = session!.user.id
 
 	setHeaders({

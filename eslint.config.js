@@ -25,5 +25,14 @@ export default antfu({
 		'ts/array-type': ['error', { default: 'generic' }],
 		'svelte/valid-compile': 'warn',
 		'svelte/mustache-spacing': 'off',
+		'no-unused-vars': 'off',
+		'ts/no-unused-vars': ['error', {
+			argsIgnorePattern: '^_[^_].*$|^_$',
+			varsIgnorePattern: '^_[^_].*$|^_$',
+			caughtErrorsIgnorePattern: '^_[^_].*$|^_$',
+		}],
+		'unused-imports/no-unused-vars': 'off',
+		'style/quotes': ['error', 'single', { avoidEscape: true }],
 	},
+	ignores: ['**/.DS_Store', '**/node_modules', '/build', '/.svelte-kit', '/package', 'pnpm-lock.yaml', 'package-lock.json', 'yarn.lock'],
 })

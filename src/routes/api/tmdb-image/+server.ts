@@ -7,7 +7,7 @@ import { tmdbImageUrlsWithDimensions, tmdbItemDetailsUrl } from '$lib/utils/tmdb
 import { TMDB_QUERY_DEFAULTS } from '$lib/server/const'
 
 export const GET: RequestHandler = async ({ url, locals, fetch, setHeaders }) => {
-	const session = await locals.getSession()
+	const session = await locals.auth()
 
 	if (!session?.user)
 		error(401, 'You must sign in to access this route.')

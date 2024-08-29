@@ -40,7 +40,7 @@ async function fetchData(customFetch: typeof fetch, item: NormalizedItemResponse
 }
 
 export const GET: RequestHandler = async ({ locals, url, fetch, setHeaders, params }) => {
-	const session = await locals.getSession()
+	const session = await locals.auth()
 
 	if (!session?.user)
 		error(401, 'You must sign in to access this route.')
