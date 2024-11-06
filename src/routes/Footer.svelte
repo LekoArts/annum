@@ -33,7 +33,7 @@
 	}
 
 	.logos :global(svg[data-icon-name='trakt']) {
-		color: #ED2225;
+		color: #0d253f;
 	}
 
 	.logos :global(svg[data-icon-name='tmdb']) {
