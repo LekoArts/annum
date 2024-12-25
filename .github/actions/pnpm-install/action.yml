@@ -16,7 +16,7 @@ runs:
     - name: Install Node.js
       uses: actions/setup-node@v4
       with:
-        node-version: 20
+        node-version: lts/*
     - name: ⚙️ Enable Corepack
       if: ${{ inputs.enable-corepack == 'true' }}
       shell: bash
@@ -24,12 +24,10 @@ runs:
         corepack enable
         echo "Corepack enabled"
 
-    - uses: pnpm/action-setup@v2.4.0
+    - uses: pnpm/action-setup@v3.0.0
       if: ${{ inputs.enable-corepack == 'false' }}
       with:
         run_install: false
-        # If you're not setting the packageManager field in package.json, add the version here
-        # version: 8.6.7
 
     - name: Expose pnpm config(s) through "$GITHUB_OUTPUT"
       id: pnpm-config
@@ -43,7 +41,7 @@ runs:
       run: |
         echo "YEAR_MONTH=$(/bin/date -u "+%Y%m")" >> $GITHUB_OUTPUT
 
-    - uses: actions/cache@v3
+    - uses: actions/cache@v4
       name: Setup pnpm cache
       with:
         path: ${{ steps.pnpm-config.outputs.STORE_PATH }}
