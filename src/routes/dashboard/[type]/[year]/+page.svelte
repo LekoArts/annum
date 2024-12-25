@@ -2,7 +2,7 @@
 	import { slide } from 'svelte/transition'
 	import type { PageData } from './$types'
 	import type { ApiHistoryResponse, InfiniteEvent, Item } from '$lib/types'
-	import { page } from '$app/stores'
+	import { page } from '$app/state'
 	import { CURRENT_YEAR } from '$const'
 	import Secondary from '$lib/button/Secondary.svelte'
 	import Grid from '$lib/grid/Grid.svelte'
@@ -66,7 +66,7 @@
 			})
 	}
 
-	let segments = $derived($page.url.pathname.slice(1).split('/'))
+	let segments = $derived(page.url.pathname.slice(1).split('/'))
 	let isDashboard = $derived(segments.length === 1)
 	let isDetailsPage = $derived(segments.length > 1)
 	let isMovie = $derived(segments[1] === 'movies')

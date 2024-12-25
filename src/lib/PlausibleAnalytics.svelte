@@ -24,7 +24,7 @@
 
 	import { onMount } from 'svelte'
 	import { dev } from '$app/environment'
-	import { page } from '$app/stores'
+	import { page } from '$app/state'
 	import { pa } from '$lib/store/plausible'
 
 	onMount(() => {
@@ -63,7 +63,7 @@
 		enabled?: boolean
 	}
 
-	let { apiHost = 'https://plausible.io', domain = $page.url.hostname, enabled = !dev }: Props = $props()
+	let { apiHost = 'https://plausible.io', domain = page.url.hostname, enabled = !dev }: Props = $props()
 
 	let api = $derived(`${apiHost}/api/event`)
 	let src = $derived([

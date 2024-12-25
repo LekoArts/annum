@@ -1,7 +1,7 @@
 <script lang='ts'>
 	import Footer from './Footer.svelte'
 	import Header from './Header.svelte'
-	import { page } from '$app/stores'
+	import { page } from '$app/state'
 	import Meta from '$lib/Meta.svelte'
 	import PlausibleAnalytics from '$lib/PlausibleAnalytics.svelte'
 	import Content from '$lib/skip-to-content/Content.svelte'
@@ -16,7 +16,7 @@
 </script>
 
 <Meta />
-<PlausibleAnalytics apiHost={`${$page.url.protocol}//${$page.url.host}`} domain={$page.url.hostname} />
+<PlausibleAnalytics apiHost={`${page.url.protocol}//${page.url.host}`} domain={page.url.hostname} />
 <SkipToContent />
 
 <Header />

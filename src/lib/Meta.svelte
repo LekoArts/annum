@@ -1,14 +1,14 @@
 <script lang='ts'>
-	import { page } from '$app/stores'
+	import { page } from '$app/state'
 	import { TITLE } from '$const'
 
 	const title = TITLE
 
 	let meta = $derived({
 		description: 'Visualize your Trakt.tv history. Display your watched movies and shows in a poster grid. Easily switch between years and get an overview of all your history.',
-		image: `${$page.url.protocol}//${$page.url.host}/og-image.png?v1`,
+		image: `${page.url.protocol}//${page.url.host}/og-image.png?v1`,
 		title,
-		...$page.data.meta,
+		...page.data.meta,
 	})
 
 	function generateTitle(t: string) {

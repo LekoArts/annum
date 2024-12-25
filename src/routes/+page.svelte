@@ -1,6 +1,6 @@
 <script lang='ts'>
 	import { signIn } from '@auth/sveltekit/client'
-	import { page } from '$app/stores'
+	import { page } from '$app/state'
 	import { GITHUB_REPO_URL, TITLE } from '$const'
 	import { classList } from '$lib/actions'
 	import Primary from '$lib/button/Primary.svelte'
@@ -19,7 +19,7 @@
 		<Spacer axis='vertical' size='2xs' />
 		<p class='text-md'>Display your watched movies and shows in a poster grid. Easily switch between years and get an overview of all your history.</p>
 		<Spacer axis='vertical' size='m' />
-		{#if $page.data?.session?.user}
+		{#if page.data?.session?.user}
 			<Primary type='link' href='/dashboard'>
 				Show me my Poster Grid <Svg id='arrow-right' />
 			</Primary>

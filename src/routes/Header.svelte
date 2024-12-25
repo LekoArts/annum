@@ -1,7 +1,7 @@
 <script lang='ts'>
 	import { signIn, signOut } from '@auth/sveltekit/client'
 	import type { TraktStats } from '$lib/types'
-	import { page } from '$app/stores'
+	import { page } from '$app/state'
 	import { CURRENT_YEAR, TITLE } from '$const'
 	import Primary from '$lib/button/Primary.svelte'
 	import Spacer from '$lib/Spacer.svelte'
@@ -9,17 +9,17 @@
 	import { stats } from '$lib/store/stats'
 	import Svg from '$lib/Svg.svelte'
 
-	let traktStats = $derived($page.data?.stats as TraktStats | undefined)
-	let user = $derived($page.data?.session?.user)
+	let traktStats = $derived(page.data?.stats as TraktStats | undefined)
+	let user = $derived(page.data?.session?.user)
 	let isSignedIn = $derived(Boolean(user))
-	let isDetailPage = $derived($page.url.pathname.includes('/movies') || $page.url.pathname.includes('/shows'))
+	let isDetailPage = $derived(page.url.pathname.includes('/movies') || page.url.pathname.includes('/shows'))
 </script>
 
 <header>
 	<div class='container'>
 		<div class='wrapper flex'>
 			<div class='title text-md-lg font-semibold'>
-				{#if $page.url.pathname.includes('/dashboard')}
+				{#if page.url.pathname.includes('/dashboard')}
 					<a class='title-link' href='/dashboard' aria-label='Back to dashboard overview'>{TITLE}</a>
 				{:else}
 					<a class='title-link' href='/' aria-label='Back to homepage'>{TITLE}</a>
@@ -27,16 +27,16 @@
 			</div>
 			<div class='cta flex align-center'>
 				{#if isSignedIn}
-					{#if $page.url.pathname.includes('/dashboard')}
+					{#if page.url.pathname.includes('/dashboard')}
 						<div class='profile text-sm-base box'>
 							{#if traktStats && isDetailPage}
 								<div class='stats' aria-label='User statistics and information'>
-									{#if $page.url.pathname.includes('/movies')}
+									{#if page.url.pathname.includes('/movies')}
 										<div class='stats-item'>
 											<Svg id='movie' /> {$stats.movies > 0 ? $stats.movies : null} <span class='visually-hidden'>movies in {CURRENT_YEAR}</span><Spacer axis='horizontal' size='3xs' />({traktStats?.movies?.watched} <span class='visually-hidden'>movies in total</span>)
 										</div>
 									{/if}
-									{#if $page.url.pathname.includes('/shows')}
+									{#if page.url.pathname.includes('/shows')}
 										<div class='stats-item'>
 											<Svg id='tv' /> {$stats.shows > 0 ? $stats.shows : null} <span class='visually-hidden'>shows in {CURRENT_YEAR}</span><Spacer axis='horizontal' size='3xs' />({traktStats?.shows?.watched} <span class='visually-hidden'>shows in total</span>)
 										</div>
