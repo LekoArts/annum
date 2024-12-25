@@ -12,8 +12,8 @@
 
 <p align="center">
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="./.github/assets/trakt-wide-red-white.svg">
-    <img alt="Trakt.tv Logo" src="./.github/assets/trakt-wide-red-black.svg" width="125">
+    <source media="(prefers-color-scheme: dark)" srcset="./.github/assets/trakt-white.svg">
+    <img alt="Trakt.tv Logo" src="./.github/assets/trakt-black.svg" width="125">
   </picture>
 </p>
 
