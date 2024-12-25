@@ -1,12 +1,12 @@
 <script lang='ts'>
 	import { signIn } from '@auth/sveltekit/client'
-	import { pa } from '$lib/store/plausible'
-	import Spacer from '$lib/Spacer.svelte'
+	import { page } from '$app/stores'
+	import { GITHUB_REPO_URL, TITLE } from '$const'
 	import { classList } from '$lib/actions'
 	import Primary from '$lib/button/Primary.svelte'
-	import { GITHUB_REPO_URL, TITLE } from '$const'
+	import Spacer from '$lib/Spacer.svelte'
+	import { pa } from '$lib/store/plausible'
 	import Svg from '$lib/Svg.svelte'
-	import { page } from '$app/stores'
 </script>
 
 <h1 class='visually-hidden'>{TITLE}</h1>

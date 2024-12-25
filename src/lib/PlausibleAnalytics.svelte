@@ -1,4 +1,4 @@
-<script context='module' lang='ts'>
+<script module lang='ts'>
 	interface Options {
 		props?: Record<string, string>
 	}

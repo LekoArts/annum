@@ -3,7 +3,7 @@
 	"type": "module",
 	"version": "0.0.1",
 	"private": true,
-	"packageManager": "pnpm@9.9.0",
+	"packageManager": "pnpm@9.15.1",
 	"license": "MIT",
 	"scripts": {
 		"dev": "vite dev",
@@ -19,7 +19,7 @@
 		"typecheck": "tsc --noEmit"
 	},
 	"devDependencies": {
-		"@antfu/eslint-config": "^2.27.3",
+		"@antfu/eslint-config": "^3.12.1",
 		"@auth/core": "^0.34.2",
 		"@auth/sveltekit": "^1.4.2",
 		"@csstools/postcss-global-data": "^3.0.0",
@@ -28,17 +28,17 @@
 		"@sveltejs/kit": "^2.5.24",
 		"@sveltejs/vite-plugin-svelte": "4.0.0-next.6",
 		"@types/lodash-es": "^4.17.12",
-		"@vitest/coverage-v8": "^2.0.5",
-		"eslint": "^9.9.1",
-		"eslint-plugin-svelte": "^2.43.0",
-		"happy-dom": "^15.0.0",
+		"@vitest/coverage-v8": "^2.1.8",
+		"eslint": "^9.17.0",
+		"eslint-plugin-svelte": "^2.46.1",
+		"happy-dom": "^15.11.7",
 		"lodash-es": "^4.17.21",
 		"postcss-preset-env": "^9.6.0",
 		"svelte": "5.0.0-next.240",
 		"svelte-check": "^3.8.6",
-		"tslib": "^2.7.0",
-		"typescript": "^5.5.4",
+		"tslib": "^2.8.1",
+		"typescript": "^5.7.2",
 		"vite": "^5.4.2",
-		"vitest": "^2.0.5"
+		"vitest": "^2.1.8"
 	}
 }

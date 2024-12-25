@@ -1,13 +1,13 @@
 <script lang='ts'>
 	import { signIn, signOut } from '@auth/sveltekit/client'
-	import { pa } from '$lib/store/plausible'
-	import { page } from '$app/stores'
-	import Svg from '$lib/Svg.svelte'
-	import Primary from '$lib/button/Primary.svelte'
 	import type { TraktStats } from '$lib/types'
+	import { page } from '$app/stores'
 	import { CURRENT_YEAR, TITLE } from '$const'
+	import Primary from '$lib/button/Primary.svelte'
 	import Spacer from '$lib/Spacer.svelte'
+	import { pa } from '$lib/store/plausible'
 	import { stats } from '$lib/store/stats'
+	import Svg from '$lib/Svg.svelte'
 
 	$: traktStats = $page.data?.stats as TraktStats | undefined
 	$: user = $page.data?.session?.user
@@ -43,7 +43,7 @@
 									{/if}
 								</div>
 							{/if}
-							<div class='font-semibold username'>{user.username}</div>
+							<div class='font-semibold username'>{user?.username}</div>
 						</div>
 						<Primary type='text' on:click={() => {
 							pa.addEvent('logout', { props: { position: 'header' } })

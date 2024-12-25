@@ -1,4 +1,4 @@
-<script context='module' lang='ts'>
+<script module lang='ts'>
 	/**
 	 * Adapted from https://github.com/skayo/svelte-infinite-loading/blob/master/src/InfiniteLoading.svelte
 	 * LICENSE: MIT

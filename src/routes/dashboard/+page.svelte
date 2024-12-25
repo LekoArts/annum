@@ -1,10 +1,10 @@
 <script lang='ts'>
 	import type { PageData } from './$types'
-	import { settings } from '$lib/store/settings'
 	import { CURRENT_YEAR, LANGUAGES } from '$const'
-	import Spacer from '$lib/Spacer.svelte'
-	import Svg from '$lib/Svg.svelte'
 	import Secondary from '$lib/button/Secondary.svelte'
+	import Spacer from '$lib/Spacer.svelte'
+	import { settings } from '$lib/store/settings'
+	import Svg from '$lib/Svg.svelte'
 	import Switch from '$lib/Switch.svelte'
 
 	export let data: PageData
