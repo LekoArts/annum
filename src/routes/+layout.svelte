@@ -7,6 +7,12 @@
 	import Content from '$lib/skip-to-content/Content.svelte'
 	import SkipToContent from '$lib/skip-to-content/Nav.svelte'
 	import './style.css'
+
+	interface Props {
+		children?: import('svelte').Snippet
+	}
+
+	let { children }: Props = $props()
 </script>
 
 <Meta />
@@ -16,7 +22,7 @@
 <Header />
 
 <Content class='container'>
-	<slot></slot>
+	{@render children?.()}
 </Content>
 
 <Footer />

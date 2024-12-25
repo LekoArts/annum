@@ -17,21 +17,25 @@
 	import { capitalize, getStartAndEndOfYear, groupBy } from '$lib/utils'
 	import { filterUniqueShowsFromHistory } from '$lib/utils/trakt'
 
-	let reset: () => Promise<void>
+	let infiniteLoading: { reset: () => Promise<void> }
 
-	let p = 1
-	let list: Array<Item> = []
-	export let data: PageData
+	let p = $state(1)
+	let list: Array<Item> = $state([])
+	interface Props {
+		data: PageData
+	}
 
-	$: ({ year, type } = data)
-	$: ({ start, end } = getStartAndEndOfYear(year))
+	let { data }: Props = $props()
 
-	$: queryParams = new URLSearchParams({
+	let { year, type } = $derived(data)
+	let { start, end } = $derived(getStartAndEndOfYear(year))
+
+	let queryParams = $derived(new URLSearchParams({
 		page: p.toString(),
 		start_at: start,
 		end_at: end,
 		lang: $settings?.lang,
-	}).toString()
+	}).toString())
 
 	function infiniteHandler({ detail: { loaded, complete, error } }: InfiniteEvent) {
 		fetch(`/api/history/${type}?${queryParams}`)
@@ -62,12 +66,12 @@
 			})
 	}
 
-	$: segments = $page.url.pathname.slice(1).split('/')
-	$: isDashboard = segments.length === 1
-	$: isDetailsPage = segments.length > 1
-	$: isMovie = segments[1] === 'movies'
-	$: isShow = segments[1] === 'shows'
-	$: listGroupedByMonth = groupBy(list, 'last_wathed_at_month')
+	let segments = $derived($page.url.pathname.slice(1).split('/'))
+	let isDashboard = $derived(segments.length === 1)
+	let isDetailsPage = $derived(segments.length > 1)
+	let isMovie = $derived(segments[1] === 'movies')
+	let isShow = $derived(segments[1] === 'shows')
+	let listGroupedByMonth = $derived(groupBy(list, 'last_wathed_at_month'))
 </script>
 
 <div class='wrapper flex'>
@@ -107,12 +111,12 @@
 			{#if $settings.screenshotMode}
 				<div class='flex align-center' transition:slide={{ axis: 'x' }}>
 					<label for='grid-columns'>Columns</label>
-					<input id='grid-columns' type='number' min='1' max='100' step='1' bind:value={$settings.columns} on:input={e => settings.set({ ...$settings, columns: Number.parseInt((e.target as HTMLInputElement).value) })} />
+					<input id='grid-columns' type='number' min='1' max='100' step='1' bind:value={$settings.columns} oninput={e => settings.set({ ...$settings, columns: Number.parseInt((e.target as HTMLInputElement).value) })} />
 				</div>
 			{/if}
 			<Switch label='Screenshot Mode' bind:value={$settings.screenshotMode} onClickWithValue={(value) => {
 				if (value)
-					reset()
+					infiniteLoading.reset()
 			}} />
 		</div>
 	{/if}
@@ -141,26 +145,34 @@
 	{/if}
 </Grid>
 
-<InfiniteLoading bind:reset={reset} on:infinite={infiniteHandler}>
-	<span slot='noMore'></span>
-	<div slot='error' let:attemptLoad>
-		Something went wrong 😢 <button on:click={() => attemptLoad()}>Retry</button>
-	</div>
-	<div slot='noResults' class='infinite-no-results'>
-		No results found. Start watching and track your progress on Trakt! 🥳
-	</div>
-	<div slot='spinner'>
-		<span class='loading-circles'>
-			<span class='circle-item'></span>
-			<span class='circle-item'></span>
-			<span class='circle-item'></span>
-			<span class='circle-item'></span>
-			<span class='circle-item'></span>
-			<span class='circle-item'></span>
-			<span class='circle-item'></span>
-			<span class='circle-item'></span>
-		</span>
-	</div>
+<InfiniteLoading bind:this={infiniteLoading} on:infinite={infiniteHandler}>
+	{#snippet noMore()}
+		<span></span>
+	{/snippet}
+	{#snippet error({ attemptLoad })}
+		<div>
+			Something went wrong 😢 <button onclick={() => attemptLoad()}>Retry</button>
+		</div>
+	{/snippet}
+	{#snippet noResults()}
+		<div class='infinite-no-results'>
+			No results found. Start watching and track your progress on Trakt! 🥳
+		</div>
+	{/snippet}
+	{#snippet spinner()}
+		<div>
+			<span class='loading-circles'>
+				<span class='circle-item'></span>
+				<span class='circle-item'></span>
+				<span class='circle-item'></span>
+				<span class='circle-item'></span>
+				<span class='circle-item'></span>
+				<span class='circle-item'></span>
+				<span class='circle-item'></span>
+				<span class='circle-item'></span>
+			</span>
+		</div>
+	{/snippet}
 </InfiniteLoading>
 
 <style lang='postcss'>

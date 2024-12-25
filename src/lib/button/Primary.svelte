@@ -1,15 +1,27 @@
 <script lang='ts'>
-	export let type: 'text' | 'link' = 'text'
-	export let href: string = ''
+	interface Props {
+		type?: 'text' | 'link'
+		href?: string
+		children?: import('svelte').Snippet
+		[key: string]: any
+	}
+
+	let {
+		type = 'text',
+		href = '',
+		onclick,
+		children,
+		...rest
+	}: Props = $props()
 </script>
 
 {#if type === 'text'}
-	<button class='button-primary' on:click {...$$restProps}>
-		<slot />
+	<button class='button-primary' {onclick} {...rest}>
+		{@render children?.()}
 	</button>
 {:else}
-	<a {href} class='button-primary' {...$$restProps}>
-		<slot />
+	<a {href} class='button-primary' {...rest}>
+		{@render children?.()}
 	</a>
 {/if}
 

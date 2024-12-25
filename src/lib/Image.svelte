@@ -3,9 +3,13 @@
 	import { fade } from 'svelte/transition'
 	import type { TmdbImageUrlsWithDimensions } from '$lib/types'
 
-	export let alt: string
-	export let loading: HTMLImgAttributes['loading']
-	export let images: TmdbImageUrlsWithDimensions
+	interface Props {
+		alt: string
+		loading: HTMLImgAttributes['loading']
+		images: TmdbImageUrlsWithDimensions
+	}
+
+	let { alt, loading, images }: Props = $props()
 
 	const maxWidth = images.w780.width
 	const maxHeight = images.w780.height

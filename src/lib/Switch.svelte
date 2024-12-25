@@ -4,9 +4,13 @@
   // On Designing and Building Toggle Switches by Sara Soueidan https://www.sarasoueidan.com/blog/toggle-switch-design/
   // And this example by Scott O'hara https://codepen.io/scottohara/pen/zLZwNv
 
-	export let label: string
-	export let value: boolean = false
-	export let onClickWithValue: (value: boolean) => void = () => {}
+	interface Props {
+		label: string
+		value?: boolean
+		onClickWithValue?: (value: boolean) => void
+	}
+
+	let { label, value = $bindable(false), onClickWithValue = () => {} }: Props = $props()
 
 	const uniqueID = Math.floor(Math.random() * 100)
 
@@ -25,7 +29,7 @@
 		role='switch'
 		aria-checked={value}
 		aria-labelledby={`switch-${uniqueID}`}
-		on:click={handleClick}>
+		onclick={handleClick}>
 	</button>
 </div>
 

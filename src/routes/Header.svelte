@@ -9,10 +9,10 @@
 	import { stats } from '$lib/store/stats'
 	import Svg from '$lib/Svg.svelte'
 
-	$: traktStats = $page.data?.stats as TraktStats | undefined
-	$: user = $page.data?.session?.user
-	$: isSignedIn = Boolean(user)
-	$: isDetailPage = $page.url.pathname.includes('/movies') || $page.url.pathname.includes('/shows')
+	let traktStats = $derived($page.data?.stats as TraktStats | undefined)
+	let user = $derived($page.data?.session?.user)
+	let isSignedIn = $derived(Boolean(user))
+	let isDetailPage = $derived($page.url.pathname.includes('/movies') || $page.url.pathname.includes('/shows'))
 </script>
 
 <header>

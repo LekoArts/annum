@@ -7,7 +7,11 @@
 	import Svg from '$lib/Svg.svelte'
 	import Switch from '$lib/Switch.svelte'
 
-	export let data: PageData
+	interface Props {
+		data: PageData
+	}
+
+	let { data }: Props = $props()
 
 	const years = [CURRENT_YEAR, CURRENT_YEAR - 1]
 </script>
@@ -45,7 +49,7 @@
 			<div class='range-wrapper flex align-center'>
 				<label for='hue'>Color hue</label>
 				<div class='current-color-hue'>{$settings.hue}</div>
-				<input id='hue' type='range' min='0' max='360' step='1' list='markers' bind:value={$settings.hue} on:input={e => settings.set({ ...$settings, hue: Number.parseInt((e.target as HTMLInputElement).value) })} />
+				<input id='hue' type='range' min='0' max='360' step='1' list='markers' bind:value={$settings.hue} oninput={e => settings.set({ ...$settings, hue: Number.parseInt((e.target as HTMLInputElement).value) })} />
 				<datalist id='markers'>
 					{#each [0, 60, 120, 180, 240, 300, 360] as marker}
 						<option value={marker} label={marker.toString()}></option>
@@ -62,7 +66,7 @@
 			<Spacer axis='vertical' size='xs' />
 			<div class='lang-wrapper flex align-center'>
 				<label for='lang'>Poster Language</label>
-				<select id='lang' name='lang' bind:value={$settings.lang} on:change={(e) => {
+				<select id='lang' name='lang' bind:value={$settings.lang} onchange={(e) => {
 					// @ts-expect-error - TODO: Fix this
 					settings.set({ ...$settings, lang: (e.target as HTMLSelectElement).value })
 				}}>

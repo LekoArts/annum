@@ -42,34 +42,36 @@
 		})
 	})
 
-	/**
-	 * The API host.
-	 *
-	 * @defaultValue 'https://plausible.io'
-	 */
-	export let apiHost = 'https://plausible.io'
+	interface Props {
+		/**
+		 * The API host.
+		 *
+		 * @defaultValue 'https://plausible.io'
+		 */
+		apiHost?: string
+		/**
+		 * The domain name(s) of the website(s) to track.
+		 *
+		 * @defaultValue current hostname.
+		 */
+		domain?: string | Array<string>
+		/**
+		 * Enable analytics.
+		 *
+		 * @defaultValue `true` in production mode, `false` in development mode.
+		 */
+		enabled?: boolean
+	}
 
-	/**
-	 * The domain name(s) of the website(s) to track.
-	 *
-	 * @defaultValue current hostname.
-	 */
-	export let domain: string | Array<string> = $page.url.hostname
+	let { apiHost = 'https://plausible.io', domain = $page.url.hostname, enabled = !dev }: Props = $props()
 
-	/**
-	 * Enable analytics.
-	 *
-	 * @defaultValue `true` in production mode, `false` in development mode.
-	 */
-	export let enabled = !dev
-
-	$: api = `${apiHost}/api/event`
-	$: src = [
+	let api = $derived(`${apiHost}/api/event`)
+	let src = $derived([
 		`${apiHost}/js/script`,
 		'js',
 	]
 		.filter(Boolean)
-		.join('.')
+		.join('.'))
 </script>
 
 <svelte:head>

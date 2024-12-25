@@ -137,6 +137,8 @@
 </script>
 
 <script lang='ts'>
+	import { run } from 'svelte/legacy'
+
 	import { createEventDispatcher, onDestroy, onMount, tick } from 'svelte'
 
 	const dispatch = createEventDispatcher()
@@ -148,23 +150,39 @@
 		ERROR: 3,
 	}
 
-	export let distance = 100
-	export let spinner = 'default'
-	export let direction = 'bottom'
-	export let forceUseInfiniteWrapper = false
-	export let identifier = +new Date()
+	interface Props {
+		distance?: number
+		direction?: string
+		forceUseInfiniteWrapper?: boolean
+		identifier?: any
+		spinner?: import('svelte').Snippet
+		noResults?: import('svelte').Snippet
+		noMore?: import('svelte').Snippet
+		error?: import('svelte').Snippet<[{ attemptLoad: (isContinuousCall: boolean) => Promise<void> }]>
+	}
 
-	let isFirstLoad = true // save the current loading whether it is the first loading
-	let isManualReset = false
-	let status = STATUS.READY
-	let mounted = false
-	let thisElement
+	let {
+		distance = 100,
+		spinner,
+		direction = 'bottom',
+		forceUseInfiniteWrapper = false,
+		identifier = +new Date(),
+		noResults,
+		noMore,
+		error,
+	}: Props = $props()
+
+	let isFirstLoad = $state(true) // save the current loading whether it is the first loading
+	let isManualReset = $state(false)
+	let status = $state(STATUS.READY)
+	let mounted = $state(false)
+	let thisElement = $state()
 	let scrollParent
 
-	$: showSpinner = status === STATUS.LOADING
-	$: showError = status === STATUS.ERROR
-	$: showNoResults = status === STATUS.COMPLETE && isFirstLoad && !isManualReset
-	$: showNoMore = status === STATUS.COMPLETE && !isFirstLoad
+	let showSpinner = $derived(status === STATUS.LOADING)
+	let showError = $derived(status === STATUS.ERROR)
+	let showNoResults = $derived(status === STATUS.COMPLETE && isFirstLoad && !isManualReset)
+	let showNoMore = $derived(status === STATUS.COMPLETE && !isFirstLoad)
 
 	const stateChanger = {
 		loaded: async () => {
@@ -313,10 +331,14 @@
 	}
 
 	// Watch forceUseInfiniteWrapper and mounted
-	$: forceUseInfiniteWrapper, mounted, updateScrollParent()
+	run(() => {
+		forceUseInfiniteWrapper, mounted, updateScrollParent()
+	})
 
 	// Watch identifier and mounted
-	$: identifier, mounted, identifierUpdated()
+	run(() => {
+		identifier, mounted, identifierUpdated()
+	})
 
 	onMount(async () => {
 		mounted = true
@@ -339,37 +361,37 @@
 <div class='infinite-loading-container' bind:this={thisElement}>
 	{#if showSpinner}
 		<div class='infinite-status-prompt'>
-			<slot name='spinner' {isFirstLoad}>
+			{#if spinner}{@render spinner()}{:else}
 				Loader
-			</slot>
+			{/if}
 		</div>
 	{/if}
 
 	{#if showNoResults}
 		<div class='infinite-status-prompt'>
-			<slot name='noResults'>
+			{#if noResults}{@render noResults()}{:else}
 				No results :(
-			</slot>
+			{/if}
 		</div>
 	{/if}
 
 	{#if showNoMore}
 		<div class='infinite-status-prompt'>
-			<slot name='noMore'>
+			{#if noMore}{@render noMore()}{:else}
 				No more data :)
-			</slot>
+			{/if}
 		</div>
 	{/if}
 
 	{#if showError}
 		<div class='infinite-status-prompt'>
-			<slot name='error' {attemptLoad}>
+			{#if error}{@render error({ attemptLoad })}{:else}
 				Oops, something went wrong :(
 				<br>
-				<button class='btn-try-infinite' on:click={attemptLoad}>
+				<button class='btn-try-infinite' onclick={() => attemptLoad()}>
 					Retry
 				</button>
-			</slot>
+			{/if}
 		</div>
 	{/if}
 </div>
