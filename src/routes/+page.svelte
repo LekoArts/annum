@@ -24,7 +24,7 @@
 				Show me my Poster Grid <Svg id='arrow-right' />
 			</Primary>
 		{:else}
-			<Primary type='text' on:click={() => {
+			<Primary type='text' onclick={() => {
 				pa.addEvent('login', { props: { position: 'hero' } })
 				signIn('trakt', { callbackUrl: '/dashboard' })
 			}}>

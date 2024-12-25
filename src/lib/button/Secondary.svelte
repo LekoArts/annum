@@ -1,9 +1,18 @@
 <script lang='ts'>
-	interface Props {
-		type: 'text' | 'link'
-		href: string
+	import type { MouseEventHandler } from 'svelte/elements'
+
+	type Props = {
+		type: 'text'
+		href?: never
+		onclick: MouseEventHandler<HTMLButtonElement>
 		children?: import('svelte').Snippet
-		[key: string]: any
+		[key: string]: unknown
+	} | {
+		type: 'link'
+		href: string
+		onclick?: never
+		children?: import('svelte').Snippet
+		[key: string]: unknown
 	}
 
 	let {

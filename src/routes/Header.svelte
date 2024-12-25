@@ -45,7 +45,7 @@
 							{/if}
 							<div class='font-semibold username'>{user?.username}</div>
 						</div>
-						<Primary type='text' on:click={() => {
+						<Primary type='text' onclick={() => {
 							pa.addEvent('logout', { props: { position: 'header' } })
 							signOut({ callbackUrl: '/' })
 						}}>
@@ -57,7 +57,7 @@
 						</Primary>
 					{/if}
 				{:else}
-					<Primary type='text' on:click={() => {
+					<Primary type='text' onclick={() => {
 						pa.addEvent('login', { props: { position: 'header' } })
 						signIn('trakt', { callbackUrl: '/dashboard' })
 					}}>
