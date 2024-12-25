@@ -158,7 +158,7 @@
 		spinner?: import('svelte').Snippet
 		noResults?: import('svelte').Snippet
 		noMore?: import('svelte').Snippet
-		error?: import('svelte').Snippet<[{ attemptLoad: (isContinuousCall: boolean) => Promise<void> }]>
+		error?: import('svelte').Snippet<[{ attemptLoad: (isContinuousCall?: boolean) => Promise<void> }]>
 	}
 
 	let {
