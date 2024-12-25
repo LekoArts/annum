@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
-import { filterUniqueShowsFromHistory, traktHistoryUrl, traktStatsUrl, traktUserUrl, traktWatchedUrl } from '../trakt'
 import { normalizeItem } from '..'
+import { filterUniqueShowsFromHistory, traktHistoryUrl, traktStatsUrl, traktUserUrl, traktWatchedUrl } from '../trakt'
 import { mergedNames, showsPageOne, showsPageOneNames, showsPageTwo, showsPageTwoNames } from './__fixtures__/history.shows'
 
 const normalizedShowsPageOne = showsPageOne.map(normalizeItem as any)

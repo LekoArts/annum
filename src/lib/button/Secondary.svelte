@@ -1,15 +1,36 @@
 <script lang='ts'>
-	export let type: 'text' | 'link' = 'text'
-	export let href: string = ''
+	import type { MouseEventHandler } from 'svelte/elements'
+
+	type Props = {
+		type: 'text'
+		href?: never
+		onclick: MouseEventHandler<HTMLButtonElement>
+		children?: import('svelte').Snippet
+		[key: string]: unknown
+	} | {
+		type: 'link'
+		href: string
+		onclick?: never
+		children?: import('svelte').Snippet
+		[key: string]: unknown
+	}
+
+	let {
+		type = 'text',
+		href = '',
+		onclick,
+		children,
+		...rest
+	}: Props = $props()
 </script>
 
 {#if type === 'text'}
-	<button class='button-secondary' on:click {...$$restProps}>
-		<slot />
+	<button class='button-secondary' {onclick} {...rest}>
+		{@render children?.()}
 	</button>
 {:else}
-	<a {href} class='button-secondary' {...$$restProps}>
-		<slot />
+	<a {href} class='button-secondary' {...rest}>
+		{@render children?.()}
 	</a>
 {/if}
 

@@ -1,7 +1,5 @@
 <script>
-
 	import { GITHUB_REPO_URL } from '$const'
-
 </script>
 <h1>Sign In</h1>
 <div class='prose'>

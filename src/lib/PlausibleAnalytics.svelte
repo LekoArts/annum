@@ -1,4 +1,4 @@
-<script context='module' lang='ts'>
+<script module lang='ts'>
 	interface Options {
 		props?: Record<string, string>
 	}
@@ -24,7 +24,7 @@
 
 	import { onMount } from 'svelte'
 	import { dev } from '$app/environment'
-	import { page } from '$app/stores'
+	import { page } from '$app/state'
 	import { pa } from '$lib/store/plausible'
 
 	onMount(() => {
@@ -42,34 +42,36 @@
 		})
 	})
 
-	/**
-	 * The API host.
-	 *
-	 * @defaultValue 'https://plausible.io'
-	 */
-	export let apiHost = 'https://plausible.io'
+	interface Props {
+		/**
+		 * The API host.
+		 *
+		 * @defaultValue 'https://plausible.io'
+		 */
+		apiHost?: string
+		/**
+		 * The domain name(s) of the website(s) to track.
+		 *
+		 * @defaultValue current hostname.
+		 */
+		domain?: string | Array<string>
+		/**
+		 * Enable analytics.
+		 *
+		 * @defaultValue `true` in production mode, `false` in development mode.
+		 */
+		enabled?: boolean
+	}
 
-	/**
-	 * The domain name(s) of the website(s) to track.
-	 *
-	 * @defaultValue current hostname.
-	 */
-	export let domain: string | Array<string> = $page.url.hostname
+	let { apiHost = 'https://plausible.io', domain = page.url.hostname, enabled = !dev }: Props = $props()
 
-	/**
-	 * Enable analytics.
-	 *
-	 * @defaultValue `true` in production mode, `false` in development mode.
-	 */
-	export let enabled = !dev
-
-	$: api = `${apiHost}/api/event`
-	$: src = [
+	let api = $derived(`${apiHost}/api/event`)
+	let src = $derived([
 		`${apiHost}/js/script`,
 		'js',
 	]
 		.filter(Boolean)
-		.join('.')
+		.join('.'))
 </script>
 
 <svelte:head>

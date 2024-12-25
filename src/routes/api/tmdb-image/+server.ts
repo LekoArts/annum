@@ -1,10 +1,10 @@
 import { error, json } from '@sveltejs/kit'
 import type { RequestHandler } from './$types'
-import { TMDB_FETCH_DEFAULTS } from '$const'
 import type { TmdbItemDetails, TraktMediaType } from '$lib/types'
+import { TMDB_FETCH_DEFAULTS } from '$const'
+import { TMDB_QUERY_DEFAULTS } from '$lib/server/const'
 import { traktTmdbMediaMap } from '$lib/utils'
 import { tmdbImageUrlsWithDimensions, tmdbItemDetailsUrl } from '$lib/utils/tmdb'
-import { TMDB_QUERY_DEFAULTS } from '$lib/server/const'
 
 export const GET: RequestHandler = async ({ url, locals, fetch, setHeaders }) => {
 	const session = await locals.auth()

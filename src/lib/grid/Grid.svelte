@@ -1,10 +1,15 @@
 <script lang='ts'>
-	export let screenshotMode = false
-	export let columns = 5
+	interface Props {
+		screenshotMode?: boolean
+		columns?: number
+		children?: import('svelte').Snippet
+	}
+
+	let { screenshotMode = false, columns = 5, children }: Props = $props()
 </script>
 
 <div class={`grid${screenshotMode ? ' screenshot' : ''}`} style={`${screenshotMode ? `--col: ${columns};` : ''}`}>
-	<slot />
+	{@render children?.()}
 </div>
 
 <style lang='postcss'>

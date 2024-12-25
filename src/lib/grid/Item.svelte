@@ -1,9 +1,14 @@
 <script lang='ts'>
-	export let index: number
+	interface Props {
+		index: number
+		children?: import('svelte').Snippet
+	}
+
+	let { index, children }: Props = $props()
 </script>
 
 <div class='grid-item' data-num={index + 1}>
-	<slot />
+	{@render children?.()}
 </div>
 
 <style lang='postcss'>

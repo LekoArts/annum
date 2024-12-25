@@ -1,10 +1,13 @@
 <script lang='ts'>
-	type SvgIconNames = 'movie' | 'tv' | 'home' | 'chevron-right' | 'tmdb' | 'trakt' | 'arrow-right'
+	interface Props {
+		id: 'movie' | 'tv' | 'home' | 'chevron-right' | 'tmdb' | 'trakt' | 'arrow-right'
+		[key: string]: unknown
+	}
 
-	export let id: SvgIconNames
+	let { id, ...rest }: Props = $props()
 </script>
 
-<svg aria-hidden='true' focusable='false' class='icon' data-icon-name={id} {...$$restProps}>
+<svg aria-hidden='true' focusable='false' class='icon' data-icon-name={id} {...rest}>
 	<use href={`/icons.svg#${id}`} />
 </svg>
 
