@@ -22,10 +22,10 @@
 	 * LICENSE: MIT
 	 */
 
-	import { onMount } from 'svelte'
 	import { dev } from '$app/environment'
 	import { page } from '$app/state'
 	import { pa } from '$lib/store/plausible'
+	import { onMount } from 'svelte'
 
 	onMount(() => {
 		pa.subscribe((events) => {

@@ -1,10 +1,10 @@
-import { error, json } from '@sveltejs/kit'
-import type { RequestHandler } from './$types'
 import type { Item, Language, NormalizedItemResponse, TmdbImageUrlsWithDimensions, TraktHistoryItem, TraktMediaType } from '$lib/types'
+import type { RequestHandler } from './$types'
 import { DEFAULT_CACHE_HEADER, PAGINATION_LIMIT, TRAKT_BASE_URL } from '$const'
 import { TRAKT_FETCH_DEFAULTS } from '$lib/server/const'
 import { normalizeItem } from '$lib/utils'
 import { filterUniqueShowsFromHistory, traktHistoryUrl } from '$lib/utils/trakt'
+import { error, json } from '@sveltejs/kit'
 
 async function fetchData(customFetch: typeof fetch, item: NormalizedItemResponse, lang: Language, type: TraktMediaType): Promise<Item | null> {
 	if (!item.tmdb_id) {

@@ -1,7 +1,7 @@
 <script lang='ts'>
+	import type { TmdbImageUrlsWithDimensions } from '$lib/types'
 	import type { HTMLImgAttributes } from 'svelte/elements'
 	import { fade } from 'svelte/transition'
-	import type { TmdbImageUrlsWithDimensions } from '$lib/types'
 
 	interface Props {
 		alt: string

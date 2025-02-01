@@ -1,6 +1,6 @@
 import type { TmdbPosterSize, TraktMediaType } from '../types'
-import { traktTmdbMediaMap } from './index'
 import { TMDB_BASE_URL, TMDB_IMAGE_BASE_URL, TMDB_POSTER_SIZES } from '$const'
+import { traktTmdbMediaMap } from './index'
 
 export function tmdbItemDetailsUrl(type: TraktMediaType, tmdb_id: string) {
 	return `${TMDB_BASE_URL}${traktTmdbMediaMap[type]}/${tmdb_id}`

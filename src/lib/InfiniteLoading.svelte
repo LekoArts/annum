@@ -137,9 +137,9 @@
 </script>
 
 <script lang='ts'>
-	import { run } from 'svelte/legacy'
-
 	import { createEventDispatcher, onDestroy, onMount, tick } from 'svelte'
+
+	import { run } from 'svelte/legacy'
 
 	const dispatch = createEventDispatcher()
 

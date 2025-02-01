@@ -1,5 +1,5 @@
-import type { LayoutServerLoad } from './$types'
 import type { TraktStats } from '$lib/types'
+import type { LayoutServerLoad } from './$types'
 import { DEFAULT_CACHE_HEADER } from '$const'
 
 export const load: LayoutServerLoad = async ({ locals, fetch, setHeaders }) => {

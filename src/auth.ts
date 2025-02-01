@@ -1,8 +1,8 @@
+import type { TraktProfile } from '$lib/types'
 import type { DefaultSession } from '@auth/sveltekit'
+import { PRIVATE_AUTH_SECRET, PRIVATE_TRAKT_CLIENT_ID, PRIVATE_TRAKT_CLIENT_SECRET } from '$env/static/private'
 import { SvelteKitAuth } from '@auth/sveltekit'
 import Trakt from '@auth/sveltekit/providers/trakt'
-import { PRIVATE_AUTH_SECRET, PRIVATE_TRAKT_CLIENT_ID, PRIVATE_TRAKT_CLIENT_SECRET } from '$env/static/private'
-import type { TraktProfile } from '$lib/types'
 
 declare module '@auth/sveltekit' {
 	interface Session {

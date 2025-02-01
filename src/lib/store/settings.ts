@@ -1,5 +1,5 @@
-import { persisted } from './persisted'
 import type { Language } from '$lib/types'
+import { persisted } from './persisted'
 
 interface Settings {
 	hue: number

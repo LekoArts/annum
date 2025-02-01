@@ -1,4 +1,5 @@
-import { type Writable, writable as internal } from 'svelte/store'
+import type { Writable } from 'svelte/store'
+import { writable as internal } from 'svelte/store'
 
 // Adapted from https://github.com/joshnuss/svelte-persisted-store
 // License: MIT

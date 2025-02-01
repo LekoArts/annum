@@ -1,7 +1,6 @@
 <script lang='ts'>
-	import { slide } from 'svelte/transition'
-	import type { PageData } from './$types'
 	import type { ApiHistoryResponse, InfiniteEvent, Item } from '$lib/types'
+	import type { PageData } from './$types'
 	import { page } from '$app/state'
 	import { CURRENT_YEAR } from '$const'
 	import Secondary from '$lib/button/Secondary.svelte'
@@ -16,6 +15,7 @@
 	import Switch from '$lib/Switch.svelte'
 	import { capitalize, getStartAndEndOfYear, groupBy } from '$lib/utils'
 	import { filterUniqueShowsFromHistory } from '$lib/utils/trakt'
+	import { slide } from 'svelte/transition'
 
 	let infiniteLoading: { reset: () => Promise<void> }
 
