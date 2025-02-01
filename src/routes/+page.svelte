@@ -1,5 +1,4 @@
 <script lang='ts'>
-	import { signIn } from '@auth/sveltekit/client'
 	import { page } from '$app/state'
 	import { GITHUB_REPO_URL, TITLE } from '$const'
 	import { classList } from '$lib/actions'
@@ -7,6 +6,7 @@
 	import Spacer from '$lib/Spacer.svelte'
 	import { pa } from '$lib/store/plausible'
 	import Svg from '$lib/Svg.svelte'
+	import { signIn } from '@auth/sveltekit/client'
 </script>
 
 <h1 class='visually-hidden'>{TITLE}</h1>

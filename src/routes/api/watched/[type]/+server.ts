@@ -1,10 +1,10 @@
-import { error, json } from '@sveltejs/kit'
-import type { RequestHandler } from './$types'
 import type { TraktMediaType, TraktWatchedItem } from '$lib/types'
+import type { RequestHandler } from './$types'
 import { DEFAULT_CACHE_HEADER, TRAKT_BASE_URL } from '$const'
 import { TRAKT_FETCH_DEFAULTS } from '$lib/server/const'
 import { filterForYear, normalizeItem } from '$lib/utils'
 import { traktWatchedUrl } from '$lib/utils/trakt'
+import { error, json } from '@sveltejs/kit'
 
 export const GET: RequestHandler = async ({ url, locals, fetch, setHeaders, params }) => {
 	const session = await locals.auth()
