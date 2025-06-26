@@ -23,7 +23,7 @@
 		"@auth/core": "^0.37.4",
 		"@auth/sveltekit": "^1.7.4",
 		"@csstools/postcss-global-data": "^3.0.0",
-		"@sveltejs/adapter-netlify": "^4.4.1",
+		"@sveltejs/adapter-netlify": "^5.0.2",
 		"@sveltejs/enhanced-img": "^0.4.4",
 		"@sveltejs/kit": "^2.16.1",
 		"@sveltejs/vite-plugin-svelte": "^5.0.3",
