@@ -12,11 +12,11 @@ importers:
         specifier: ^5.2.1
         version: 5.2.1(@vue/compiler-sfc@3.4.21)(eslint-plugin-svelte@3.11.0(eslint@9.33.0)(svelte@5.38.2))(eslint@9.33.0)(svelte-eslint-parser@1.3.0(svelte@5.38.2))(typescript@5.9.2)(vitest@3.2.4(@types/debug@4.1.12)(@types/node@20.19.1)(happy-dom@18.0.1)(yaml@2.8.1))
       '@auth/core':
-        specifier: ^0.37.4
-        version: 0.37.4
+        specifier: ^0.40.0
+        version: 0.40.0
       '@auth/sveltekit':
-        specifier: ^1.7.4
-        version: 1.7.4(@sveltejs/kit@2.16.1(@sveltejs/vite-plugin-svelte@5.0.3(svelte@5.38.2)(vite@6.0.11(@types/node@20.19.1)(yaml@2.8.1)))(svelte@5.38.2)(vite@6.0.11(@types/node@20.19.1)(yaml@2.8.1)))(svelte@5.38.2)
+        specifier: ^1.10.0
+        version: 1.10.0(@sveltejs/kit@2.16.1(@sveltejs/vite-plugin-svelte@5.0.3(svelte@5.38.2)(vite@6.0.11(@types/node@20.19.1)(yaml@2.8.1)))(svelte@5.38.2)(vite@6.0.11(@types/node@20.19.1)(yaml@2.8.1)))(svelte@5.38.2)
       '@csstools/postcss-global-data':
         specifier: ^3.0.0
         version: 3.0.0(postcss@8.5.6)
@@ -136,8 +136,8 @@ packages:
   '@antfu/install-pkg@1.1.0':
     resolution: {integrity: sha512-MGQsmw10ZyI+EJo45CdSER4zEb+p31LpDAFp2Z3gkSd1yqVZGi0Ebx++YTEMonJy4oChEMLsxZ64j8FH6sSqtQ==}
 
-  '@auth/core@0.37.4':
-    resolution: {integrity: sha512-HOXJwXWXQRhbBDHlMU0K/6FT1v+wjtzdKhsNg0ZN7/gne6XPsIrjZ4daMcFnbq0Z/vsAbYBinQhhua0d77v7qw==}
+  '@auth/core@0.40.0':
+    resolution: {integrity: sha512-n53uJE0RH5SqZ7N1xZoMKekbHfQgjd0sAEyUbE+IYJnmuQkbvuZnXItCU7d+i7Fj8VGOgqvNO7Mw4YfBTlZeQw==}
     peerDependencies:
       '@simplewebauthn/browser': ^9.0.1
       '@simplewebauthn/server': ^9.0.2
@@ -150,8 +150,8 @@ packages:
       nodemailer:
         optional: true
 
-  '@auth/sveltekit@1.7.4':
-    resolution: {integrity: sha512-jerujN2T6txrVGcblhWrB75sBbtub3v2U1DM9+8W3MOOSfhFdlCLEW+Uow8qAGZzsnTE2WmvcMkXeGd7r2jl5A==}
+  '@auth/sveltekit@1.10.0':
+    resolution: {integrity: sha512-nTKS3FoFvgdqUwb7a8HZpLxDlx+pHndygcodM16J/iFHbe/0wha0MUCuTkVeUYZuKwL63L2ujmMAC1WEoki2+g==}
     peerDependencies:
       '@simplewebauthn/browser': ^9.0.1
       '@simplewebauthn/server': ^9.0.3
@@ -2068,8 +2068,8 @@ packages:
   jackspeak@3.4.3:
     resolution: {integrity: sha512-OGlZQpz2yfahA/Rd1Y8Cd9SIEsqvXkLVoSw/cgwhnhFMDbsQFeZYoJJ7bIZBS9BcamUW96asq/npPWugM+RQBw==}
 
-  jose@5.9.6:
-    resolution: {integrity: sha512-AMlnetc9+CV9asI19zHmrgS/WYsWUwCn2R7RzlbJWD7F9eWYUTGyBmU9o6PxngtLGOiDGPRu+Uc4fhKzbpteZQ==}
+  jose@6.0.12:
+    resolution: {integrity: sha512-T8xypXs8CpmiIi78k0E+Lk7T2zlK4zDyg+o1CZ4AkOHgDg98ogdP2BeZ61lTFKFyoEwJ9RgAgN+SdM3iPgNonQ==}
 
   js-tokens@9.0.1:
     resolution: {integrity: sha512-mxa9E9ITFOt0ban3j6L5MpjwegGz6lBQmM1IJkWeBZGcMxto50+eWdjC/52xDbS2vy0k7vIMK0Fe2wfL9OQSpQ==}
@@ -2356,8 +2356,8 @@ packages:
   nth-check@2.1.1:
     resolution: {integrity: sha512-lqjrjmaOoAnWfMmBPL+XNnynZh2+swxiX3WUE0s4yEHI6m+AwrK2UZOimIRl3X/4QctVqS8AiZjFqyOGrMXb/w==}
 
-  oauth4webapi@3.1.4:
-    resolution: {integrity: sha512-eVfN3nZNbok2s/ROifO0UAc5G8nRoLSbrcKJ09OqmucgnhXEfdIQOR4gq1eJH1rN3gV7rNw62bDEgftsgFtBEg==}
+  oauth4webapi@3.7.0:
+    resolution: {integrity: sha512-Q52wTPUWPsVLVVmTViXPQFMW2h2xv2jnDGxypjpelCFKaOjLsm7AxYuOk1oQgFm95VNDbuggasu9htXrz6XwKw==}
 
   optionator@0.9.4:
     resolution: {integrity: sha512-6IpQ7mKUxRcZNLIObR0hz7lxsapSSIYNZJwXPGeF0mTVqGKFIXj1DQcMoT22S3ROcLyY/rz0PWaWZ9ayWmad9g==}
@@ -3128,17 +3128,17 @@ snapshots:
       package-manager-detector: 1.3.0
       tinyexec: 1.0.1
 
-  '@auth/core@0.37.4':
+  '@auth/core@0.40.0':
     dependencies:
       '@panva/hkdf': 1.2.1
-      jose: 5.9.6
-      oauth4webapi: 3.1.4
+      jose: 6.0.12
+      oauth4webapi: 3.7.0
       preact: 10.24.3
       preact-render-to-string: 6.5.11(preact@10.24.3)
 
-  '@auth/sveltekit@1.7.4(@sveltejs/kit@2.16.1(@sveltejs/vite-plugin-svelte@5.0.3(svelte@5.38.2)(vite@6.0.11(@types/node@20.19.1)(yaml@2.8.1)))(svelte@5.38.2)(vite@6.0.11(@types/node@20.19.1)(yaml@2.8.1)))(svelte@5.38.2)':
+  '@auth/sveltekit@1.10.0(@sveltejs/kit@2.16.1(@sveltejs/vite-plugin-svelte@5.0.3(svelte@5.38.2)(vite@6.0.11(@types/node@20.19.1)(yaml@2.8.1)))(svelte@5.38.2)(vite@6.0.11(@types/node@20.19.1)(yaml@2.8.1)))(svelte@5.38.2)':
     dependencies:
-      '@auth/core': 0.37.4
+      '@auth/core': 0.40.0
       '@sveltejs/kit': 2.16.1(@sveltejs/vite-plugin-svelte@5.0.3(svelte@5.38.2)(vite@6.0.11(@types/node@20.19.1)(yaml@2.8.1)))(svelte@5.38.2)(vite@6.0.11(@types/node@20.19.1)(yaml@2.8.1))
       set-cookie-parser: 2.7.1
       svelte: 5.38.2
@@ -4985,7 +4985,7 @@ snapshots:
     optionalDependencies:
       '@pkgjs/parseargs': 0.11.0
 
-  jose@5.9.6: {}
+  jose@6.0.12: {}
 
   js-tokens@9.0.1: {}
 
@@ -5428,7 +5428,7 @@ snapshots:
     dependencies:
       boolbase: 1.0.0
 
-  oauth4webapi@3.1.4: {}
+  oauth4webapi@3.7.0: {}
 
   optionator@0.9.4:
     dependencies:

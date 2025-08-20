@@ -20,8 +20,8 @@
 	},
 	"devDependencies": {
 		"@antfu/eslint-config": "^5.2.1",
-		"@auth/core": "^0.37.4",
-		"@auth/sveltekit": "^1.7.4",
+		"@auth/core": "^0.40.0",
+		"@auth/sveltekit": "^1.10.0",
 		"@csstools/postcss-global-data": "^3.0.0",
 		"@sveltejs/adapter-netlify": "^5.0.2",
 		"@sveltejs/enhanced-img": "^0.4.4",
