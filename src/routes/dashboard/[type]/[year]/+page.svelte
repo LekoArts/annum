@@ -1,5 +1,5 @@
 <script lang='ts'>
-	import type { ApiHistoryResponse, InfiniteEvent, Item } from '$lib/types'
+	import type { ApiHistoryResponse, Item, StateChanger } from '$lib/types'
 	import type { PageData } from './$types'
 	import { page } from '$app/state'
 	import { CURRENT_YEAR } from '$const'
@@ -37,7 +37,7 @@
 		lang: $settings?.lang,
 	}).toString())
 
-	function infiniteHandler({ detail: { loaded, complete, error } }: InfiniteEvent) {
+	function infiniteHandler({ loaded, complete, error }: StateChanger) {
 		fetch(`/api/history/${type}?${queryParams}`)
 			.then<ApiHistoryResponse>(res => res.json())
 			.then((data) => {
@@ -145,7 +145,7 @@
 	{/if}
 </Grid>
 
-<InfiniteLoading bind:this={infiniteLoading} on:infinite={infiniteHandler}>
+<InfiniteLoading bind:this={infiniteLoading} onInfinite={infiniteHandler}>
 	{#snippet noMore()}
 		<span></span>
 	{/snippet}

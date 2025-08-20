@@ -127,11 +127,8 @@
 </script>
 
 <script lang='ts'>
-	import { createEventDispatcher, onDestroy, onMount, tick } from 'svelte'
-
-	import { run } from 'svelte/legacy'
-
-	const dispatch = createEventDispatcher()
+	import type { StateChanger } from '$lib/types'
+	import { onDestroy, onMount, tick } from 'svelte'
 
 	const STATUS = {
 		READY: 0,
@@ -149,6 +146,7 @@
 		noResults?: import('svelte').Snippet
 		noMore?: import('svelte').Snippet
 		error?: import('svelte').Snippet<[{ attemptLoad: (isContinuousCall?: boolean) => Promise<void> }]>
+		onInfinite: (stateChanger: StateChanger) => void
 	}
 
 	let {
@@ -156,10 +154,10 @@
 		spinner,
 		direction = 'bottom',
 		forceUseInfiniteWrapper = false,
-		// identifier = +new Date(),
 		noResults,
 		noMore,
 		error,
+		onInfinite,
 	}: Props = $props()
 
 	let isFirstLoad = $state(true) // save the current loading whether it is the first loading
@@ -174,7 +172,7 @@
 	let showNoResults = $derived(status === STATUS.COMPLETE && isFirstLoad && !isManualReset)
 	let showNoMore = $derived(status === STATUS.COMPLETE && !isFirstLoad)
 
-	const stateChanger = {
+	const stateChanger: StateChanger = {
 		loaded: async () => {
 			isFirstLoad = false
 
@@ -246,7 +244,9 @@
 					scrollBarStorage.save(scrollParent)
 				}
 			}
-			dispatch('infinite', stateChanger)
+
+			onInfinite(stateChanger)
+
 			if (isContinuousCall && !forceUseInfiniteWrapper && !loopTracker.isChecked) {
 				// check this component whether be in an infinite loop if it is not checked
 				loopTracker.track()
@@ -322,11 +322,11 @@
 			stateChanger.reset()
 	}
 
-	run(() => {
+	$effect(() => {
 		updateScrollParent()
 	})
 
-	run(() => {
+	$effect(() => {
 		identifierUpdated()
 	})
 
