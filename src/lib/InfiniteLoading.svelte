@@ -156,7 +156,7 @@
 		spinner,
 		direction = 'bottom',
 		forceUseInfiniteWrapper = false,
-		identifier = +new Date(),
+		// identifier = +new Date(),
 		noResults,
 		noMore,
 		error,
@@ -166,8 +166,8 @@
 	let isManualReset = $state(false)
 	let status = $state(STATUS.READY)
 	let mounted = $state(false)
-	let thisElement = $state()
-	let scrollParent
+	let thisElement: HTMLElement | null = $state(null)
+	let scrollParent: Element | Window | null = null
 
 	let showSpinner = $derived(status === STATUS.LOADING)
 	let showError = $derived(status === STATUS.ERROR)
@@ -182,7 +182,9 @@
 				// wait for DOM updated
 				await tick()
 
-				scrollBarStorage.restore(scrollParent)
+				if (scrollParent) {
+					scrollBarStorage.restore(scrollParent)
+				}
 			}
 
 			if (status === STATUS.LOADING) {
@@ -197,16 +199,19 @@
 			// force re-complation computed properties to fix the problem of get slot text delay
 			await tick()
 
-			scrollParent.removeEventListener('scroll', scrollHandler, thirdEventArg)
+			if (scrollParent) {
+				scrollParent.removeEventListener('scroll', scrollHandler, thirdEventArg as EventListenerOptions)
+			}
 		},
 
 		reset: () => {
 			status = STATUS.READY
 			isFirstLoad = true
 
-			scrollBarStorage.remove(scrollParent)
-
-			scrollParent.addEventListener('scroll', scrollHandler, thirdEventArg)
+			if (scrollParent) {
+				scrollBarStorage.remove(scrollParent)
+				scrollParent.addEventListener('scroll', scrollHandler, thirdEventArg as AddEventListenerOptions)
+			}
 
 			// wait for list to be empty and the empty action may trigger a scroll event
 			setTimeout(() => {
