@@ -38,10 +38,10 @@
 	})()
 
 	const throttler = {
-		timers: [],
-		caches: [],
+		timers: new Array<ReturnType<typeof setTimeout>>(),
+		caches: new Array<() => void>(),
 
-		throttle(fn) {
+		throttle(fn: () => void) {
 			if (!this.caches.includes(fn)) {
 				// cache current handler
 				this.caches.push(fn)
@@ -71,7 +71,7 @@
 
 	const loopTracker: {
 		isChecked: boolean
-		timer: number | null
+		timer: ReturnType<typeof setTimeout> | null
 		times: number
 		track: () => void
 	} = {
@@ -101,38 +101,28 @@
 
 	const scrollBarStorage = {
 		key: '_infiniteScrollHeight',
-
-		getScrollElement(element) {
-			return element === window ? document.documentElement : element
+		getScrollElement(element: Element | Window): Element {
+			return element === window ? document.documentElement : element as Element
 		},
-
-		save(element) {
-			const target = this.getScrollElement(element)
-
-			// save scroll height on the scroll parent
-			target[this.key] = target.scrollHeight
+		save(element: Element | Window) {
+			const target = this.getScrollElement(element);
+			(target as any)[this.key] = (target as Element).scrollHeight
 		},
-
-		restore(element) {
+		restore(element: Element | Window) {
 			const target = this.getScrollElement(element)
-
-			/* istanbul ignore else */
-			if (typeof target[this.key] === 'number')
-				target.scrollTop = target.scrollHeight - target[this.key] + target.scrollTop
-
+			if (typeof (target as any)[this.key] === 'number')
+				(target as Element).scrollTop = (target as Element).scrollHeight - (target as any)[this.key] + (target as Element).scrollTop
 			this.remove(target)
 		},
-
-		remove(element) {
-			if (element[this.key] !== undefined) {
-				// remove scroll height
-				delete element[this.key]
+		remove(element: Element | Window) {
+			if ((element as any)[this.key] !== undefined) {
+				delete (element as any)[this.key]
 			}
 		},
 	}
 
-	function isVisible(element) {
-		return element && (element.offsetWidth + element.offsetHeight) > 0
+	function isVisible(element: HTMLElement | null | undefined): boolean {
+		return !!element && (element.offsetWidth + element.offsetHeight) > 0
 	}
 </script>
 
