@@ -18,10 +18,11 @@ export function traktHistoryUrl(id: string, type: TraktMediaType) {
 }
 
 /**
- * Filter the response of /history/shows to unique shows since the endpoint returns episodes, not only shows. The returned result only contains unique values (so no duplicated) and is ordered by the order they originally appeared in the response.
+ * Filter the response by unique `trakt_id` values. An example is the `/history/shows` endpoint that returns episodes, not only shows.
+ * The returned result only contains unique values (so no duplicated) and is ordered by the order they originally appeared in the response.
  * The order will be by the last watched episode of each show.
  */
-export function filterUniqueShowsFromHistory<T extends NormalizedItemResponse>(history: Array<T>): Array<T> {
+export function filterUniqueItemsFromHistory<T extends NormalizedItemResponse>(history: Array<T>): Array<T> {
 	if (!history)
 		return []
 	if (!Array.isArray(history))

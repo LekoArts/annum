@@ -14,7 +14,7 @@
 	import Svg from '$lib/Svg.svelte'
 	import Switch from '$lib/Switch.svelte'
 	import { capitalize, getStartAndEndOfYear, groupBy } from '$lib/utils'
-	import { filterUniqueShowsFromHistory } from '$lib/utils/trakt'
+	import { filterUniqueItemsFromHistory } from '$lib/utils/trakt'
 	import { slide } from 'svelte/transition'
 
 	let infiniteLoading: { reset: () => Promise<void> }
@@ -49,7 +49,7 @@
 
 					// The /history/shows endpoint returns normalized episodes, not shows. So we need to deduplicate the list to only have unique shows.
 					if (type === 'shows') {
-						list = filterUniqueShowsFromHistory([...list, ...data.items])
+						list = filterUniqueItemsFromHistory([...list, ...data.items])
 						stats.setShows(list.length)
 					}
 					else {

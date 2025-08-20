@@ -54,6 +54,6 @@ export const GET: RequestHandler = async ({ url, locals, fetch, setHeaders }) =>
 		})
 	}
 	catch (e) {
-		error(404, `Failed to fetch TMDB image for ${traktTmdbMediaMap[type]} "${title}" (TMDB ID: ${id}). ${e}`)
+		error(404, `Failed to fetch TMDB image for "${title}" (TMDB ID: ${id}, Type: ${traktTmdbMediaMap[type]}). ${e}`)
 	}
 }

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { normalizeItem } from '..'
-import { filterUniqueShowsFromHistory, traktHistoryUrl, traktStatsUrl, traktUserUrl, traktWatchedUrl } from '../trakt'
+import { filterUniqueItemsFromHistory, traktHistoryUrl, traktStatsUrl, traktUserUrl, traktWatchedUrl } from '../trakt'
 import { mergedNames, showsPageOne, showsPageOneNames, showsPageTwo, showsPageTwoNames } from './__fixtures__/history.shows'
 
 const normalizedShowsPageOne = showsPageOne.map(normalizeItem as any)
@@ -39,32 +39,32 @@ describe('traktWatchedUrl', () => {
 describe('filterUniqueShowsFromHistory', () => {
 	describe('error handling', () => {
 		it('should return empty array if no history is passed', () => {
-			expect(filterUniqueShowsFromHistory(undefined as any)).toEqual([])
+			expect(filterUniqueItemsFromHistory(undefined as any)).toEqual([])
 		})
 		it('should return empty array if history is not an array', () => {
-			expect(filterUniqueShowsFromHistory({} as any)).toEqual([])
+			expect(filterUniqueItemsFromHistory({} as any)).toEqual([])
 		})
 		it('should return empty array if history is empty', () => {
-			expect(filterUniqueShowsFromHistory([])).toEqual([])
+			expect(filterUniqueItemsFromHistory([])).toEqual([])
 		})
 	})
 	describe('functionality', () => {
 		it('should return unique shows from history', () => {
-			const o = filterUniqueShowsFromHistory(normalizedShowsPageOne as any)
+			const o = filterUniqueItemsFromHistory(normalizedShowsPageOne as any)
 			expect(o.map(i => i.title)).toEqual(expect.arrayContaining([...showsPageOneNames]))
 
-			const v = filterUniqueShowsFromHistory(normalizedShowsPageTwo as any)
+			const v = filterUniqueItemsFromHistory(normalizedShowsPageTwo as any)
 			expect(v.map(i => i.title)).toEqual(expect.arrayContaining([...showsPageTwoNames]))
 		})
 		it('should return unique shows in correct order', () => {
-			const o = filterUniqueShowsFromHistory(normalizedShowsPageOne as any)
+			const o = filterUniqueItemsFromHistory(normalizedShowsPageOne as any)
 			expect(o.map(i => i.title)).toEqual(showsPageOneNames)
 
-			const v = filterUniqueShowsFromHistory(normalizedShowsPageTwo as any)
+			const v = filterUniqueItemsFromHistory(normalizedShowsPageTwo as any)
 			expect(v.map(i => i.title)).toEqual(showsPageTwoNames)
 		})
 		it('should return unique shows from merged history', () => {
-			const o = filterUniqueShowsFromHistory([...normalizedShowsPageOne, ...normalizedShowsPageTwo] as any)
+			const o = filterUniqueItemsFromHistory([...normalizedShowsPageOne, ...normalizedShowsPageTwo] as any)
 			expect(o.map(i => i.title)).toEqual(mergedNames)
 		})
 	})

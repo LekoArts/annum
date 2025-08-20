@@ -3,12 +3,12 @@ import type { RequestHandler } from './$types'
 import { DEFAULT_CACHE_HEADER, PAGINATION_LIMIT, TRAKT_BASE_URL } from '$const'
 import { TRAKT_FETCH_DEFAULTS } from '$lib/server/const'
 import { normalizeItem } from '$lib/utils'
-import { filterUniqueShowsFromHistory, traktHistoryUrl } from '$lib/utils/trakt'
+import { filterUniqueItemsFromHistory, traktHistoryUrl } from '$lib/utils/trakt'
 import { error, json } from '@sveltejs/kit'
 
 async function fetchData(customFetch: typeof fetch, item: NormalizedItemResponse, lang: Language, type: TraktMediaType): Promise<Item | null> {
 	if (!item.tmdb_id) {
-		console.warn(`No TMDB ID found for movie "${item.title}" (TMDB ID: ${item.tmdb_id})`)
+		console.warn(`No TMDB ID found for ${type} "${item.title}" (TMDB ID: ${item.tmdb_id})`)
 
 		return null
 	}
@@ -20,9 +20,12 @@ async function fetchData(customFetch: typeof fetch, item: NormalizedItemResponse
 		lang,
 	}).toString()
 
-	return await customFetch(`/api/tmdb-image?${queryParams}`).then((res) => {
+	return await customFetch(`/api/tmdb-image?${queryParams}`).then(async (res) => {
 		if (!res.ok) {
-			console.warn(`No TMDB ID found for movie "${item.title}" (TMDB ID: ${item.tmdb_id})`)
+			const errorBody = await res.json().catch(() => null)
+			const errorMsg = errorBody?.message || `Failed to fetch TMDB image for "${item.title}" (TMDB ID: ${item.tmdb_id}, Type: ${type})`
+
+			console.warn(errorMsg)
 
 			return null
 		}
@@ -77,7 +80,7 @@ export const GET: RequestHandler = async ({ locals, url, fetch, setHeaders, para
 
 		const rawItems = await res.json() as Array<TraktHistoryItem>
 		const normalizedItems = rawItems.map(normalizeItem)
-		const uniqueItems = filterUniqueShowsFromHistory(normalizedItems)
+		const uniqueItems = filterUniqueItemsFromHistory(normalizedItems)
 
 		const itemsPromises = await Promise.allSettled(uniqueItems.map(i => fetchData(fetch, i, lang, type)))
 
