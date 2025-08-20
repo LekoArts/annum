@@ -38,10 +38,10 @@
 	})()
 
 	const throttler = {
-		timers: [],
-		caches: [],
+		timers: new Array<ReturnType<typeof setTimeout>>(),
+		caches: new Array<() => void>(),
 
-		throttle(fn) {
+		throttle(fn: () => void) {
 			if (!this.caches.includes(fn)) {
 				// cache current handler
 				this.caches.push(fn)
@@ -71,7 +71,7 @@
 
 	const loopTracker: {
 		isChecked: boolean
-		timer: number | null
+		timer: ReturnType<typeof setTimeout> | null
 		times: number
 		track: () => void
 	} = {
@@ -101,47 +101,34 @@
 
 	const scrollBarStorage = {
 		key: '_infiniteScrollHeight',
-
-		getScrollElement(element) {
-			return element === window ? document.documentElement : element
+		getScrollElement(element: Element | Window): Element {
+			return element === window ? document.documentElement : element as Element
 		},
-
-		save(element) {
-			const target = this.getScrollElement(element)
-
-			// save scroll height on the scroll parent
-			target[this.key] = target.scrollHeight
+		save(element: Element | Window) {
+			const target = this.getScrollElement(element);
+			(target as any)[this.key] = (target as Element).scrollHeight
 		},
-
-		restore(element) {
+		restore(element: Element | Window) {
 			const target = this.getScrollElement(element)
-
-			/* istanbul ignore else */
-			if (typeof target[this.key] === 'number')
-				target.scrollTop = target.scrollHeight - target[this.key] + target.scrollTop
-
+			if (typeof (target as any)[this.key] === 'number')
+				(target as Element).scrollTop = (target as Element).scrollHeight - (target as any)[this.key] + (target as Element).scrollTop
 			this.remove(target)
 		},
-
-		remove(element) {
-			if (element[this.key] !== undefined) {
-				// remove scroll height
-				delete element[this.key]
+		remove(element: Element | Window) {
+			if ((element as any)[this.key] !== undefined) {
+				delete (element as any)[this.key]
 			}
 		},
 	}
 
-	function isVisible(element) {
-		return element && (element.offsetWidth + element.offsetHeight) > 0
+	function isVisible(element: HTMLElement | null | undefined): boolean {
+		return !!element && (element.offsetWidth + element.offsetHeight) > 0
 	}
 </script>
 
 <script lang='ts'>
-	import { createEventDispatcher, onDestroy, onMount, tick } from 'svelte'
-
-	import { run } from 'svelte/legacy'
-
-	const dispatch = createEventDispatcher()
+	import type { StateChanger } from '$lib/types'
+	import { onDestroy, onMount, tick } from 'svelte'
 
 	const STATUS = {
 		READY: 0,
@@ -159,6 +146,7 @@
 		noResults?: import('svelte').Snippet
 		noMore?: import('svelte').Snippet
 		error?: import('svelte').Snippet<[{ attemptLoad: (isContinuousCall?: boolean) => Promise<void> }]>
+		onInfinite: (stateChanger: StateChanger) => void
 	}
 
 	let {
@@ -166,25 +154,25 @@
 		spinner,
 		direction = 'bottom',
 		forceUseInfiniteWrapper = false,
-		identifier = +new Date(),
 		noResults,
 		noMore,
 		error,
+		onInfinite,
 	}: Props = $props()
 
 	let isFirstLoad = $state(true) // save the current loading whether it is the first loading
 	let isManualReset = $state(false)
 	let status = $state(STATUS.READY)
 	let mounted = $state(false)
-	let thisElement = $state()
-	let scrollParent
+	let thisElement: HTMLElement | null = $state(null)
+	let scrollParent: Element | Window | null = null
 
 	let showSpinner = $derived(status === STATUS.LOADING)
 	let showError = $derived(status === STATUS.ERROR)
 	let showNoResults = $derived(status === STATUS.COMPLETE && isFirstLoad && !isManualReset)
 	let showNoMore = $derived(status === STATUS.COMPLETE && !isFirstLoad)
 
-	const stateChanger = {
+	const stateChanger: StateChanger = {
 		loaded: async () => {
 			isFirstLoad = false
 
@@ -192,7 +180,9 @@
 				// wait for DOM updated
 				await tick()
 
-				scrollBarStorage.restore(scrollParent)
+				if (scrollParent) {
+					scrollBarStorage.restore(scrollParent)
+				}
 			}
 
 			if (status === STATUS.LOADING) {
@@ -207,16 +197,19 @@
 			// force re-complation computed properties to fix the problem of get slot text delay
 			await tick()
 
-			scrollParent.removeEventListener('scroll', scrollHandler, thirdEventArg)
+			if (scrollParent) {
+				scrollParent.removeEventListener('scroll', scrollHandler, thirdEventArg as EventListenerOptions)
+			}
 		},
 
 		reset: () => {
 			status = STATUS.READY
 			isFirstLoad = true
 
-			scrollBarStorage.remove(scrollParent)
-
-			scrollParent.addEventListener('scroll', scrollHandler, thirdEventArg)
+			if (scrollParent) {
+				scrollBarStorage.remove(scrollParent)
+				scrollParent.addEventListener('scroll', scrollHandler, thirdEventArg as AddEventListenerOptions)
+			}
 
 			// wait for list to be empty and the empty action may trigger a scroll event
 			setTimeout(() => {
@@ -231,11 +224,10 @@
 		},
 	}
 
-	function scrollHandler(event) {
+	function scrollHandler(event?: Event) {
 		if (status === STATUS.READY) {
-			if (event && event.constructor === Event && isVisible(thisElement))
+			if (event && event.constructor === Event && isVisible(thisElement as HTMLElement | null))
 				throttler.throttle(attemptLoad)
-
 			else
 				attemptLoad()
 		}
@@ -243,17 +235,17 @@
 
 	// Attempt to trigger load
 	async function attemptLoad(isContinuousCall = false) {
-		if (status !== STATUS.COMPLETE && isVisible(thisElement) && getCurrentDistance() <= distance) {
+		if (status !== STATUS.COMPLETE && isVisible(thisElement as HTMLElement | null) && getCurrentDistance() <= distance) {
 			status = STATUS.LOADING
-
 			if (direction === 'top') {
 				// wait for spinner display
 				await tick()
-
-				scrollBarStorage.save(scrollParent)
+				if (scrollParent) {
+					scrollBarStorage.save(scrollParent)
+				}
 			}
 
-			dispatch('infinite', stateChanger)
+			onInfinite(stateChanger)
 
 			if (isContinuousCall && !forceUseInfiniteWrapper && !loopTracker.isChecked) {
 				// check this component whether be in an infinite loop if it is not checked
@@ -270,11 +262,10 @@
 		status = STATUS.READY
 		isFirstLoad = true
 		isManualReset = true
-
-		scrollBarStorage.remove(scrollParent)
-
-		scrollParent.addEventListener('scroll', scrollHandler, thirdEventArg)
-
+		if (scrollParent) {
+			scrollBarStorage.remove(scrollParent)
+			scrollParent.addEventListener('scroll', scrollHandler, thirdEventArg as AddEventListenerOptions)
+		}
 		// wait for list to be empty and the empty action may trigger a scroll event
 		setTimeout(() => {
 			throttler.reset()
@@ -283,77 +274,76 @@
 	}
 
 	// Get current distance from the specified direction
-	function getCurrentDistance() {
-		let distance
-
+	function getCurrentDistance(): number {
+		let distance: number
+		if (!scrollParent || !thisElement)
+			return 0
 		if (direction === 'top') {
-			distance = typeof scrollParent.scrollTop === 'number' ? scrollParent.scrollTop : scrollParent.pageYOffset
+			if ('scrollTop' in scrollParent && typeof (scrollParent as Element).scrollTop === 'number') {
+				distance = (scrollParent as Element).scrollTop
+			}
+			else if ('pageYOffset' in scrollParent && typeof (scrollParent as Window).pageYOffset === 'number') {
+				distance = (scrollParent as Window).pageYOffset
+			}
+			else {
+				distance = 0
+			}
 		}
 		else {
-			const infiniteElementOffsetTopFromBottom = thisElement.getBoundingClientRect().top
-			const scrollElementOffsetTopFromBottom = scrollParent === window ? window.innerHeight : scrollParent.getBoundingClientRect().bottom
-
+			const infiniteElementOffsetTopFromBottom = (thisElement as HTMLElement).getBoundingClientRect().top
+			const scrollElementOffsetTopFromBottom = scrollParent === window ? window.innerHeight : (scrollParent as Element).getBoundingClientRect().bottom
 			distance = infiniteElementOffsetTopFromBottom - scrollElementOffsetTopFromBottom
 		}
-
 		return distance
 	}
 
 	// Get the first scroll parent of an element
-	function getScrollParent(element = thisElement) {
-		let result
-
+	function getScrollParent(element: Element | null = thisElement as Element | null): Element | Window | null {
+		let result: Element | Window | null = null
 		if (typeof forceUseInfiniteWrapper === 'string')
 			result = document.querySelector(forceUseInfiniteWrapper)
-
-		if (!result) {
+		if (!result && element) {
 			if (element.tagName === 'BODY')
 				result = window
-
 			else if (!forceUseInfiniteWrapper && ['scroll', 'auto'].includes(getComputedStyle(element).overflowY))
 				result = element
-
 			else if (element.hasAttribute('infinite-wrapper') || element.hasAttribute('data-infinite-wrapper'))
 				result = element
 		}
-
-		return result || getScrollParent(element.parentNode)
+		return result || (element && element.parentNode && element.parentNode instanceof Element ? getScrollParent(element.parentNode) : null)
 	}
 
 	function updateScrollParent() {
 		if (mounted)
 			scrollParent = getScrollParent()
 	}
-
 	function identifierUpdated() {
 		if (mounted)
 			stateChanger.reset()
 	}
 
-	// Watch forceUseInfiniteWrapper and mounted
-	run(() => {
-		forceUseInfiniteWrapper, mounted, updateScrollParent()
+	$effect(() => {
+		updateScrollParent()
 	})
 
-	// Watch identifier and mounted
-	run(() => {
-		identifier, mounted, identifierUpdated()
+	$effect(() => {
+		identifierUpdated()
 	})
 
 	onMount(async () => {
 		mounted = true
-
 		setTimeout(() => {
 			scrollHandler()
-			scrollParent.addEventListener('scroll', scrollHandler, thirdEventArg)
+			if (scrollParent) {
+				scrollParent.addEventListener('scroll', scrollHandler, thirdEventArg as AddEventListenerOptions)
+			}
 		}, 1)
 	})
-
 	onDestroy(() => {
-		if (mounted && status !== STATUS.COMPLETE) {
+		if (mounted && status !== STATUS.COMPLETE && scrollParent) {
 			throttler.reset()
 			scrollBarStorage.remove(scrollParent)
-			scrollParent.removeEventListener('scroll', scrollHandler, thirdEventArg)
+			scrollParent.removeEventListener('scroll', scrollHandler, thirdEventArg as EventListenerOptions)
 		}
 	})
 </script>

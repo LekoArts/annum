@@ -203,5 +203,3 @@ export interface StateChanger {
 	 */
 	reset: () => void
 }
-export interface InfiniteEvent extends CustomEvent<StateChanger> {
-}

@@ -1,7 +1,9 @@
-import type { Handle, MaybePromise, RequestEvent, ResolveOptions } from '@sveltejs/kit'
+import type { Handle, RequestEvent, ResolveOptions } from '@sveltejs/kit'
 import { redirect } from '@sveltejs/kit'
 import { sequence } from '@sveltejs/kit/hooks'
 import { handle as authenticationHandle } from './auth'
+
+type MaybePromise<T> = T | Promise<T>
 
 async function authorization({ event, resolve }: { event: RequestEvent, resolve: (event: RequestEvent, opts?: ResolveOptions) => MaybePromise<Response> }) {
 	// Protect all routes under /dashboard
