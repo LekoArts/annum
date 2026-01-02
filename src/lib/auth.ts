@@ -19,6 +19,12 @@ interface TraktUser {
 	}
 }
 
+console.log('Auth initialized with base URL:', PUBLIC_BETTER_AUTH_URL)
+console.log('Trusted Origins:', [
+	PUBLIC_BETTER_AUTH_URL,
+	...(process.env.NETLIFY_URL ? [process.env.NETLIFY_URL] : []),
+])
+
 export const auth = betterAuth({
 	secret: PRIVATE_BETTER_AUTH_SECRET,
 	baseURL: PUBLIC_BETTER_AUTH_URL,
