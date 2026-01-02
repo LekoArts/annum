@@ -46,7 +46,7 @@ This [SvelteKit](https://kit.svelte.dev/) project was bootstrapped with [`create
 
     1. `PRIVATE_TRAKT_CLIENT_ID` and `PRIVATE_TRAKT_CLIENT_SECRET`: Login to [Trakt.tv](https://trakt.tv) and inside your settings go to your [Your API Apps](https://trakt.tv/oauth/applications) section. Create a new application. Set `http://localhost:5173/auth/callback/trakt` as one of the **Redirect URI** and set `http://localhost:5173` as one of the **JavaScript (CORS) Origins**. Copy over the **Client ID** and **Client Secret** to the `.env` file.
 
-    1. `PRIVATE_AUTH_SECRET`: Generate a random string which is used to encrypt tokens. Run `openssl rand -base64 32` in your terminal and copy the value over to the `.env` file.
+    1. `PRIVATE_BETTER_AUTH_SECRET`: Generate a random string which is used to encrypt tokens. Run `openssl rand -base64 32` in your terminal and copy the value over to the `.env` file.
 
     1. `PRIVATE_TMDB_API_KEY`: Login to your [TMDB](https://www.themoviedb.org/) account and inside your settings go to [API section](https://www.themoviedb.org/settings/api). Copy the **API Key** over to the `.env` file.
 

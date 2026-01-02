@@ -204,7 +204,7 @@ export function chunks<T>(array: Array<T>, number: number | string): Array<Array
 **Private Variables:** Prefix with `PRIVATE_` (configured in `svelte.config.js`)
 - `PRIVATE_TRAKT_CLIENT_ID`
 - `PRIVATE_TRAKT_CLIENT_SECRET`
-- `PRIVATE_AUTH_SECRET`
+- `PRIVATE_BETTER_AUTH_SECRET`
 - `PRIVATE_TMDB_API_KEY`
 
 **Public Variables:** Prefix with `PUBLIC_`
