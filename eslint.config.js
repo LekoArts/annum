@@ -35,5 +35,5 @@ export default antfu({
 		'unused-imports/no-unused-vars': 'off',
 		'style/quotes': ['error', 'single', { avoidEscape: true }],
 	},
-	ignores: ['**/.DS_Store', '**/node_modules', '/build', '/.svelte-kit', '/package', 'pnpm-lock.yaml', 'package-lock.json', 'yarn.lock'],
+	ignores: ['**/.DS_Store', '**/node_modules', '/build', '/.svelte-kit', 'pnpm-lock.yaml', 'AGENTS.md'],
 })
