@@ -1,5 +1,6 @@
 import { getRequestEvent } from '$app/server'
 import { PRIVATE_BETTER_AUTH_SECRET, PRIVATE_TRAKT_CLIENT_ID, PRIVATE_TRAKT_CLIENT_SECRET } from '$env/static/private'
+import { PUBLIC_BETTER_AUTH_URL } from '$env/static/public'
 import { betterAuth } from 'better-auth'
 import { customSession, genericOAuth } from 'better-auth/plugins'
 import { sveltekitCookies } from 'better-auth/svelte-kit'
@@ -20,6 +21,7 @@ interface TraktUser {
 
 export const auth = betterAuth({
 	secret: PRIVATE_BETTER_AUTH_SECRET,
+	baseURL: PUBLIC_BETTER_AUTH_URL,
 	// Stateless mode - no database required
 	// This will automatically enable JWT-based sessions in cookies
 	session: {
