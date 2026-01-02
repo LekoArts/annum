@@ -1,6 +1,7 @@
 <script lang='ts'>
 	import type { PageData } from './$types'
 	import { CURRENT_YEAR, LANGUAGES } from '$const'
+	import { authClient } from '$lib/auth-client'
 	import Secondary from '$lib/button/Secondary.svelte'
 	import Spacer from '$lib/Spacer.svelte'
 	import { settings } from '$lib/store/settings'
@@ -12,6 +13,7 @@
 	}
 
 	let { data }: Props = $props()
+	const session = authClient.useSession()
 
 	const years = [CURRENT_YEAR, CURRENT_YEAR - 1]
 </script>
@@ -19,7 +21,7 @@
 <h1 class='visually-hidden'>Dashboard</h1>
 
 <div class='prose'>
-	<p class='welcome'>Hello {data.session?.user.username} 👋🏻</p>
+	<p class='welcome'>Hello {$session.data?.user.name} 👋🏻</p>
 	<p>In total, you watched <Svg id='movie' /> <strong>{data.stats?.movies?.watched} movies</strong> and <strong><Svg id='tv' /> {data.stats?.shows?.watched} shows</strong> ({data.stats?.episodes.watched} episodes). You can use this app to view your movies and shows year by year in a poster grid. Here are some quick links to the current and previous year:</p>
 </div>
 

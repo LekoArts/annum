@@ -1,26 +1,26 @@
-import type { Handle, RequestEvent, ResolveOptions } from '@sveltejs/kit'
+import type { Handle } from '@sveltejs/kit'
+import { building } from '$app/environment'
+import { auth } from '$lib/auth'
 import { redirect } from '@sveltejs/kit'
-import { sequence } from '@sveltejs/kit/hooks'
-import { handle as authenticationHandle } from './auth'
+import { svelteKitHandler } from 'better-auth/svelte-kit'
 
-type MaybePromise<T> = T | Promise<T>
+export const handle: Handle = async ({ event, resolve }) => {
+	if (event.route.id?.startsWith('/(protected)/')) {
+		const session = await auth.api.getSession({
+			headers: event.request.headers,
+		})
 
-async function authorization({ event, resolve }: { event: RequestEvent, resolve: (event: RequestEvent, opts?: ResolveOptions) => MaybePromise<Response> }) {
-	// Protect all routes under /dashboard
-	if (event.url.pathname.startsWith('/dashboard')) {
-		const session = await event.locals.auth()
-		if (!session)
+		if (session) {
+			event.locals.session = session?.session
+			event.locals.user = session?.user
+
+			return svelteKitHandler({ event, resolve, auth, building })
+		}
+		else {
 			throw redirect(303, '/sign-in')
+		}
 	}
-
-	return resolve(event)
+	else {
+		return svelteKitHandler({ event, resolve, auth, building })
+	}
 }
-
-/**
- * First handle authentication, then authorization.
- * Each function acts as a middleware, receiving the request handle. And returning a handle which gets passed to the next function.
- */
-export const handle: Handle = sequence(
-	authenticationHandle,
-	authorization,
-)

@@ -18,10 +18,11 @@
 		"lint:fix": "eslint . --fix",
 		"typecheck": "tsc --noEmit"
 	},
+	"dependencies": {
+		"better-auth": "^1.4.10"
+	},
 	"devDependencies": {
 		"@antfu/eslint-config": "^6.7.3",
-		"@auth/core": "^0.40.0",
-		"@auth/sveltekit": "^1.11.1",
 		"@csstools/postcss-global-data": "^3.1.0",
 		"@sveltejs/adapter-netlify": "^5.2.4",
 		"@sveltejs/enhanced-img": "^0.9.2",

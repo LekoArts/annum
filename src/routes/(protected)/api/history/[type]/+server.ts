@@ -43,9 +43,9 @@ async function fetchData(customFetch: typeof fetch, item: NormalizedItemResponse
 }
 
 export const GET: RequestHandler = async ({ locals, url, fetch, setHeaders, params }) => {
-	const session = await locals.auth()
+	const user = locals.user
 
-	if (!session?.user)
+	if (!user)
 		error(401, 'You must sign in to access this route.')
 
 	setHeaders({
@@ -69,7 +69,7 @@ export const GET: RequestHandler = async ({ locals, url, fetch, setHeaders, para
 	}).toString()
 
 	try {
-		const res = await fetch(`${TRAKT_BASE_URL}${traktHistoryUrl(session.user.id, type)}?${queryParams}`, TRAKT_FETCH_DEFAULTS)
+		const res = await fetch(`${TRAKT_BASE_URL}${traktHistoryUrl(user.slug, type)}?${queryParams}`, TRAKT_FETCH_DEFAULTS)
 
 		if (!res.ok)
 			throw new Error(`Response not OK: ${res.status}`)
@@ -100,6 +100,6 @@ export const GET: RequestHandler = async ({ locals, url, fetch, setHeaders, para
 		})
 	}
 	catch (e) {
-		error(404, `Failed to fetch Trakt history for user: ${session.user.id}. ${e}`)
+		error(404, `Failed to fetch Trakt history for user: ${user.slug}. ${e}`)
 	}
 }

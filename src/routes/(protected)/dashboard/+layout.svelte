@@ -1,5 +1,7 @@
 <script lang='ts'>
+	import { goto } from '$app/navigation'
 	import { style } from '$lib/actions'
+	import { authClient } from '$lib/auth-client'
 	import { settings } from '$lib/store/settings'
 
 	interface Props {
@@ -7,6 +9,11 @@
 	}
 
 	let { children }: Props = $props()
+	const session = authClient.useSession()
+
+	if (!session) {
+		goto('/sign-in')
+	}
 </script>
 
 {@render children?.()}

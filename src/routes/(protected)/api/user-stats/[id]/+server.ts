@@ -5,12 +5,7 @@ import { TRAKT_FETCH_DEFAULTS } from '$lib/server/const'
 import { traktStatsUrl } from '$lib/utils/trakt'
 import { error, json } from '@sveltejs/kit'
 
-export const GET: RequestHandler = async ({ locals, params, fetch, setHeaders }) => {
-	const session = await locals.auth()
-
-	if (!session?.user)
-		error(401, 'You must sign in to access this route.')
-
+export const GET: RequestHandler = async ({ params, fetch, setHeaders }) => {
 	const { id } = params
 
 	setHeaders({

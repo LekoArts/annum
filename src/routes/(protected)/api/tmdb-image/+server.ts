@@ -6,12 +6,7 @@ import { traktTmdbMediaMap } from '$lib/utils'
 import { tmdbImageUrlsWithDimensions, tmdbItemDetailsUrl } from '$lib/utils/tmdb'
 import { error, json } from '@sveltejs/kit'
 
-export const GET: RequestHandler = async ({ url, locals, fetch, setHeaders }) => {
-	const session = await locals.auth()
-
-	if (!session?.user)
-		error(401, 'You must sign in to access this route.')
-
+export const GET: RequestHandler = async ({ url, fetch, setHeaders }) => {
 	const id = url.searchParams.get('id')
 	const type = url.searchParams.get('type') as TraktMediaType | null
 	const title = url.searchParams.get('title')
