@@ -19,12 +19,15 @@ interface TraktUser {
 	}
 }
 
+// Use the preview deployment URL if available, otherwise fall back to PUBLIC_BETTER_AUTH_URL
+const baseURL = __DEPLOY_PRIME_URL__ || PUBLIC_BETTER_AUTH_URL
+
 export const auth = betterAuth({
 	secret: PRIVATE_BETTER_AUTH_SECRET,
-	baseURL: PUBLIC_BETTER_AUTH_URL,
+	baseURL,
 	trustedOrigins: [
 		PUBLIC_BETTER_AUTH_URL,
-		...(process.env.NETLIFY_URL ? [process.env.NETLIFY_URL] : []),
+		...(__DEPLOY_PRIME_URL__ ? [__DEPLOY_PRIME_URL__] : []),
 	],
 	// Stateless mode - no database required
 	// This will automatically enable JWT-based sessions in cookies
