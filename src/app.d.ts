@@ -6,6 +6,9 @@ interface CustomUser extends User {
 }
 
 declare global {
+	// Netlify build-time environment variable (injected by Vite)
+	const __DEPLOY_PRIME_URL__: string
+
 	namespace App {
 		// interface Error {}
 		interface Locals {

@@ -19,19 +19,14 @@ interface TraktUser {
 	}
 }
 
-console.log('Auth initialized with base URL:', PUBLIC_BETTER_AUTH_URL)
-console.log('Trusted Origins:', [
-	PUBLIC_BETTER_AUTH_URL,
-	// @ts-ignore
-	...(__DEPLOY_PRIME_URL__ ? [__DEPLOY_PRIME_URL__] : []),
-])
+// Use the preview deployment URL if available, otherwise fall back to PUBLIC_BETTER_AUTH_URL
+const baseURL = __DEPLOY_PRIME_URL__ || PUBLIC_BETTER_AUTH_URL
 
 export const auth = betterAuth({
 	secret: PRIVATE_BETTER_AUTH_SECRET,
-	baseURL: PUBLIC_BETTER_AUTH_URL,
+	baseURL,
 	trustedOrigins: [
 		PUBLIC_BETTER_AUTH_URL,
-		// @ts-ignore
 		...(__DEPLOY_PRIME_URL__ ? [__DEPLOY_PRIME_URL__] : []),
 	],
 	// Stateless mode - no database required
