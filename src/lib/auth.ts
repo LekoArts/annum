@@ -22,7 +22,7 @@ interface TraktUser {
 console.log('Auth initialized with base URL:', PUBLIC_BETTER_AUTH_URL)
 console.log('Trusted Origins:', [
 	PUBLIC_BETTER_AUTH_URL,
-	...(process.env.NETLIFY_URL ? [process.env.NETLIFY_URL] : []),
+	...(process.env.DEPLOY_PRIME_URL ? [process.env.DEPLOY_PRIME_URL] : []),
 ])
 
 export const auth = betterAuth({
@@ -30,7 +30,7 @@ export const auth = betterAuth({
 	baseURL: PUBLIC_BETTER_AUTH_URL,
 	trustedOrigins: [
 		PUBLIC_BETTER_AUTH_URL,
-		...(process.env.NETLIFY_URL ? [process.env.NETLIFY_URL] : []),
+		...(process.env.DEPLOY_PRIME_URL ? [process.env.DEPLOY_PRIME_URL] : []),
 	],
 	// Stateless mode - no database required
 	// This will automatically enable JWT-based sessions in cookies
