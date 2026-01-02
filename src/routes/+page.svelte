@@ -1,6 +1,5 @@
 <script lang='ts'>
 	/* eslint-disable svelte/valid-compile */
-	import { page } from '$app/state'
 	import { GITHUB_REPO_URL, TITLE } from '$const'
 	import { classList } from '$lib/actions'
 	import { authClient } from '$lib/auth-client'
@@ -8,6 +7,8 @@
 	import Spacer from '$lib/Spacer.svelte'
 	import { pa } from '$lib/store/plausible'
 	import Svg from '$lib/Svg.svelte'
+
+	const session = authClient.useSession()
 </script>
 
 <h1 class='visually-hidden'>{TITLE}</h1>
@@ -20,7 +21,7 @@
 		<Spacer axis='vertical' size='2xs' />
 		<p class='text-md'>Display your watched movies and shows in a poster grid. Easily switch between years and get an overview of all your history.</p>
 		<Spacer axis='vertical' size='m' />
-		{#if page.data?.session?.user}
+		{#if $session.data}
 			<Primary type='link' href='/dashboard'>
 				Show me my Poster Grid <Svg id='arrow-right' />
 			</Primary>

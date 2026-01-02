@@ -43,7 +43,6 @@ async function fetchData(customFetch: typeof fetch, item: NormalizedItemResponse
 }
 
 export const GET: RequestHandler = async ({ locals, url, fetch, setHeaders, params }) => {
-	// Session is already populated in hooks.server.ts
 	const user = locals.user
 
 	if (!user)
@@ -70,7 +69,7 @@ export const GET: RequestHandler = async ({ locals, url, fetch, setHeaders, para
 	}).toString()
 
 	try {
-		const res = await fetch(`${TRAKT_BASE_URL}${traktHistoryUrl(user.id, type)}?${queryParams}`, TRAKT_FETCH_DEFAULTS)
+		const res = await fetch(`${TRAKT_BASE_URL}${traktHistoryUrl(user.slug, type)}?${queryParams}`, TRAKT_FETCH_DEFAULTS)
 
 		if (!res.ok)
 			throw new Error(`Response not OK: ${res.status}`)
@@ -101,6 +100,6 @@ export const GET: RequestHandler = async ({ locals, url, fetch, setHeaders, para
 		})
 	}
 	catch (e) {
-		error(404, `Failed to fetch Trakt history for user: ${user.id}. ${e}`)
+		error(404, `Failed to fetch Trakt history for user: ${user.slug}. ${e}`)
 	}
 }

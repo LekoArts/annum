@@ -2,7 +2,7 @@ import type { Session, User } from 'better-auth/types'
 
 // Extend BetterAuth User type to include username
 interface CustomUser extends User {
-	username: string
+	slug: string
 }
 
 declare global {

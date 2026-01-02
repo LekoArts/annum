@@ -10,8 +10,7 @@
 	import Svg from '$lib/Svg.svelte'
 
 	let traktStats = $derived(page.data?.stats as TraktStats | undefined)
-	let user = $derived(page.data?.session?.user as { username: string, name: string, image?: string | null } | undefined)
-	let isSignedIn = $derived(Boolean(user))
+	const session = authClient.useSession()
 	let isDetailPage = $derived(page.url.pathname.includes('/movies') || page.url.pathname.includes('/shows'))
 </script>
 
@@ -26,7 +25,7 @@
 				{/if}
 			</div>
 			<div class='cta flex align-center'>
-				{#if isSignedIn}
+				{#if $session.data}
 					{#if page.url.pathname.includes('/dashboard')}
 						<div class='profile text-sm-base box'>
 							{#if traktStats && isDetailPage}
@@ -43,7 +42,7 @@
 									{/if}
 								</div>
 							{/if}
-							<div class='font-semibold username'>{user?.username}</div>
+							<div class='font-semibold username'>{$session.data.user.name}</div>
 						</div>
 						<Primary type='text' onclick={async () => {
 							pa.addEvent('logout', { props: { position: 'header' } })

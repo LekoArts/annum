@@ -74,3 +74,22 @@ Before deploying, test the following:
 - Generic OAuth Plugin: https://www.better-auth.com/docs/plugins/generic-oauth
 - Stateless Sessions: https://www.better-auth.com/docs/concepts/session-management#stateless-session-management
 - Trakt OAuth Issue: https://github.com/better-auth/better-auth/issues/1479
+
+## Testing
+
+- Went to /dashboard and I was redirected to sign-in
+- When I go to http://localhost:5173/dashboard/shows/2024 I see my dashboard, after a refresh I'm redirected to sign-in. I was previously signed in a previous session. Is that a problem?
+- Going to http://localhost:5173/dashboard/movies/2025 and then scrolling down to trigger the infinite scroll errors out. The console says:
+```
+GET http://localhost:5173/api/history/movies?page=2&start_at=2025-01-01T00%3A00%3A00.000Z&end_at=2025-12-31T00%3A00%3A00.000Z&lang=en 404 (Not Found)
+window.fetch @ fetcher.js?v=f9a4c313:66
+infiniteHandler @ +page.svelte:41
+attemptLoad @ InfiniteLoading.svelte:246
+(anonymous) @ InfiniteLoading.svelte:51
+setTimeout
+throttle @ InfiniteLoading.svelte:50
+scrollHandler @ InfiniteLoading.svelte:230Understand this error
+installHook.js:1 TypeError: data.items is not iterable
+    at +page.svelte:56:32
+```
+Same for shows
