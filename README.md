@@ -23,6 +23,8 @@
 
 This website was created by [LekoArts](https://www.lekoarts.de?utm_source=annum_readme) as a christmas project to try out SvelteKit. LekoArts loves watching movies and shows ⸺ so why not have a great overview? You can also follow me on [Trakt](https://trakt.tv/users/arsaurea) if you want.
 
+TEST
+
 ## Development
 
 This [SvelteKit](https://kit.svelte.dev/) project was bootstrapped with [`create-svelte`](https://github.com/sveltejs/kit/tree/main/packages/create-svelte).
