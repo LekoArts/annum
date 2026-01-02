@@ -22,6 +22,10 @@ interface TraktUser {
 export const auth = betterAuth({
 	secret: PRIVATE_BETTER_AUTH_SECRET,
 	baseURL: PUBLIC_BETTER_AUTH_URL,
+	trustedOrigins: [
+		PUBLIC_BETTER_AUTH_URL,
+		...(process.env.NETLIFY_URL ? [process.env.NETLIFY_URL] : []),
+	],
 	// Stateless mode - no database required
 	// This will automatically enable JWT-based sessions in cookies
 	session: {

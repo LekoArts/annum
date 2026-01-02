@@ -1,10 +1,10 @@
 import type { auth } from '$lib/auth'
-import { PUBLIC_BETTER_AUTH_URL } from '$env/static/public'
 import { customSessionClient, genericOAuthClient } from 'better-auth/client/plugins'
 import { createAuthClient } from 'better-auth/svelte'
+import { browser } from "$app/environment";
 
 export const authClient = createAuthClient({
-	baseURL: PUBLIC_BETTER_AUTH_URL,
+	baseURL: browser ? window.location.origin : undefined,
 	plugins: [
 		genericOAuthClient(),
 		customSessionClient<typeof auth>(),
