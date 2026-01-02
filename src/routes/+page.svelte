@@ -1,4 +1,5 @@
 <script lang='ts'>
+	/* eslint-disable svelte/valid-compile */
 	import { page } from '$app/state'
 	import { GITHUB_REPO_URL, TITLE } from '$const'
 	import { classList } from '$lib/actions'
