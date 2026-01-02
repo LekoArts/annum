@@ -2,15 +2,15 @@
 	import type { TraktStats } from '$lib/types'
 	import { page } from '$app/state'
 	import { CURRENT_YEAR, TITLE } from '$const'
+	import { authClient } from '$lib/auth-client'
 	import Primary from '$lib/button/Primary.svelte'
 	import Spacer from '$lib/Spacer.svelte'
 	import { pa } from '$lib/store/plausible'
 	import { stats } from '$lib/store/stats'
 	import Svg from '$lib/Svg.svelte'
-	import { signIn, signOut } from '@auth/sveltekit/client'
 
 	let traktStats = $derived(page.data?.stats as TraktStats | undefined)
-	let user = $derived(page.data?.session?.user)
+	let user = $derived(page.data?.session?.user as { username: string, name: string, image?: string | null } | undefined)
 	let isSignedIn = $derived(Boolean(user))
 	let isDetailPage = $derived(page.url.pathname.includes('/movies') || page.url.pathname.includes('/shows'))
 </script>
@@ -45,9 +45,15 @@
 							{/if}
 							<div class='font-semibold username'>{user?.username}</div>
 						</div>
-						<Primary type='text' onclick={() => {
+						<Primary type='text' onclick={async () => {
 							pa.addEvent('logout', { props: { position: 'header' } })
-							signOut({ callbackUrl: '/' })
+							await authClient.signOut({
+								fetchOptions: {
+									onSuccess: () => {
+										window.location.href = '/'
+									},
+								},
+							})
 						}}>
 							Sign Out
 						</Primary>
@@ -57,9 +63,12 @@
 						</Primary>
 					{/if}
 				{:else}
-					<Primary type='text' onclick={() => {
+					<Primary type='text' onclick={async () => {
 						pa.addEvent('login', { props: { position: 'header' } })
-						signIn('trakt', { callbackUrl: '/dashboard' })
+						await authClient.signIn.oauth2({
+							providerId: 'trakt',
+							callbackURL: '/dashboard',
+						})
 					}}>
 						Sign In With Trakt
 					</Primary>

@@ -3,11 +3,11 @@
 	import { page } from '$app/state'
 	import { GITHUB_REPO_URL, TITLE } from '$const'
 	import { classList } from '$lib/actions'
+	import { authClient } from '$lib/auth-client'
 	import Primary from '$lib/button/Primary.svelte'
 	import Spacer from '$lib/Spacer.svelte'
 	import { pa } from '$lib/store/plausible'
 	import Svg from '$lib/Svg.svelte'
-	import { signIn } from '@auth/sveltekit/client'
 </script>
 
 <h1 class='visually-hidden'>{TITLE}</h1>
@@ -25,9 +25,12 @@
 				Show me my Poster Grid <Svg id='arrow-right' />
 			</Primary>
 		{:else}
-			<Primary type='text' onclick={() => {
+			<Primary type='text' onclick={async () => {
 				pa.addEvent('login', { props: { position: 'hero' } })
-				signIn('trakt', { callbackUrl: '/dashboard' })
+				await authClient.signIn.oauth2({
+					providerId: 'trakt',
+					callbackURL: '/dashboard',
+				})
 			}}>
 				Show me my Poster Grid <Svg id='arrow-right' />
 			</Primary>

@@ -3,8 +3,9 @@ import type { LayoutServerLoad } from './$types'
 import { DEFAULT_CACHE_HEADER } from '$const'
 
 export const load: LayoutServerLoad = async ({ locals, fetch, setHeaders }) => {
-	const session = await locals.auth()
-	const id = session!.user.id
+	// Session is already populated in hooks.server.ts
+	const user = locals.user
+	const id = user!.id
 
 	setHeaders({
 		...DEFAULT_CACHE_HEADER,

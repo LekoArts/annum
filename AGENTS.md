@@ -76,10 +76,15 @@ Order imports by:
 Example:
 
 ```typescript
-import type { Language, NormalizedItemResponse } from '$lib/types'
+import type { Language } from '$lib/types'
 import { page } from '$app/state'
+import { authClient } from '$lib/auth-client'
 import { normalizeItem } from '$lib/utils'
-import { signIn } from '@auth/sveltekit/client'
+
+// Using these in your component
+const _session = authClient.useSession()
+const _items = normalizeItem(rawData)
+const _lang: Language = page.data.lang
 ```
 
 ### SvelteKit Path Aliases
@@ -155,19 +160,20 @@ describe('functionName', () => {
 - Use `RequestHandler` type from `./$types`
 - Set cache headers using `setHeaders()`
 - Return responses with `json()` helper
-- Check authentication with `await locals.auth()`
+- Check authentication from `locals.user` (populated in hooks.server.ts)
 
 Example structure:
 
 ```typescript
-export const GET: RequestHandler = async ({ locals, url, fetch, setHeaders }) => {
-	const session = await locals.auth()
-	if (!session?.user)
+export const GET: RequestHandler = async ({ locals, setHeaders }) => {
+	const user = locals.user
+	if (!user)
 		error(401, 'You must sign in to access this route.')
 
 	setHeaders({ ...DEFAULT_CACHE_HEADER })
 
 	// Implementation
+	const data = { userId: user.id }
 	return json({ data })
 }
 ```
@@ -192,8 +198,9 @@ export const TMDB_FETCH_DEFAULTS = {
 ### Type Guards
 
 ```typescript
-function isTraktWatchedItem(item: TraktHistoryItem | TraktWatchedItem): item is TraktWatchedItem {
-	return !('type' in item)
+function _isTraktWatchedItem(item: TraktHistoryItem | TraktWatchedItem): item is TraktWatchedItem {
+	const isWatched = !('type' in item)
+	return isWatched
 }
 ```
 

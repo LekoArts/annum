@@ -7,9 +7,10 @@ import { tmdbImageUrlsWithDimensions, tmdbItemDetailsUrl } from '$lib/utils/tmdb
 import { error, json } from '@sveltejs/kit'
 
 export const GET: RequestHandler = async ({ url, locals, fetch, setHeaders }) => {
-	const session = await locals.auth()
+	// Session is already populated in hooks.server.ts
+	const user = locals.user
 
-	if (!session?.user)
+	if (!user)
 		error(401, 'You must sign in to access this route.')
 
 	const id = url.searchParams.get('id')
