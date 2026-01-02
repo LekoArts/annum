@@ -2,7 +2,7 @@ import { getRequestEvent } from '$app/server'
 import { PRIVATE_BETTER_AUTH_SECRET, PRIVATE_TRAKT_CLIENT_ID, PRIVATE_TRAKT_CLIENT_SECRET } from '$env/static/private'
 import { PUBLIC_BETTER_AUTH_URL } from '$env/static/public'
 import { betterAuth } from 'better-auth'
-import { customSession, genericOAuth } from 'better-auth/plugins'
+import { customSession, genericOAuth, oAuthProxy } from 'better-auth/plugins'
 import { sveltekitCookies } from 'better-auth/svelte-kit'
 
 interface TraktUser {
@@ -83,5 +83,8 @@ export const auth = betterAuth({
 			}
 		}),
 		sveltekitCookies(getRequestEvent),
+		oAuthProxy({
+			productionURL: PUBLIC_BETTER_AUTH_URL,
+		})
 	],
 })
