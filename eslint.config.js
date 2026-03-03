@@ -26,6 +26,7 @@ export default antfu({
 		'svelte/valid-compile': 'warn',
 		'svelte/mustache-spacing': 'off',
 		'no-unused-vars': 'off',
+		'node/prefer-global/process': 'off',
 		'prefer-const': 'off',
 		'ts/no-unused-vars': ['error', {
 			argsIgnorePattern: '^_[^_].*$|^_$',

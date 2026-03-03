@@ -92,6 +92,6 @@ export const auth = betterAuth({
 		sveltekitCookies(getRequestEvent),
 		oAuthProxy({
 			productionURL: PUBLIC_BETTER_AUTH_URL,
-		})
+		}),
 	],
 })
