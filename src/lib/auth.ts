@@ -57,6 +57,9 @@ export const auth = betterAuth({
 					clientSecret: PRIVATE_TRAKT_CLIENT_SECRET,
 					authorizationUrl: 'https://trakt.tv/oauth/authorize',
 					tokenUrl: 'https://api.trakt.tv/oauth/token',
+					authorizationHeaders: {
+						'User-Agent': 'annum/1.0',
+					},
 					getUserInfo: async (tokens) => {
 						const user = await fetch('https://api.trakt.tv/users/me?extended=full', {
 							method: 'GET',
@@ -64,6 +67,7 @@ export const auth = betterAuth({
 								'Authorization': `Bearer ${tokens.accessToken}`,
 								'trakt-api-version': '2',
 								'trakt-api-key': PRIVATE_TRAKT_CLIENT_ID,
+								'User-Agent': 'annum/1.0',
 							},
 						}).then(res => res.json()) as TraktUser
 
