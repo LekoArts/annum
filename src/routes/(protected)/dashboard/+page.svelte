@@ -35,11 +35,8 @@
 	<div class='flex flex-wrap items-center gap-4'>
 		<TypeToggles {types} {year} />
 		<YearSelect {year} {years} />
-		<!--
-			Plain links on purpose: `data-sveltekit-reload` would send these through `native_navigation`
-			and reload the whole document. The year's items come from the cached library, so a client-side
-			navigation re-renders the grid instantly.
-		-->
+		<!-- Plain links on purpose: `data-sveltekit-reload` would reload the whole document, while the year's
+			items come from the cached library and re-render instantly on a client-side navigation -->
 		<div class='flex items-center gap-2'>
 			{#if year > earliestYear}
 				<Secondary type='link' href={`/dashboard${dashboardSearch({ year: year - 1, types, currentYear: CURRENT_YEAR })}`} aria-label='Navigate to previous year'>Previous</Secondary>

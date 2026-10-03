@@ -12,10 +12,8 @@
 
 	let { year, years }: Props = $props()
 
-	/**
-	 * Changing the year must not lose the media selection, so it is read back from the URL (per-parameter
-	 * tracking keeps this reactive to `?types=`) and written together with the new year.
-	 */
+	// The media selection is read back from the URL (per-parameter tracking keeps this reactive to
+	// `?types=`) so changing the year does not lose it.
 	function handleChange(event: Event) {
 		const next = Number.parseInt((event.currentTarget as HTMLSelectElement).value, 10)
 		const types = resolveSelectedTypes(page.url.searchParams)

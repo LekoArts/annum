@@ -11,11 +11,8 @@
 	let panel: HTMLDivElement | undefined
 	let expanded = $state(false)
 
-	/**
-	 * The UA stylesheet centres `[popover]` in the viewport, so anchoring it under the trigger is our job:
-	 * compute the position when it opens and keep it there while the page scrolls or resizes beneath it.
-	 * The horizontal position is clamped so a narrow window cannot push the panel off-screen.
-	 */
+	// `[popover]` is centred by the UA stylesheet, so anchoring it under the trigger is our job. The
+	// horizontal position is clamped so a narrow window cannot push the panel off-screen.
 	function place() {
 		if (!trigger || !panel)
 			return
@@ -51,10 +48,7 @@
 	</Secondary>
 </span>
 
-<!--
-	`inset-auto` and `m-0` undo the UA centring of `[popover]`: the panel is positioned by `place()`
-	instead, so those declarations must not fight it.
--->
+<!-- `inset-auto m-0` undo the UA centring of `[popover]`; `place()` decides the position instead. -->
 <div id='dashboard-settings' class='inset-auto m-0 space-y-3' popover='auto' bind:this={panel} ontoggle={handleToggle}>
 	<div>
 		<p>Posters will be grouped by month indicated by individual headings.</p>

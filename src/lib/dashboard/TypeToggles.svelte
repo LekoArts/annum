@@ -13,10 +13,8 @@
 
 	let { types, year }: Props = $props()
 
-	/**
-	 * The selection lives in the URL, so a toggle is a navigation. `reset: false` keeps the scroll
-	 * position and focus where they were - the grid swaps underneath without the page jumping.
-	 */
+	// The selection lives in the URL, so a toggle is a navigation; `reset: false` keeps scroll and focus
+	// where they were, and the grid swaps underneath without the page jumping.
 	function toggle(type: SimklMediaType) {
 		const next = types.includes(type)
 			? types.filter(selected => selected !== type)

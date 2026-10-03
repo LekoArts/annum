@@ -1,17 +1,13 @@
 export type SimklMediaType = 'movies' | 'shows' | 'anime'
 
-/**
- * Watch activity for a single year. `watchedAt` is the latest watch in that year.
- */
+/** Watch activity in one year; `watchedAt` is the latest watch that year. */
 export interface SimklWatchEntry {
 	year: number
 	month: string
 	watchedAt: string
 }
 
-/**
- * A normalized Simkl library item - deliberately small so the whole library fits in localStorage.
- */
+/** A normalized item - deliberately small so the whole library fits in localStorage. */
 export interface SimklMediaItem {
 	simklId: number
 	slug: string | null
@@ -32,9 +28,7 @@ export interface SimklActivityDomain {
 	removed_from_list?: string | null
 }
 
-/**
- * The `/sync/activities` response. `all` is the top-level timestamp used for the sync stop check.
- */
+/** The `/sync/activities` response; `all` is the timestamp the sync stop check compares. */
 export type SimklActivities = Record<string, unknown> & {
 	all?: string | null
 	settings?: SimklActivityDomain

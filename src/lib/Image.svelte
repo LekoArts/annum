@@ -13,19 +13,12 @@
 
 	const src = $derived(simklPosterUrl(poster))
 	const srcset = $derived(simklPosterSrcset(poster))
-	/**
-	 * `auto` is only legal on lazy images — the HTML spec defines an `<img>` as "allows auto-sizes"
-	 * when its `loading` is in the lazy state — so the eagerly loaded first poster of a page keeps the
-	 * pre-`srcset` behaviour: no `sizes` means 100vw, which selects the largest available poster.
-	 */
+	// `auto` is only legal on lazy images, so the eager first poster keeps no `sizes` (100vw, i.e. the largest)
 	const sizes = $derived(loading === 'lazy' ? 'auto' : undefined)
 	let failed = $state(false)
 
-	/**
-	 * Poster paths can go stale (Simkl merges titles), which would leave a broken image. Swap in the
-	 * placeholder and drop the `srcset` so it cannot pick a stale path again; the flag keeps a failing
-	 * placeholder from looping.
-	 */
+	// Stale poster paths (Simkl merges titles) fall back to the placeholder with its `srcset` dropped;
+	// the flag keeps a failing placeholder from looping
 	function handleError(event: Event) {
 		if (failed)
 			return
@@ -39,11 +32,6 @@
 	}
 </script>
 
-<!--
-	`sizes='auto'` lets the browser measure the tile itself: the grid is fluid (auto-fill in normal
-	mode, a user-chosen column count in screenshot mode), so only the layout knows how wide a poster
-	ends up. The source size is in CSS pixels and the browser multiplies it by the device pixel ratio
-	when picking a candidate, so high-DPI screens get the largest poster Simkl has (340px) rather than
-	one matching the tile in CSS pixels.
--->
-<img class='aspect-[2/3] w-full object-cover' decoding='async' transition:fade {alt} {loading} {src} {srcset} {sizes} onerror={handleError} />
+<!-- `sizes='auto'` lets the browser measure the tile, which only the fluid grid knows. The browser
+     multiplies the CSS width by the device pixel ratio, so high-DPI screens get Simkl's largest (340px) -->
+<img class='aspect-2/3 w-full object-cover' decoding='async' transition:fade {alt} {loading} {src} {srcset} {sizes} onerror={handleError} />

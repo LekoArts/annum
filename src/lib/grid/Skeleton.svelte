@@ -13,12 +13,8 @@
 	const tiles = $derived(Array.from({ length: count }, (_, index) => index))
 </script>
 
-<!--
-	Placeholder tiles for the first sync, when the library is not in `localStorage` yet. They reuse
-	`Grid`, so the skeleton has the same geometry as the grid it stands in for - including in screenshot
-	mode, where the gutters collapse. The tiles keep the poster aspect ratio so the grid does not reflow
-	when the real posters arrive.
--->
+<!-- Placeholders for the first sync, drawn through `Grid` so they share its geometry. The tiles keep the
+     poster aspect ratio, so the grid does not reflow when the real posters arrive. -->
 <div aria-busy='true'>
 	<p class='sr-only'>Loading your library…</p>
 	<Grid {screenshotMode} {columns}>

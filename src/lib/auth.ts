@@ -30,8 +30,7 @@ export const auth = betterAuth({
 		PUBLIC_BETTER_AUTH_URL,
 		...__DEPLOY_PRIME_URL__ ? [__DEPLOY_PRIME_URL__] : [],
 	],
-	// Stateless mode - no database required
-	// This will automatically enable JWT-based sessions in cookies
+	// Stateless: no database, so sessions are encrypted JWT cookies
 	session: {
 		cookieCache: {
 			enabled: true,
@@ -55,8 +54,7 @@ export const auth = betterAuth({
 				{
 					providerId: 'simkl',
 					clientId: PUBLIC_SIMKL_CLIENT_ID,
-					// Simkl's browser sign-in apps are public clients, so PKCE is
-					// mandatory and no client secret is configured.
+					// Public client: PKCE is mandatory and no client secret exists
 					pkce: true,
 					authorizationUrl: 'https://simkl.com/oauth2/authorize',
 					tokenUrl: 'https://api.simkl.com/oauth2/token',
@@ -79,8 +77,7 @@ export const auth = betterAuth({
 							},
 						})
 
-						// A failed profile lookup otherwise surfaces as an opaque Better Auth sign-in
-						// error, so fail with the actual status here.
+						// Fail here so the status is visible instead of an opaque sign-in error
 						if (!response.ok)
 							throw new Error(`Simkl profile request failed with HTTP ${response.status}`)
 
@@ -101,9 +98,8 @@ export const auth = betterAuth({
 		oAuthProxy({
 			productionURL: PUBLIC_BETTER_AUTH_URL,
 		}),
-		// better-auth requires the cookie integration last: plugins with `hooks.after` that run
-		// after it (like the oauth proxy, which rewrites the account cookie) could otherwise set
-		// cookies that never reach SvelteKit's cookie store.
+		// The cookie integration must be last: a later `hooks.after` (the oauth proxy rewrites the
+		// account cookie) would otherwise set cookies that never reach SvelteKit's cookie store.
 		sveltekitCookies(getRequestEvent),
 	],
 })

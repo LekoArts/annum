@@ -19,16 +19,15 @@
 	const SYNC_STATUS_DELAY = 400
 	let showSyncStatus = $state(false)
 
-	// `$effect` only runs in the browser, which is exactly the "on mount" semantics wanted here.
-	// `sync` reads and then writes the library store, so the call has to be untracked - otherwise the
-	// write would re-trigger this effect and it would sync forever.
+	// `$effect` only runs in the browser (= on mount). `sync` writes the store it reads, so it must be
+	// untracked - otherwise the write re-triggers this effect and it syncs forever.
 	$effect(() => {
 		untrack(() => sync())
 	})
 
-	// A cold library has nothing on screen yet, so its sync is announced right away; with a cached
-	// library on screen the sync is a background refresh and only speaks up if it is still running
-	// after the grace period. The chip is fixed, so it never shifts the page either way.
+	// A cold library has nothing on screen yet, so its sync is announced right away; a warm one is a
+	// background refresh that only speaks up after the grace period. The chip is fixed, so it never
+	// shifts the page either way.
 	$effect(() => {
 		const state = $syncState
 		const cold = !$hasData
@@ -52,12 +51,12 @@
 </script>
 
 {#if $syncState === 'error'}
-	<div class='flex items-center gap-2' role='alert'>
+	<div class='fixed right-4 bottom-4 z-10 flex items-center gap-2' role='alert'>
 		Couldn't sync your Simkl library.
 		<button onclick={() => sync()}>Retry</button>
 	</div>
 {:else if showSyncStatus}
-	<div class='flex items-center gap-2' role='status'>
+	<div class='fixed right-4 bottom-4 z-10 flex items-center gap-2' role='status'>
 		Syncing your Simkl library…
 	</div>
 {/if}

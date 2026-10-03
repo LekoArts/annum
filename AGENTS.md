@@ -158,10 +158,9 @@ settings.set({ ...$settings, columns: 3 })
 (`@import 'tailwindcss'`) and built by the `@tailwindcss/vite` plugin. There is no PostCSS pipeline, no
 separate stylesheet layer and no design tokens yet: components carry the few utilities they need inline.
 
-Layout is deliberately generic - a flex column shell in `src/routes/+layout.svelte`, a centered
-max-width container, and a CSS grid for the posters. `src/lib/grid/Grid.svelte` publishes the geometry
-the settings toolbar decides as CSS variables, because the grid, its skeleton and the toolbar all read
-the same contract:
+The shell is a flex column in `src/routes/+layout.svelte` with a centered max-width container and a CSS
+grid for the posters. `src/lib/grid/Grid.svelte` publishes its geometry as CSS variables so a design can
+restyle it without touching the grid logic:
 
 - `--gap` - gutter between tiles (`0px` in screenshot mode; `1rem` otherwise)
 - `--columns` - column count, used by the fixed template in screenshot mode
@@ -197,17 +196,14 @@ catch (e) {
 
 ### Documentation
 
-**JSDoc Comments:**
-- Add JSDoc for utility functions
-- Include `@example` usage examples
-- Document parameters and return types
+**Comments:**
+- Keep them to one line unless the behaviour is genuinely not obvious from the code
+- Explain the why, not the signature: the types already carry parameters and return values
+- Do not narrate the current design or what a future one might do
 
 Example:
 ```typescript
-/**
- * Group array elements by the given key
- * @example groupBy([{ id: 1, name: 'John' }], 'name') => { John: [{ id: 1, name: 'John' }] }
- */
+/** Group array elements by one of their keys */
 export function groupBy<T extends Record<PropertyKey, any>, Key extends Filter<T>>(arr: Array<T>, key: Key): Record<T[Key], Array<T>>
 ```
 

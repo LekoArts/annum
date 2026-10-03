@@ -14,11 +14,9 @@
 	/** Display names come from Simkl as words; be lenient about runs of whitespace between them. */
 	const NAME_WORD_SEPARATOR = /\s+/
 
-	/**
-	 * The dashboard's selection lives in the query string, so the header reads it from the URL instead of
-	 * from a route segment: the counts must follow the grid the user is actually looking at. Derived here
-	 * rather than passed down, so the header stays reactive to `page.url` on every navigation.
-	 */
+	// The selection lives in the query string, so the header reads it from the URL rather than a route
+	// segment: the counts must follow the grid on screen. Derived here (not passed down) so the header
+	// stays reactive to `page.url` on every navigation.
 	const types = $derived(resolveSelectedTypes(page.url.searchParams))
 	const year = $derived(resolveYear(page.url.searchParams, availableYears($library, CURRENT_YEAR), CURRENT_YEAR))
 
@@ -46,10 +44,7 @@
 					<div class='flex items-center gap-4'>
 						<div class='flex items-center gap-2' aria-label='User statistics and information'>
 							{#each types as type (type)}
-								<!--
-									The count is rendered even when it is 0: with the all-time total gone, an
-									icon followed by nothing would read as a rendering bug rather than as "none".
-								-->
+								<!-- Render 0 too: without the all-time total an icon followed by nothing reads as a bug -->
 								<div>
 									<Svg id={MEDIA_TYPE_ICONS[type]} /> {countForYear($library, type, year)} <span class='sr-only'>{MEDIA_TYPE_LABELS[type].toLowerCase()} in {year}</span>
 								</div>

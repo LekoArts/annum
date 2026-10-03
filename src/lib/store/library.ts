@@ -5,10 +5,7 @@ import { persisted } from './persisted'
 
 export type SyncState = 'idle' | 'syncing' | 'error'
 
-/**
- * The cache is the last sync: the normalized library plus the Simkl `activities` snapshot whose `all`
- * timestamp anchors the next `date_from` delta.
- */
+/** The cache: the normalized library plus the `activities` snapshot that anchors the next delta. */
 export interface CachedLibrary extends SimklLibrary {
 	activities: SimklActivities | null
 }
@@ -25,11 +22,8 @@ export const library = persisted<CachedLibrary>('annum-simkl-library', {
 export const syncState = writable<SyncState>('idle')
 
 /**
- * Whether a sync has finished successfully in this session.
- *
- * The library only lives in `localStorage`, so the server (and the first paint) has no items to
- * show. "Nothing here for this year" copy therefore waits for this flag instead of `syncState`,
- * whose pre-sync value is also `idle`.
+ * Whether a sync finished in this session. The library only lives in the browser, so the "nothing
+ * watched" copy waits for this flag - `syncState` is `idle` before the first sync too.
  */
 export const syncCompleted = writable(false)
 
@@ -40,10 +34,8 @@ export const hasData = derived(library, $library =>
 let syncing = false
 
 /**
- * Sync the Simkl library into the persisted cache.
- *
- * On `up-to-date` the previously saved activities snapshot is kept: it is identical to what the server
- * returned, and overwriting it could drop a moved `removed_from_list` baseline.
+ * Sync into the persisted cache; on `up-to-date` the saved activities snapshot is kept, since
+ * overwriting it could drop a moved `removed_from_list` baseline.
  */
 export async function sync(): Promise<void> {
 	if (syncing)

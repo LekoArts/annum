@@ -1,11 +1,4 @@
-/**
- * The dashboard is a client-side app: its data is the Simkl library cached in `localStorage` plus the
- * sync against `/api/simkl/sync`, neither of which the server can reach. Server rendering those routes
- * could only ever paint the empty state - zero counts, an empty grid - and then replace it during
- * hydration.
- *
- * So the subtree renders on the client. The session gate for `(protected)` still runs on the server in
- * `src/hooks.server.ts`, and SvelteKit keeps the route's styles and font preloads in the served HTML
- * (see the `ssr: false` branch of `render_response`), so this does not cause a flash of unstyled content.
- */
+// The dashboard's data (the cached library plus `/api/simkl/sync`) only exists in the browser, so server
+// rendering could only paint an empty grid and replace it during hydration. The `(protected)` session
+// gate still runs on the server in `src/hooks.server.ts`.
 export const ssr = false
