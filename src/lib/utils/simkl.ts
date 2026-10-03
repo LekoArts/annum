@@ -55,15 +55,19 @@ const SIMKL_POSTER_BASE_URL = 'https://simkl.in/posters'
 const SIMKL_AVATAR_BASE_URL = 'https://simkl.in/avatars'
 const SIMKL_IMAGE_PROXY = 'https://wsrv.nl/?url='
 const PLACEHOLDER_DATE_THRESHOLD = Date.parse('2000-01-01T00:00:00Z')
+/** A leading slash and/or the `avatars/` segment, neither of which may be repeated in a built avatar URL. */
+const AVATAR_PATH_PREFIX = /^\/?(avatars\/)?/
 
 /**
  * Build an avatar URL for the `user.avatar` value Simkl returns.
  *
  * Simkl serves avatars straight from simkl.in (no image proxy) and the API is not consistent about the
  * shape: its `/users/settings` example shows a full URL while the image docs describe a path fragment.
- * Both are accepted, and a path fragment gets the documented size suffix.
+ * Both are accepted, and a path fragment gets the documented size suffix. A path that already carries
+ * the `avatars/` segment (with or without a leading slash) does not get a second one.
  * @example simklAvatarUrl('https://simkl.in/avatars/1/2_100.jpg') => the URL unchanged
  * @example simklAvatarUrl('1/2.jpg') => 'https://simkl.in/avatars/1/2_100.jpg'
+ * @example simklAvatarUrl('avatars/1/2.jpg') => 'https://simkl.in/avatars/1/2_100.jpg'
  */
 export function simklAvatarUrl(avatar: string | null | undefined, size = '100'): string | null {
 	if (!avatar)
@@ -72,9 +76,10 @@ export function simklAvatarUrl(avatar: string | null | undefined, size = '100'):
 	if (avatar.startsWith('http'))
 		return avatar
 
-	const dot = avatar.lastIndexOf('.')
-	const stem = dot === -1 ? avatar : avatar.slice(0, dot)
-	const extension = dot === -1 ? '' : avatar.slice(dot)
+	const path = avatar.replace(AVATAR_PATH_PREFIX, '')
+	const dot = path.lastIndexOf('.')
+	const stem = dot === -1 ? path : path.slice(0, dot)
+	const extension = dot === -1 ? '' : path.slice(dot)
 
 	return `${SIMKL_AVATAR_BASE_URL}/${stem}_${size}${extension}`
 }
@@ -295,6 +300,7 @@ export function itemsForYear(library: SimklLibrary, type: SimklMediaType, year: 
 
 /**
  * Number of items of a type with watching activity in a given year.
+ * @example countForYear(library, 'movies', 2024) => 12
  */
 export function countForYear(library: SimklLibrary, type: SimklMediaType, year: number | string): number {
 	const y = typeof year === 'string' ? Number.parseInt(year) : year

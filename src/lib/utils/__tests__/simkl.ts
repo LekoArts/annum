@@ -459,6 +459,11 @@ describe('simklAvatarUrl', () => {
 		expect(simklAvatarUrl('12/34567.jpg', '256')).toBe('https://simkl.in/avatars/12/34567_256.jpg')
 	})
 
+	it('does not repeat an avatars segment the path already carries', () => {
+		expect(simklAvatarUrl('avatars/12/34567.jpg')).toBe('https://simkl.in/avatars/12/34567_100.jpg')
+		expect(simklAvatarUrl('/avatars/12/34567.jpg')).toBe('https://simkl.in/avatars/12/34567_100.jpg')
+	})
+
 	it('returns null when there is no avatar', () => {
 		expect(simklAvatarUrl(null)).toBeNull()
 		expect(simklAvatarUrl(undefined)).toBeNull()
