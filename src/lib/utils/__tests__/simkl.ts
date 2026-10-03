@@ -1,6 +1,6 @@
 import type { SimklAllItemsResponse, SimklLibrary, SimklMediaItem, SimklRawItem, SimklSyncResponse, SimklWatchEntry } from '#lib/types.js'
 import { describe, expect, it } from 'vitest'
-import { collectSimklIds, countByType, countForYear, isPlaceholderDate, itemsForYear, mergeSyncResponse, normalizeSimklItem, simklItemUrl, simklPosterSrcset, simklPosterUrl } from '../simkl'
+import { availableYears, collectSimklIds, countByType, countForTypes, countForYear, isPlaceholderDate, itemsForTypes, itemsForYear, mergeSyncResponse, normalizeSimklItem, simklAvatarUrl, simklItemUrl, simklPosterSrcset, simklPosterUrl } from '../simkl'
 
 function media(simklId: number, watched: Array<SimklWatchEntry> = []): SimklMediaItem {
 	return {
@@ -364,5 +364,123 @@ describe('mergeSyncResponse', () => {
 		expect(result.movies).toEqual([])
 		expect(result.shows.map(item => item.simklId)).toEqual([10, 11])
 		expect(result.anime).toEqual([])
+	})
+})
+
+describe('itemsForTypes', () => {
+	it('tags each item with its own type and interleaves the types newest first', () => {
+		const library: SimklLibrary = {
+			movies: [media(1, [watch(2020, 'January', '2020-01-01T00:00:00Z')])],
+			shows: [media(2, [watch(2020, 'June', '2020-06-01T00:00:00Z')])],
+			anime: [media(3, [watch(2020, 'March', '2020-03-01T00:00:00Z')])],
+		}
+
+		expect(itemsForTypes(library, ['movies', 'shows', 'anime'], 2020).map(item => `${item.type}:${item.simklId}`))
+			.toEqual(['shows:2', 'anime:3', 'movies:1'])
+	})
+
+	it('preserves the year month and watchedAt of each projected item', () => {
+		const library: SimklLibrary = {
+			movies: [],
+			shows: [],
+			anime: [media(3, [watch(2020, 'March', '2020-03-03T00:00:00Z')])],
+		}
+
+		expect(itemsForTypes(library, ['anime'], 2020)[0]).toMatchObject({
+			simklId: 3,
+			type: 'anime',
+			month: 'March',
+			watchedAt: '2020-03-03T00:00:00Z',
+		})
+	})
+
+	it('projects only the selected types', () => {
+		expect(itemsForTypes(makeLibrary(), ['movies', 'shows'], 2020).map(item => item.simklId)).toEqual([1])
+		expect(itemsForTypes(makeLibrary(), ['movies', 'shows'], 2022).map(item => item.simklId)).toEqual([11])
+		expect(itemsForTypes(makeLibrary(), ['anime'], 2021)).toEqual([])
+	})
+
+	it('returns an empty array for a year with no activity', () => {
+		expect(itemsForTypes(makeLibrary(), ['movies', 'shows', 'anime'], 1999)).toEqual([])
+	})
+})
+
+describe('countForTypes', () => {
+	it('sums the per-type counts of the selection', () => {
+		const library: SimklLibrary = {
+			movies: [media(1, [watch(2020)]), media(2, [watch(2020)])],
+			shows: [media(3, [watch(2020)])],
+			anime: [media(4, [watch(2019)])],
+		}
+
+		expect(countForTypes(library, ['movies', 'shows', 'anime'], 2020)).toBe(3)
+		expect(countForTypes(library, ['movies'], 2020)).toBe(2)
+		expect(countForTypes(library, ['shows', 'anime'], 2020)).toBe(1)
+	})
+
+	it('counts nothing for a year with no activity', () => {
+		expect(countForTypes(makeLibrary(), ['movies', 'shows', 'anime'], 1999)).toBe(0)
+	})
+})
+
+describe('availableYears', () => {
+	it('returns a contiguous descending range from the current year to the earliest watched year', () => {
+		const library: SimklLibrary = {
+			movies: [media(1, [watch(2018)])],
+			shows: [media(2, [watch(2022)])],
+			anime: [media(3, [watch(2020)])],
+		}
+
+		expect(availableYears(library, 2023)).toEqual([2023, 2022, 2021, 2020, 2019, 2018])
+	})
+
+	it('lists the gap years even when nothing was watched in them', () => {
+		const library: SimklLibrary = {
+			movies: [media(1, [watch(2019)]), media(2, [watch(2021)])],
+			shows: [],
+			anime: [],
+		}
+
+		expect(availableYears(library, 2021)).toEqual([2021, 2020, 2019])
+	})
+
+	it('returns only the current year for an empty library', () => {
+		expect(availableYears({ movies: [], shows: [], anime: [] }, 2024)).toEqual([2024])
+	})
+
+	it('includes the current year even when nothing was watched in it', () => {
+		const library: SimklLibrary = { movies: [media(1, [watch(2015)])], shows: [], anime: [] }
+
+		expect(availableYears(library, 2024)).toEqual([2024, 2023, 2022, 2021, 2020, 2019, 2018, 2017, 2016, 2015])
+	})
+
+	it('ignores years after the current year so the range cannot invert', () => {
+		const library: SimklLibrary = {
+			movies: [media(1, [watch(2030)]), media(2, [watch(2016)])],
+			shows: [],
+			anime: [],
+		}
+
+		expect(availableYears(library, 2024)).toEqual([2024, 2023, 2022, 2021, 2020, 2019, 2018, 2017, 2016])
+	})
+})
+
+describe('simklAvatarUrl', () => {
+	it('passes a full URL through unchanged', () => {
+		expect(simklAvatarUrl('https://simkl.in/avatars/12/34567_100.jpg')).toBe('https://simkl.in/avatars/12/34567_100.jpg')
+	})
+
+	it('appends the documented 100px suffix to a bare path', () => {
+		expect(simklAvatarUrl('12/34567.png')).toBe('https://simkl.in/avatars/12/34567_100.png')
+	})
+
+	it('honours an explicit size', () => {
+		expect(simklAvatarUrl('12/34567.jpg', '256')).toBe('https://simkl.in/avatars/12/34567_256.jpg')
+	})
+
+	it('returns null when there is no avatar', () => {
+		expect(simklAvatarUrl(null)).toBeNull()
+		expect(simklAvatarUrl(undefined)).toBeNull()
+		expect(simklAvatarUrl('')).toBeNull()
 	})
 })
