@@ -71,6 +71,11 @@ describe('resolveYear', () => {
 	it('accepts the current year itself', () => {
 		expect(resolveYear(params('year=2024'), YEARS, 2024)).toBe(2024)
 	})
+
+	it('does not read a hex-looking value as a year', () => {
+		// `0x7e6` is 2022 in hex; parsed without a radix it would resolve to an available year
+		expect(resolveYear(params('year=0x7e6'), YEARS, 2024)).toBe(2024)
+	})
 })
 
 describe('dashboardSearch', () => {

@@ -42,7 +42,8 @@ export function resolveSelectedTypes(searchParams: SearchParamsReader): Array<Si
  */
 export function resolveYear(searchParams: SearchParamsReader, availableYears: ReadonlyArray<number>, currentYear: number): number {
 	const raw = searchParams.get('year')
-	const year = raw === null ? Number.NaN : Number.parseInt(raw)
+	// Base 10 explicitly: `parseInt` would otherwise read a `0x`-prefixed value as hexadecimal
+	const year = raw === null ? Number.NaN : Number.parseInt(raw, 10)
 
 	return Number.isInteger(year) && availableYears.includes(year) ? year : currentYear
 }

@@ -17,7 +17,7 @@
 	 * tracking keeps this reactive to `?types=`) and written together with the new year.
 	 */
 	function handleChange(event: Event) {
-		const next = Number.parseInt((event.currentTarget as HTMLSelectElement).value)
+		const next = Number.parseInt((event.currentTarget as HTMLSelectElement).value, 10)
 		const types = resolveSelectedTypes(page.url.searchParams)
 
 		goto(`/dashboard${dashboardSearch({ year: next, types, currentYear: CURRENT_YEAR })}`, { reset: false })
