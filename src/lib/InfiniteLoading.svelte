@@ -127,7 +127,7 @@
 </script>
 
 <script lang='ts'>
-	import type { StateChanger } from '$lib/types'
+	import type { StateChanger } from '#lib/types.js'
 	import { onDestroy, onMount, tick } from 'svelte'
 
 	const STATUS = {

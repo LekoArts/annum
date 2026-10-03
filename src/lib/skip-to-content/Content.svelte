@@ -1,5 +1,5 @@
 <script lang='ts'>
-	import { SKIP_TO_CONTENT_ID } from '$const'
+	import { SKIP_TO_CONTENT_ID } from '#const'
 
 	interface Props {
 		id?: string

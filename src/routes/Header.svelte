@@ -1,13 +1,13 @@
 <script lang='ts'>
-	import type { TraktStats } from '$lib/types'
+	import type { TraktStats } from '#lib/types.js'
+	import { CURRENT_YEAR, TITLE } from '#const'
+	import { authClient } from '#lib/auth-client.js'
+	import Primary from '#lib/button/Primary.svelte'
+	import Spacer from '#lib/Spacer.svelte'
+	import { pa } from '#lib/store/plausible.js'
+	import { stats } from '#lib/store/stats.js'
+	import Svg from '#lib/Svg.svelte'
 	import { page } from '$app/state'
-	import { CURRENT_YEAR, TITLE } from '$const'
-	import { authClient } from '$lib/auth-client'
-	import Primary from '$lib/button/Primary.svelte'
-	import Spacer from '$lib/Spacer.svelte'
-	import { pa } from '$lib/store/plausible'
-	import { stats } from '$lib/store/stats'
-	import Svg from '$lib/Svg.svelte'
 
 	let traktStats = $derived(page.data?.stats as TraktStats | undefined)
 	const session = authClient.useSession()

@@ -1,12 +1,12 @@
 <script lang='ts'>
 	/* eslint-disable svelte/valid-compile */
-	import { GITHUB_REPO_URL, TITLE } from '$const'
-	import { classList } from '$lib/actions'
-	import { authClient } from '$lib/auth-client'
-	import Primary from '$lib/button/Primary.svelte'
-	import Spacer from '$lib/Spacer.svelte'
-	import { pa } from '$lib/store/plausible'
-	import Svg from '$lib/Svg.svelte'
+	import { GITHUB_REPO_URL, TITLE } from '#const'
+	import { classList } from '#lib/actions.js'
+	import { authClient } from '#lib/auth-client.js'
+	import Primary from '#lib/button/Primary.svelte'
+	import Spacer from '#lib/Spacer.svelte'
+	import { pa } from '#lib/store/plausible.js'
+	import Svg from '#lib/Svg.svelte'
 
 	const session = authClient.useSession()
 </script>

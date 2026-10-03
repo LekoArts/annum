@@ -1,4 +1,4 @@
-import { PRIVATE_TMDB_API_KEY, PRIVATE_TRAKT_CLIENT_ID } from '$env/static/private'
+import { PRIVATE_TMDB_API_KEY, PRIVATE_TRAKT_CLIENT_ID } from '$app/env/private'
 
 export const TRAKT_FETCH_DEFAULTS = {
 	method: 'GET',

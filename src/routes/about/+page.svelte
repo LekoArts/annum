@@ -1,6 +1,6 @@
 <script lang='ts'>
-	import { GITHUB_REPO_URL } from '$const'
-	import Spacer from '$lib/Spacer.svelte'
+	import { GITHUB_REPO_URL } from '#const'
+	import Spacer from '#lib/Spacer.svelte'
 </script>
 
 <h1>About</h1>
