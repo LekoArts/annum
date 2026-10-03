@@ -1,0 +1,39 @@
+diff --git a/dist/plugins/oauth-proxy/index.mjs b/dist/plugins/oauth-proxy/index.mjs
+index 7f15091a72aaa4b4cf355bca52cfc6c345eadd1d..09ee2c3c0569f3b8851a22692bec6e90ea055943 100644
+--- a/dist/plugins/oauth-proxy/index.mjs
++++ b/dist/plugins/oauth-proxy/index.mjs
+@@ -128,7 +128,7 @@ const oAuthProxy = (opts) => {
+ 				})
+ 			}, {
+ 				matcher(context) {
+-					return context.path === "/callback/:id";
++					return context.path === "/callback/:id" || context.path === "/oauth2/callback/:providerId";
+ 				},
+ 				handler: createAuthMiddleware(async (ctx) => {
+ 					const callbackParams = defu(ctx.query, ctx.body);
+@@ -173,18 +173,23 @@ const oAuthProxy = (opts) => {
+ 						ctx.context.logger.error("OAuth callback missing authorization code");
+ 						throw redirectOnError(ctx, errorURL, "no_code");
+ 					}
+-					const providerId = ctx.params?.id;
++					// The generic OAuth plugin serves its callback on a different route,
++					// so the provider id comes from `providerId` there instead of `id`.
++					const providerId = ctx.params?.id ?? ctx.params?.providerId;
+ 					const provider = ctx.context.socialProviders.find((p) => p.id === providerId);
+ 					if (!provider) {
+ 						ctx.context.logger.error("OAuth provider not found", providerId);
+ 						throw redirectOnError(ctx, errorURL, "oauth_provider_not_found");
+ 					}
++					const callbackPath = ctx.path === "/oauth2/callback/:providerId"
++						? `/oauth2/callback/${provider.id}`
++						: `/callback/${provider.id}`;
+ 					let tokens;
+ 					try {
+ 						tokens = await provider.validateAuthorizationCode({
+ 							code,
+ 							codeVerifier: stateData.codeVerifier,
+-							redirectURI: `${ctx.context.baseURL}/callback/${provider.id}`
++							redirectURI: `${ctx.context.baseURL}${callbackPath}`
+ 						});
+ 					} catch (e) {
+ 						ctx.context.logger.error("Failed to validate authorization code", e);

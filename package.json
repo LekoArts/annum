@@ -51,6 +51,9 @@
 	"pnpm": {
 		"onlyBuiltDependencies": [
 			"esbuild"
-		]
+		],
+		"patchedDependencies": {
+			"better-auth@1.6.9": "patches/better-auth@1.6.9.patch"
+		}
 	}
 }
