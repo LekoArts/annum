@@ -12,3 +12,4 @@ vite.config.ts.timestamp-*
 .vercel
 coverage
 .mastracode
+debug-vector-index.jsonl

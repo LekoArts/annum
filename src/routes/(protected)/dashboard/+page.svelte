@@ -1,130 +1,114 @@
 <script lang='ts'>
+	import type { PageData } from './$types'
 	import { CURRENT_YEAR } from '#const'
-	import { authClient } from '#lib/auth-client.js'
 	import Secondary from '#lib/button/Secondary.svelte'
+	import SettingsPopover from '#lib/dashboard/SettingsPopover.svelte'
+	import TypeToggles from '#lib/dashboard/TypeToggles.svelte'
+	import YearSelect from '#lib/dashboard/YearSelect.svelte'
+	import Grid from '#lib/grid/Grid.svelte'
+	import GridItem from '#lib/grid/Item.svelte'
+	import GridSkeleton from '#lib/grid/Skeleton.svelte'
+	import Image from '#lib/Image.svelte'
 	import Spacer from '#lib/Spacer.svelte'
-	import { library } from '#lib/store/library.js'
+	import { library, syncCompleted, syncState } from '#lib/store/library.js'
 	import { settings } from '#lib/store/settings.js'
-	import Svg from '#lib/Svg.svelte'
-	import Switch from '#lib/Switch.svelte'
-	import { countByType, countForYear } from '#lib/utils/simkl.js'
+	import { dashboardSearch } from '#lib/utils/dashboard.js'
+	import { groupBy } from '#lib/utils/index.js'
+	import { availableYears, itemsForTypes, simklItemUrl } from '#lib/utils/simkl.js'
 
-	const session = authClient.useSession()
+	interface Props {
+		data: PageData
+	}
 
-	const years = [CURRENT_YEAR, CURRENT_YEAR - 1]
+	let { data }: Props = $props()
 
-	const totals = $derived(countByType($library))
-	const currentYear = $derived({
-		movies: countForYear($library, 'movies', CURRENT_YEAR),
-		shows: countForYear($library, 'shows', CURRENT_YEAR),
-		anime: countForYear($library, 'anime', CURRENT_YEAR),
-	})
+	const years = $derived(availableYears($library, CURRENT_YEAR))
+	const year = $derived(data.year)
+	const types = $derived(data.types)
+	const items = $derived(itemsForTypes($library, types, year))
+	const grouped = $derived(groupBy(items, 'month'))
+	const earliestYear = $derived(years.at(-1) ?? CURRENT_YEAR)
 </script>
 
-<h1 class='visually-hidden'>Dashboard</h1>
+<h1 class='visually-hidden'>{data.meta.title}</h1>
 
-<div class='prose'>
-	<p class='welcome'>Hello {$session.data?.user.name} 👋🏻</p>
-	<p>In total, you watched <Svg id='movie' /> <strong>{totals.movies} movies</strong>, <strong><Svg id='tv' /> {totals.shows} shows</strong> and <strong><Svg id='anime' /> {totals.anime} anime</strong>. You can use this app to view your movies, shows and anime year by year in a poster grid. Here are some quick links to the current and previous year:</p>
-</div>
-
-<div class='flex quicklinks'>
-	{#each years as year}
-		<Secondary type='link' href={`/dashboard/movies/${year}`}>Movies {year}</Secondary>
-		<Secondary type='link' href={`/dashboard/shows/${year}`}>Shows {year}</Secondary>
-		<Secondary type='link' href={`/dashboard/anime/${year}`}>Anime {year}</Secondary>
-	{/each}
-</div>
-
-<Spacer axis='vertical' size='xs' />
-
-<div class='prose'>
-	<p>On each page you will find a <code>Previous</code> and <code>Next</code> button to switch years. Next to the "Sign Out" button you'll see the count for the current year and total count in parentheses. You can also manually change the year in the URL as the format is always the same, for example: <code>/dashboard/movies/{CURRENT_YEAR}</code>.</p>
-</div>
-
-<Spacer axis='vertical' size='m' />
-
-<section>
-	<h2>Settings</h2>
-	<Spacer axis='vertical' size='xs' />
-	<div class='settings-wrapper'>
-		<div class='box'>
-			<p class='title'>Color Hue</p>
-			<p>Choose a color hue between <code>0deg</code> and <code>360deg</code> to change the appearance. Default is <code>240deg</code>.</p>
-			<Spacer axis='vertical' size='xs' />
-			<div class='range-wrapper flex align-center'>
-				<label for='hue'>Color hue</label>
-				<div class='current-color-hue'>{$settings.hue}</div>
-				<input id='hue' type='range' min='0' max='360' step='1' list='markers' bind:value={$settings.hue} oninput={e => settings.set({ ...$settings, hue: Number.parseInt((e.target as HTMLInputElement).value) })} />
-				<datalist id='markers'>
-					{#each [0, 60, 120, 180, 240, 300, 360] as marker}
-						<option value={marker} label={marker.toString()}></option>
-					{/each}
-				</datalist>
-			</div>
-			<Spacer axis='vertical' size='xs' />
-			<Switch label='Grayscale Mode' bind:value={$settings.grayscaleMode} />
-			<Spacer axis='vertical' size='2xs' />
-		</div>
-		<div class='box'>
-			<p class='title'>Grouping</p>
-			<p>Posters will be grouped by month indicated by individual headings.</p>
-			<Spacer axis='vertical' size='xs' />
-			<Switch label='Group by month' bind:value={$settings.groupByMonth} />
-			<Spacer axis='vertical' size='2xs' />
+<div class='wrapper flex'>
+	<div class='flex align-center navigation'>
+		<TypeToggles {types} {year} />
+		<YearSelect {year} {years} />
+		<!--
+			Plain links on purpose: `data-sveltekit-reload` would send these through `native_navigation`
+			and reload the whole document. The year's items come from the cached library, so a client-side
+			navigation re-renders the grid instantly.
+		-->
+		<div class='prev-next flex align-center'>
+			{#if year > earliestYear}
+				<Secondary type='link' href={`/dashboard${dashboardSearch({ year: year - 1, types, currentYear: CURRENT_YEAR })}`} aria-label='Navigate to previous year'>Previous</Secondary>
+			{/if}
+			{#if year < CURRENT_YEAR}
+				<Secondary type='link' href={`/dashboard${dashboardSearch({ year: year + 1, types, currentYear: CURRENT_YEAR })}`} aria-label='Navigate to next year'>Next</Secondary>
+			{/if}
 		</div>
 	</div>
-</section>
+	<SettingsPopover />
+</div>
 
 <Spacer axis='vertical' size='m' />
 
-<div class='prose'>
-	<p class='current-year'>Currently, you have <Svg id='movie' /> <strong>{currentYear.movies} movies</strong>, <strong><Svg id='tv' /> {currentYear.shows} shows</strong> and <strong><Svg id='anime' /> {currentYear.anime} anime</strong> watched in {CURRENT_YEAR}.</p>
-</div>
+{#if items.length > 0}
+	<Grid screenshotMode={$settings.screenshotMode} columns={$settings.columns}>
+		{#if $settings.groupByMonth}
+			{#each Object.entries(grouped) as [month, monthItems]}
+				<h2 class='month-heading'>{month}</h2>
+				{#each monthItems as item, index}
+					<GridItem index={index} href={simklItemUrl(item.type, item.simklId, item.slug)}>
+						<Image poster={item.poster} alt={item.title} loading={index === 0 ? 'eager' : 'lazy'} />
+					</GridItem>
+				{/each}
+			{/each}
+		{:else}
+			{#each items as item, index}
+				<GridItem index={index} href={simklItemUrl(item.type, item.simklId, item.slug)}>
+					<Image poster={item.poster} alt={item.title} loading={index === 0 ? 'eager' : 'lazy'} />
+				</GridItem>
+			{/each}
+		{/if}
+	</Grid>
+{:else if $syncState !== 'error' && !$syncCompleted}
+	<GridSkeleton screenshotMode={$settings.screenshotMode} columns={$settings.columns} />
+{:else if $syncCompleted}
+	<p class='no-results'>Nothing watched in {year} for the selected categories. Start watching and track your progress on Simkl! 🥳</p>
+{/if}
 
 <style lang='postcss'>
-	.settings-wrapper {
-		display: grid;
-		gap: var(--grid-gutter);
-		grid-template-columns: 1;
-
-		@media (--md) {
-			grid-template-columns: repeat(2, 1fr);
-		}
-	}
-
-	.title, .welcome {
-		font-weight: 600;
-		font-size: var(--step-1);
-		margin-bottom: var(--space-2xs);
-	}
-
-	.quicklinks {
+	.wrapper {
+		justify-content: space-between;
 		flex-wrap: wrap;
-		gap: var(--space-2xs-xs);
+		gap: var(--grid-gutter);
 	}
 
-	.range-wrapper {
-		gap: var(--space-s);
-		& input {
-			flex-grow: 1;
-			accent-color: white;
+	.navigation {
+		gap: var(--space-2xs-xs);
+		flex-wrap: wrap;
+		justify-content: center;
+		flex-grow: 1;
+
+		@media (--sm) {
+			flex-grow: initial;
 		}
 	}
 
-	.current-color-hue {
-		--color-alpha: 1;
-		min-width: 5ch;
-		font-weight: 600;
-		border: 2px solid var(--color-6);
-		padding: var(--space-3xs) var(--space-2xs);
-		line-height: 1;
-		border-radius: var(--space-2xs);
-		box-shadow: 0 0 8px var(--color-5);
-		text-align: center;
+	.prev-next {
+		gap: var(--space-3xs);
 	}
 
-	.current-year {
+	.month-heading {
+		grid-column: 1 / -1;
+	}
+
+	.no-results {
 		--color-alpha: 0.75;
+		text-align: center;
+		padding: var(--space-m-l) 0;
 	}
 </style>

@@ -1,7 +1,3 @@
-export function capitalize(str: string): string {
-	return str.slice(0, 1).toUpperCase() + str.slice(1)
-}
-
 type MapValuesToKeysIfAllowed<T> = {
 	[K in keyof T]: T[K] extends PropertyKey ? K : never;
 }

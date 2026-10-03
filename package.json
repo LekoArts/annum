@@ -6,7 +6,6 @@
 	"packageManager": "pnpm@9.15.1",
 	"license": "MIT",
 	"imports": {
-		"#lib": "./src/lib/index.js",
 		"#lib/*": "./src/lib/*",
 		"#const": "./src/const.ts"
 	},

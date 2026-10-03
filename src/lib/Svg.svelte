@@ -1,6 +1,6 @@
 <script lang='ts'>
 	interface Props {
-		id: 'movie' | 'tv' | 'anime' | 'home' | 'chevron-right' | 'simkl' | 'arrow-right'
+		id: 'movie' | 'tv' | 'anime' | 'chevron-right' | 'simkl' | 'arrow-right'
 		[key: string]: unknown
 	}
 

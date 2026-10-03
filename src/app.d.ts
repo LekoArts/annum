@@ -11,7 +11,6 @@ declare global {
 			user: User | null
 		}
 		interface PageData {
-			year?: string
 			meta?: {
 				title: string
 				description: string

@@ -1,20 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { capitalize, groupBy } from '../index'
-
-describe('capitalize', () => {
-	it('should capitalize a string', () => {
-		const result = capitalize('hello')
-		expect(result).toBe('Hello')
-	})
-	it('should handle empty string', () => {
-		const result = capitalize('')
-		expect(result).toBe('')
-	})
-	it('should leave rest of string untouched', () => {
-		const result = capitalize('hello world')
-		expect(result).toBe('Hello world')
-	})
-})
+import { groupBy } from '../index'
 
 describe('groupBy', () => {
 	it('should group array elements by the specified key', () => {

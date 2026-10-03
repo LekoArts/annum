@@ -1,39 +1,34 @@
 <script lang='ts'>
-	import type { SimklMediaType } from '#lib/types.js'
 	import { CURRENT_YEAR, TITLE } from '#const'
 	import { authClient } from '#lib/auth-client.js'
 	import Primary from '#lib/button/Primary.svelte'
-	import Spacer from '#lib/Spacer.svelte'
 	import { library } from '#lib/store/library.js'
 	import { pa } from '#lib/store/plausible.js'
 	import Svg from '#lib/Svg.svelte'
-	import { countByType, countForYear, isSimklMediaType } from '#lib/utils/simkl.js'
+	import { resolveSelectedTypes, resolveYear } from '#lib/utils/dashboard.js'
+	import { availableYears, countForYear, MEDIA_TYPE_ICONS, MEDIA_TYPE_LABELS, simklAvatarUrl } from '#lib/utils/simkl.js'
 	import { page } from '$app/state'
 
 	const session = authClient.useSession()
 
-	const ICONS: Record<SimklMediaType, 'movie' | 'tv' | 'anime'> = {
-		movies: 'movie',
-		shows: 'tv',
-		anime: 'anime',
-	}
+	/** Display names come from Simkl as words; be lenient about runs of whitespace between them. */
+	const NAME_WORD_SEPARATOR = /\s+/
 
-	const LABELS: Record<SimklMediaType, string> = {
-		movies: 'movies',
-		shows: 'shows',
-		anime: 'anime',
-	}
+	/**
+	 * The dashboard's selection lives in the query string, so the header reads it from the URL instead of
+	 * from a route segment: the counts must follow the grid the user is actually looking at. Derived here
+	 * rather than passed down, so the header stays reactive to `page.url` on every navigation.
+	 */
+	const types = $derived(resolveSelectedTypes(page.url.searchParams))
+	const year = $derived(resolveYear(page.url.searchParams, availableYears($library, CURRENT_YEAR), CURRENT_YEAR))
 
-	// `/dashboard/{type}/{year}` - the type segment is the third one
-	let mediaType = $derived.by(() => {
-		const segment = page.url.pathname.split('/')[2]
+	/** Simkl serves avatars directly; when there is none, the initials of the name stand in for it. */
+	const avatar = $derived(simklAvatarUrl($session.data?.user.image))
+	const initials = $derived.by(() => {
+		const words = ($session.data?.user.name ?? '').trim().split(NAME_WORD_SEPARATOR).filter(Boolean)
 
-		return segment && isSimklMediaType(segment) ? segment : null
+		return words.slice(0, 2).map(word => word.charAt(0).toUpperCase()).join('')
 	})
-
-	let isDetailPage = $derived(mediaType !== null)
-	let totals = $derived(countByType($library))
-	let currentYearCount = $derived(mediaType ? countForYear($library, mediaType, CURRENT_YEAR) : 0)
 </script>
 
 <header>
@@ -41,7 +36,7 @@
 		<div class='wrapper flex'>
 			<div class='title text-md-lg font-semibold'>
 				{#if page.url.pathname.includes('/dashboard')}
-					<a class='title-link' href='/dashboard' aria-label='Back to dashboard overview'>{TITLE}</a>
+					<a class='title-link' href='/dashboard' aria-label='Dashboard'>{TITLE}</a>
 				{:else}
 					<a class='title-link' href='/' aria-label='Back to homepage'>{TITLE}</a>
 				{/if}
@@ -50,12 +45,21 @@
 				{#if $session.data}
 					{#if page.url.pathname.includes('/dashboard')}
 						<div class='profile text-sm-base box'>
-							{#if mediaType && isDetailPage}
-								<div class='stats' aria-label='User statistics and information'>
+							<div class='stats' aria-label='User statistics and information'>
+								{#each types as type (type)}
+									<!--
+										The count is rendered even when it is 0: with the all-time total gone, an
+										icon followed by nothing would read as a rendering bug rather than as "none".
+									-->
 									<div class='stats-item'>
-										<Svg id={ICONS[mediaType]} /> {currentYearCount > 0 ? currentYearCount : null} <span class='visually-hidden'>{LABELS[mediaType]} in {CURRENT_YEAR}</span><Spacer axis='horizontal' size='3xs' />({totals[mediaType]} <span class='visually-hidden'>{LABELS[mediaType]} in total</span>)
+										<Svg id={MEDIA_TYPE_ICONS[type]} /> {countForYear($library, type, year)} <span class='visually-hidden'>{MEDIA_TYPE_LABELS[type].toLowerCase()} in {year}</span>
 									</div>
-								</div>
+								{/each}
+							</div>
+							{#if avatar}
+								<img class='avatar' src={avatar} alt='' width='24' height='24' />
+							{:else}
+								<span class='initials' aria-hidden='true'>{initials}</span>
 							{/if}
 							<div class='font-semibold username'>{$session.data.user.name}</div>
 						</div>
@@ -153,6 +157,11 @@
     line-height: 1.25;
   }
 
+  /* Only the profile box spaces its children; `.stats-item` spaces its icon through the `svg` margin. */
+  .profile {
+    gap: var(--space-xs-s);
+  }
+
   .stats {
     --color-alpha: 1;
     gap: var(--space-xs-s);
@@ -166,5 +175,25 @@
 
 	.stats-item :global(svg) {
 		margin-right: var(--space-2xs);
+	}
+
+	.avatar {
+		--color-alpha: 1;
+		border-radius: 50%;
+	}
+
+	.initials {
+		--color-alpha: 1;
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		width: 24px;
+		height: 24px;
+		border-radius: 50%;
+		background: var(--color-8);
+		color: var(--color-0);
+		font-size: var(--step--1);
+		font-weight: 600;
+		line-height: 1;
 	}
 </style>

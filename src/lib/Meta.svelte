@@ -5,7 +5,7 @@
 	const title = TITLE
 
 	let meta = $derived({
-		description: 'Visualize your Simkl history. Display your watched movies, shows and anime in a poster grid. Easily switch between years and get an overview of all your history.',
+		description: 'Visualize your Simkl history. Display your watched movies, shows and anime in a poster grid. Easily switch between years and categories to browse everything you watched.',
 		image: `${page.url.protocol}//${page.url.host}/og-image.png?v1`,
 		title,
 		...page.data.meta,
@@ -29,5 +29,4 @@
 	<meta name='twitter:title' content={generateTitle(meta.title)} />
 	<meta name='twitter:description' content={meta.description} />
 	<meta name='twitter:image' content={meta.image} />
-	<link rel='preload' href='/icons.svg' as='image' type='image/svg+xml' />
 </svelte:head>

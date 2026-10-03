@@ -30,10 +30,59 @@ export const simklItemTypeMap = {
 	anime: 'anime',
 } as const satisfies Record<SimklMediaType, string>
 
+/**
+ * Human-readable media type names, shared by the dashboard toolbar, the header counts and the page title.
+ * @example MEDIA_TYPE_LABELS.shows => 'Shows'
+ */
+export const MEDIA_TYPE_LABELS = {
+	movies: 'Movies',
+	shows: 'Shows',
+	anime: 'Anime',
+} as const satisfies Record<SimklMediaType, string>
+
+/**
+ * The `static/icons.svg` symbol that represents each media type.
+ * @example MEDIA_TYPE_ICONS.shows => 'tv'
+ */
+export const MEDIA_TYPE_ICONS = {
+	movies: 'movie',
+	shows: 'tv',
+	anime: 'anime',
+} as const satisfies Record<SimklMediaType, 'movie' | 'tv' | 'anime'>
+
 const SIMKL_ITEM_BASE_URL = 'https://simkl.com'
 const SIMKL_POSTER_BASE_URL = 'https://simkl.in/posters'
+const SIMKL_AVATAR_BASE_URL = 'https://simkl.in/avatars'
 const SIMKL_IMAGE_PROXY = 'https://wsrv.nl/?url='
 const PLACEHOLDER_DATE_THRESHOLD = Date.parse('2000-01-01T00:00:00Z')
+/** A leading slash and/or the `avatars/` segment, neither of which may be repeated in a built avatar URL. */
+const AVATAR_PATH_PREFIX = /^\/?(avatars\/)?/
+
+/**
+ * Build an avatar URL for the `user.avatar` value Simkl returns.
+ *
+ * Simkl serves avatars straight from simkl.in (no image proxy) and the API is not consistent about the
+ * shape: its `/users/settings` example shows a full URL while the image docs describe a path fragment.
+ * Both are accepted, and a path fragment gets the documented size suffix. A path that already carries
+ * the `avatars/` segment (with or without a leading slash) does not get a second one.
+ * @example simklAvatarUrl('https://simkl.in/avatars/1/2_100.jpg') => the URL unchanged
+ * @example simklAvatarUrl('1/2.jpg') => 'https://simkl.in/avatars/1/2_100.jpg'
+ * @example simklAvatarUrl('avatars/1/2.jpg') => 'https://simkl.in/avatars/1/2_100.jpg'
+ */
+export function simklAvatarUrl(avatar: string | null | undefined, size = '100'): string | null {
+	if (!avatar)
+		return null
+
+	if (avatar.startsWith('http'))
+		return avatar
+
+	const path = avatar.replace(AVATAR_PATH_PREFIX, '')
+	const dot = path.lastIndexOf('.')
+	const stem = dot === -1 ? path : path.slice(0, dot)
+	const extension = dot === -1 ? '' : path.slice(dot)
+
+	return `${SIMKL_AVATAR_BASE_URL}/${stem}_${size}${extension}`
+}
 
 /**
  * The Simkl poster sizes we serve, smallest first, with the exact widths documented for each.
@@ -250,24 +299,46 @@ export function itemsForYear(library: SimklLibrary, type: SimklMediaType, year: 
 }
 
 /**
- * Total number of watched items in the library per type. List-only entries that were never watched do
- * not count.
- */
-export function countByType(library: SimklLibrary): Record<SimklMediaType, number> {
-	const count = (items: Array<SimklMediaItem>) => items.filter(item => item.watched.length > 0).length
-
-	return {
-		movies: count(library.movies),
-		shows: count(library.shows),
-		anime: count(library.anime),
-	}
-}
-
-/**
  * Number of items of a type with watching activity in a given year.
+ * @example countForYear(library, 'movies', 2024) => 12
  */
 export function countForYear(library: SimklLibrary, type: SimklMediaType, year: number | string): number {
 	const y = typeof year === 'string' ? Number.parseInt(year) : year
 
 	return library[type].filter(item => item.watched.some(watched => watched.year === y)).length
+}
+
+export interface SimklTypedYearItem extends SimklYearItem {
+	type: SimklMediaType
+}
+
+/**
+ * Project the items of several types with watching activity in a year into one mixed, newest-first list.
+ * Each item keeps its own `type`, which a tile needs to link to its Simkl page.
+ * @example itemsForTypes(library, ['movies', 'shows'], 2023) => Array<SimklTypedYearItem>
+ */
+export function itemsForTypes(library: SimklLibrary, types: ReadonlyArray<SimklMediaType>, year: number | string): Array<SimklTypedYearItem> {
+	return types
+		.flatMap(type => itemsForYear(library, type, year).map(item => ({ ...item, type })))
+		.sort((a, b) => Date.parse(b.watchedAt) - Date.parse(a.watchedAt))
+}
+
+/**
+ * The contiguous year range the dashboard offers: `currentYear` down to the earliest watched year.
+ *
+ * Years after `currentYear` are ignored so one future-dated row cannot invert the range, and an empty
+ * library still offers the current year.
+ * @example availableYears(library, 2024) => [2024, 2023, ..., 2015]
+ */
+export function availableYears(library: SimklLibrary, currentYear: number): Array<number> {
+	const watchedYears = SIMKL_MEDIA_TYPES
+		.flatMap(type => library[type].flatMap(item => item.watched.map(watched => watched.year)))
+		.filter(year => year <= currentYear)
+
+	if (watchedYears.length === 0)
+		return [currentYear]
+
+	const earliest = Math.min(...watchedYears)
+
+	return Array.from({ length: currentYear - earliest + 1 }, (_, index) => currentYear - index)
 }
