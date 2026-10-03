@@ -13,6 +13,12 @@
 
 	const src = $derived(simklPosterUrl(poster))
 	const srcset = $derived(simklPosterSrcset(poster))
+	/**
+	 * `auto` is only legal on lazy images — the HTML spec defines an `<img>` as "allows auto-sizes"
+	 * when its `loading` is in the lazy state — so the eagerly loaded first poster of a page keeps the
+	 * pre-`srcset` behaviour: no `sizes` means 100vw, which selects the largest available poster.
+	 */
+	const sizes = $derived(loading === 'lazy' ? 'auto' : undefined)
 	const style = $derived('object-fit: cover; aspect-ratio: 1 / 1.5; width: 100%;')
 	let failed = $state(false)
 
@@ -37,7 +43,8 @@
 <!--
 	`sizes='auto'` lets the browser measure the tile itself: the grid is fluid (auto-fill in normal
 	mode, a user-chosen column count in screenshot mode), so only the layout knows how wide a poster
-	ends up. Browsers without `sizes='auto'` fall back to 100vw and pick the largest candidate, which
-	is the single size that was served before there was a `srcset` at all.
+	ends up. The source size is in CSS pixels and the browser multiplies it by the device pixel ratio
+	when picking a candidate, so high-DPI screens get the largest poster Simkl has (340px) rather than
+	one matching the tile in CSS pixels.
 -->
-<img decoding='async' transition:fade {alt} {loading} {src} {srcset} sizes='auto' {style} onerror={handleError} />
+<img decoding='async' transition:fade {alt} {loading} {src} {srcset} {sizes} {style} onerror={handleError} />
