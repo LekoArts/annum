@@ -294,20 +294,6 @@ export function itemsForYear(library: SimklLibrary, type: SimklMediaType, year: 
 }
 
 /**
- * Total number of watched items in the library per type. List-only entries that were never watched do
- * not count.
- */
-export function countByType(library: SimklLibrary): Record<SimklMediaType, number> {
-	const count = (items: Array<SimklMediaItem>) => items.filter(item => item.watched.length > 0).length
-
-	return {
-		movies: count(library.movies),
-		shows: count(library.shows),
-		anime: count(library.anime),
-	}
-}
-
-/**
  * Number of items of a type with watching activity in a given year.
  */
 export function countForYear(library: SimklLibrary, type: SimklMediaType, year: number | string): number {

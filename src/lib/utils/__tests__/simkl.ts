@@ -1,6 +1,6 @@
 import type { SimklAllItemsResponse, SimklLibrary, SimklMediaItem, SimklRawItem, SimklSyncResponse, SimklWatchEntry } from '#lib/types.js'
 import { describe, expect, it } from 'vitest'
-import { availableYears, collectSimklIds, countByType, countForTypes, countForYear, isPlaceholderDate, itemsForTypes, itemsForYear, mergeSyncResponse, normalizeSimklItem, simklAvatarUrl, simklItemUrl, simklPosterSrcset, simklPosterUrl } from '../simkl'
+import { availableYears, collectSimklIds, countForTypes, countForYear, isPlaceholderDate, itemsForTypes, itemsForYear, mergeSyncResponse, normalizeSimklItem, simklAvatarUrl, simklItemUrl, simklPosterSrcset, simklPosterUrl } from '../simkl'
 
 function media(simklId: number, watched: Array<SimklWatchEntry> = []): SimklMediaItem {
 	return {
@@ -264,15 +264,14 @@ describe('itemsForYear', () => {
 	})
 })
 
-describe('countByType / countForYear', () => {
-	it('excludes list-only entries that were never watched', () => {
+describe('countForYear', () => {
+	it('counts only the items with watching activity in that year', () => {
 		const library: SimklLibrary = {
 			movies: [media(1, [watch(2020)]), media(2, [])],
 			shows: [media(3, [watch(2020)])],
 			anime: [],
 		}
 
-		expect(countByType(library)).toEqual({ movies: 1, shows: 1, anime: 0 })
 		expect(countForYear(library, 'movies', 2020)).toBe(1)
 		expect(countForYear(library, 'movies', 2019)).toBe(0)
 		expect(countForYear(library, 'shows', '2020')).toBe(1)
