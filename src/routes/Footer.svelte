@@ -7,11 +7,11 @@
 	<p>&copy; {CURRENT_YEAR} by <a href='https://www.lekoarts.de?utm_source=annum'>LekoArts</a> • <a href='/about'>About</a> • <a href={GITHUB_REPO_URL}>Source Code</a></p>
 	<Spacer axis='vertical' size='xs' />
 	<div class='logos flex align-center'>
-		Powered by <div class='svg-wrapper'><Svg id='trakt' aria-label='Trakt' /></div> and <div class='svg-wrapper'><Svg id='tmdb' aria-label='TMDB' /></div>
+		Powered by <div class='svg-wrapper'><Svg id='simkl' aria-label='Simkl' /></div>
 	</div>
 	<Spacer axis='vertical' size='xs' />
 	<div class='attribution'>
-		<p>This website uses TMDB & Trakt and the TMDB APIs & Trakt APIs but is not endorsed, certified, or otherwise approved by TMDB or Trakt.</p>
+		<p>This website uses the Simkl API but is not endorsed or certified by Simkl.</p>
 	</div>
 </footer>
 
@@ -32,12 +32,8 @@
 		width: var(--space-s-m);
 	}
 
-	.logos :global(svg[data-icon-name='trakt']) {
-		color: #0d253f;
-	}
-
-	.logos :global(svg[data-icon-name='tmdb']) {
-		color: #0d253f;
+	.logos :global(svg[data-icon-name='simkl']) {
+		color: var(--color-13);
 	}
 
 	.svg-wrapper {

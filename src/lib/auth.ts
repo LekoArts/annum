@@ -7,7 +7,7 @@ import { PUBLIC_BETTER_AUTH_URL } from '$app/env/public'
 
 import { getRequestEvent } from '$app/server'
 import { betterAuth } from 'better-auth'
-import { customSession, genericOAuth, oAuthProxy } from 'better-auth/plugins'
+import { genericOAuth, oAuthProxy } from 'better-auth/plugins'
 import { sveltekitCookies } from 'better-auth/svelte-kit'
 
 interface SimklSettings {
@@ -93,16 +93,6 @@ export const auth = betterAuth({
 					},
 				},
 			],
-		}),
-		customSession(async ({ session, user }) => {
-			const slug = user.email
-			return {
-				user: {
-					...user,
-					slug,
-				},
-				session,
-			}
 		}),
 		sveltekitCookies(getRequestEvent),
 		oAuthProxy({

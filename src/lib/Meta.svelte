@@ -5,7 +5,7 @@
 	const title = TITLE
 
 	let meta = $derived({
-		description: 'Visualize your Trakt.tv history. Display your watched movies and shows in a poster grid. Easily switch between years and get an overview of all your history.',
+		description: 'Visualize your Simkl history. Display your watched movies, shows and anime in a poster grid. Easily switch between years and get an overview of all your history.',
 		image: `${page.url.protocol}//${page.url.host}/og-image.png?v1`,
 		title,
 		...page.data.meta,
@@ -13,7 +13,7 @@
 
 	function generateTitle(t: string) {
 		if (t === title)
-			return `${t} - Visualize your Trakt.tv history`
+			return `${t} - Visualize your Simkl history`
 		return `${t} | ${title}`
 	}
 </script>
