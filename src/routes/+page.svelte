@@ -28,8 +28,8 @@
 		{:else}
 			<Primary type='text' onclick={async () => {
 				pa.addEvent('login', { props: { position: 'hero' } })
-				await authClient.signIn.oauth2({
-					providerId: 'simkl',
+				await authClient.signIn.social({
+					provider: 'simkl',
 					callbackURL: '/dashboard',
 				})
 			}}>
