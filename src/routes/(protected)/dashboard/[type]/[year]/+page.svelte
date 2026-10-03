@@ -7,7 +7,7 @@
 	import GridItem from '#lib/grid/Item.svelte'
 	import Image from '#lib/Image.svelte'
 	import Spacer from '#lib/Spacer.svelte'
-	import { library, syncState } from '#lib/store/library.js'
+	import { library, syncCompleted } from '#lib/store/library.js'
 	import { settings } from '#lib/store/settings.js'
 	import Svg from '#lib/Svg.svelte'
 	import Switch from '#lib/Switch.svelte'
@@ -83,7 +83,7 @@
 
 <h1 class='visually-hidden'>{TYPE_LABELS[type]} from {year}</h1>
 
-{#if $syncState === 'idle' && list.length === 0}
+{#if $syncCompleted && list.length === 0}
 	<p class='no-results'>No {TYPE_LABELS[type].toLowerCase()} watched in {year}. Start watching and track your progress on Simkl! 🥳</p>
 {:else}
 	<Grid screenshotMode={$settings.screenshotMode} columns={$settings.columns}>

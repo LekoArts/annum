@@ -1,6 +1,6 @@
 import type { SimklActivities, SimklLibrary, SimklSyncResponse } from '#lib/types.js'
 import { mergeSyncResponse } from '#lib/utils/simkl.js'
-import { get, writable } from 'svelte/store'
+import { derived, get, writable } from 'svelte/store'
 import { persisted } from './persisted'
 
 export type SyncState = 'idle' | 'syncing' | 'error'
@@ -23,6 +23,19 @@ export const library = persisted<CachedLibrary>('annum-simkl-library', {
 })
 
 export const syncState = writable<SyncState>('idle')
+
+/**
+ * Whether a sync has finished successfully in this session.
+ *
+ * The library only lives in `localStorage`, so the server (and the first paint) has no items to
+ * show. "Nothing here for this year" copy therefore waits for this flag instead of `syncState`,
+ * whose pre-sync value is also `idle`.
+ */
+export const syncCompleted = writable(false)
+
+/** Whether the cached library holds anything — distinguishes "never synced" from "empty year". */
+export const hasData = derived(library, $library =>
+	$library.movies.length + $library.shows.length + $library.anime.length > 0)
 
 let syncing = false
 
@@ -54,6 +67,7 @@ export async function sync(): Promise<void> {
 			activities: response.status === 'up-to-date' ? current.activities : response.activities,
 		}))
 
+		syncCompleted.set(true)
 		syncState.set('idle')
 	}
 	catch (e) {
