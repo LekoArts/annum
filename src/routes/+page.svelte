@@ -19,7 +19,7 @@
 	<div class='text'>
 		<h2 class='text-xl'>Visualize Your Simkl History</h2>
 		<Spacer axis='vertical' size='2xs' />
-		<p class='text-md'>Display your watched movies, shows and anime in a poster grid. Easily switch between years and get an overview of all your history.</p>
+		<p class='text-md'>Display your watched movies, shows and anime in a poster grid. Easily switch between years and categories to browse everything you watched.</p>
 		<Spacer axis='vertical' size='m' />
 		{#if $session.data}
 			<Primary type='link' href='/dashboard'>
@@ -37,7 +37,7 @@
 			</Primary>
 		{/if}
 	</div>
-	<enhanced:img src='../assets/default-preview.png' sizes='(min-width: 1374px) 1374px, 100vw' alt='Screenshot of the dashboard you will see once logged in. Shown is the movie overview for the year 2023, with all movie posters in a 5 column grid. You can use previous/next buttons to switch years and enable a "Screenshot Mode" to remove the gaps between the columns and rows.' loading='eager' />
+	<enhanced:img src='../assets/default-preview.png' sizes='(min-width: 1374px) 1374px, 100vw' alt='Screenshot of the poster-grid dashboard you see once logged in: watched movies in a 5 column grid for the year 2023, with previous/next buttons to switch years and a "Screenshot Mode" that removes the gaps between the columns and rows.' loading='eager' />
 </section>
 
 <Spacer axis='vertical' size='3xl' />
