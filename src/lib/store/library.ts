@@ -1,6 +1,6 @@
 import type { SimklActivities, SimklLibrary, SimklSyncResponse } from '#lib/types.js'
 import { mergeSyncResponse } from '#lib/utils/simkl.js'
-import { derived, get, writable } from 'svelte/store'
+import { get, writable } from 'svelte/store'
 import { persisted } from './persisted'
 
 export type SyncState = 'idle' | 'syncing' | 'error'
@@ -23,9 +23,6 @@ export const library = persisted<CachedLibrary>('annum-simkl-library', {
 })
 
 export const syncState = writable<SyncState>('idle')
-
-export const hasData = derived(library, $library =>
-	$library.movies.length + $library.shows.length + $library.anime.length > 0)
 
 let syncing = false
 

@@ -12,10 +12,6 @@ declare global {
 		}
 		interface PageData {
 			year?: string
-			session?: {
-				session: Session
-				user: User
-			} | null
 			meta?: {
 				title: string
 				description: string

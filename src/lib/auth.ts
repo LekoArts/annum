@@ -74,13 +74,20 @@ export const auth = betterAuth({
 							'app-version': '1.0',
 						}).toString()
 
-						const { user, account } = await fetch(`https://api.simkl.com/users/settings?${queryParams}`, {
+						const response = await fetch(`https://api.simkl.com/users/settings?${queryParams}`, {
 							method: 'GET',
 							headers: {
 								'Authorization': `Bearer ${tokens.accessToken}`,
 								'User-Agent': 'annum/1.0',
 							},
-						}).then(res => res.json()) as SimklSettings
+						})
+
+						// A failed profile lookup otherwise surfaces as an opaque Better Auth sign-in
+						// error, so fail with the actual status here.
+						if (!response.ok)
+							throw new Error(`Simkl profile request failed with HTTP ${response.status}`)
+
+						const { user, account } = await response.json() as SimklSettings
 
 						return {
 							id: String(account.id),

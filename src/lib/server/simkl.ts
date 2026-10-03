@@ -118,7 +118,7 @@ export async function withRetry(url: string, accessToken?: string): Promise<Resp
 		}
 
 		const waitMs = isRateLimit
-			? (retryAfterSeconds ?? 1) * 1000
+			? Math.min((retryAfterSeconds ?? 1) * 1000, MAX_BACKOFF_MS)
 			: Math.min(2 ** attempt * 1000 + Math.random() * 1000, MAX_BACKOFF_MS)
 
 		await sleep(waitMs)
