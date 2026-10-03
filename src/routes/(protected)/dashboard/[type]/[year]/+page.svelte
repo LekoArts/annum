@@ -58,10 +58,15 @@
 			</ol>
 		</nav>
 		{#if isDetailsPage}
+			<!--
+				Plain links on purpose: `data-sveltekit-reload` would send these through
+				`native_navigation` and reload the whole document. The year's items come from the cached
+				library, so a client-side navigation re-renders the grid instantly.
+			-->
 			<div class='prev-next'>
-				<Secondary data-sveltekit-reload type='link' href={`/dashboard/${segments[1]}/${Number.parseInt(year) - 1}`} aria-label='Navigate to previous year'>Previous</Secondary>
+				<Secondary type='link' href={`/dashboard/${segments[1]}/${Number.parseInt(year) - 1}`} aria-label='Navigate to previous year'>Previous</Secondary>
 				{#if !(Number.parseInt(year) === CURRENT_YEAR)}
-					<Secondary data-sveltekit-reload type='link' href={`/dashboard/${segments[1]}/${Number.parseInt(year) + 1}`} aria-label='Navigate to next year'>Next</Secondary>
+					<Secondary type='link' href={`/dashboard/${segments[1]}/${Number.parseInt(year) + 1}`} aria-label='Navigate to next year'>Next</Secondary>
 				{/if}
 			</div>
 		{/if}
