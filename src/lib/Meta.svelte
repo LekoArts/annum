@@ -29,5 +29,4 @@
 	<meta name='twitter:title' content={generateTitle(meta.title)} />
 	<meta name='twitter:description' content={meta.description} />
 	<meta name='twitter:image' content={meta.image} />
-	<link rel='preload' href='/icons.svg' as='fetch' type='image/svg+xml' />
 </svelte:head>
