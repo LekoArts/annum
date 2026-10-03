@@ -6,4 +6,5 @@ export const variables = defineEnvVars({
 	PRIVATE_TRAKT_CLIENT_ID: { static: true },
 	PRIVATE_TRAKT_CLIENT_SECRET: { static: true },
 	PRIVATE_TMDB_API_KEY: { static: true },
+	PRIVATE_SIMKL_CLIENT_ID: { static: true },
 })

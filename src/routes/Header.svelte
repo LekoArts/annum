@@ -65,11 +65,11 @@
 					<Primary type='text' onclick={async () => {
 						pa.addEvent('login', { props: { position: 'header' } })
 						await authClient.signIn.oauth2({
-							providerId: 'trakt',
+							providerId: 'simkl',
 							callbackURL: '/dashboard',
 						})
 					}}>
-						Sign In With Trakt
+						Sign In With Simkl
 					</Primary>
 				{/if}
 			</div>
