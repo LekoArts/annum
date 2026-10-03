@@ -1,6 +1,6 @@
 import type { SimklAllItemsResponse, SimklLibrary, SimklMediaItem, SimklRawItem, SimklSyncResponse, SimklWatchEntry } from '#lib/types.js'
 import { describe, expect, it } from 'vitest'
-import { collectSimklIds, countByType, countForYear, isPlaceholderDate, itemsForYear, mergeSyncResponse, normalizeSimklItem, simklItemUrl, simklPosterUrl } from '../simkl'
+import { collectSimklIds, countByType, countForYear, isPlaceholderDate, itemsForYear, mergeSyncResponse, normalizeSimklItem, simklItemUrl, simklPosterSrcset, simklPosterUrl } from '../simkl'
 
 function media(simklId: number, watched: Array<SimklWatchEntry> = []): SimklMediaItem {
 	return {
@@ -64,16 +64,34 @@ describe('simklItemUrl', () => {
 
 describe('simklPosterUrl', () => {
 	it('builds a wsrv.nl URL from a poster fragment', () => {
-		expect(simklPosterUrl('aa/bb')).toBe('https://wsrv.nl/?url=https://simkl.in/posters/aa/bb_m.webp&q=90')
+		expect(simklPosterUrl('aa/bb')).toBe('https://wsrv.nl/?url=https://simkl.in/posters/aa/bb_c.webp&q=90')
 	})
 
 	it('supports a size override', () => {
-		expect(simklPosterUrl('aa/bb', 'c')).toBe('https://wsrv.nl/?url=https://simkl.in/posters/aa/bb_c.webp&q=90')
+		expect(simklPosterUrl('aa/bb', 'm')).toBe('https://wsrv.nl/?url=https://simkl.in/posters/aa/bb_m.webp&q=90')
+		expect(simklPosterUrl('aa/bb', 'cm')).toBe('https://wsrv.nl/?url=https://simkl.in/posters/aa/bb_cm.webp&q=90')
 	})
 
-	it('falls back to the missing-poster image', () => {
-		expect(simklPosterUrl(null)).toBe('https://simkl.in/poster_no_pic.png')
-		expect(simklPosterUrl(undefined)).toBe('https://simkl.in/poster_no_pic.png')
+	it('falls back to the proxied missing-poster image', () => {
+		expect(simklPosterUrl(null)).toBe('https://wsrv.nl/?url=https://simkl.in/poster_no_pic_c.png')
+		expect(simklPosterUrl(undefined)).toBe('https://wsrv.nl/?url=https://simkl.in/poster_no_pic_c.png')
+	})
+})
+
+describe('simklPosterSrcset', () => {
+	it('offers every documented poster size with its exact width', () => {
+		expect(simklPosterSrcset('aa/bb')).toBe([
+			'https://wsrv.nl/?url=https://simkl.in/posters/aa/bb_s.webp&q=90 40w',
+			'https://wsrv.nl/?url=https://simkl.in/posters/aa/bb_cm.webp&q=90 84w',
+			'https://wsrv.nl/?url=https://simkl.in/posters/aa/bb_c.webp&q=90 170w',
+			'https://wsrv.nl/?url=https://simkl.in/posters/aa/bb_ca.webp&q=90 190w',
+			'https://wsrv.nl/?url=https://simkl.in/posters/aa/bb_m.webp&q=90 340w',
+		].join(', '))
+	})
+
+	it('has no srcset for a missing poster, so the placeholder is not scaled', () => {
+		expect(simklPosterSrcset(null)).toBeUndefined()
+		expect(simklPosterSrcset(undefined)).toBeUndefined()
 	})
 })
 

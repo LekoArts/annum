@@ -32,8 +32,23 @@ export const simklItemTypeMap = {
 
 const SIMKL_ITEM_BASE_URL = 'https://simkl.com'
 const SIMKL_POSTER_BASE_URL = 'https://simkl.in/posters'
-const SIMKL_POSTER_FALLBACK = 'https://simkl.in/poster_no_pic.png'
+const SIMKL_IMAGE_PROXY = 'https://wsrv.nl/?url='
 const PLACEHOLDER_DATE_THRESHOLD = Date.parse('2000-01-01T00:00:00Z')
+
+/**
+ * The Simkl poster sizes we serve, smallest first, with the exact widths documented for each.
+ * `_w` is deliberately absent: it is a 600x338 landscape crop, not a portrait poster.
+ */
+export const SIMKL_POSTER_SIZES = [
+	{ size: 's', width: 40 },
+	{ size: 'cm', width: 84 },
+	{ size: 'c', width: 170 },
+	{ size: 'ca', width: 190 },
+	{ size: 'm', width: 340 },
+] as const
+
+/** Missing-poster placeholder, proxied and cut to `_c` so it matches the default `src` above. */
+export const SIMKL_POSTER_PLACEHOLDER = `${SIMKL_IMAGE_PROXY}https://simkl.in/poster_no_pic_c.png`
 
 /**
  * Build the Simkl page URL for an item. The slug is not unique, so the numeric id is the stable part.
@@ -47,13 +62,35 @@ export function simklItemUrl(type: SimklMediaType, simklId: number, slug?: strin
 
 /**
  * Build a poster URL for a Simkl `poster` path fragment.
- * @example simklPosterUrl('57/5742576cd8f59fcb0') => 'https://wsrv.nl/?url=https://simkl.in/posters/57/5742576cd8f59fcb0_m.webp&q=90'
+ *
+ * The default is the size used as `src` — the smallest card size, so a browser that ignores `srcset`
+ * still gets a crisp-enough poster without downloading the large one.
+ * @example simklPosterUrl('57/5742576cd8f59fcb0') => 'https://wsrv.nl/?url=https://simkl.in/posters/57/5742576cd8f59fcb0_c.webp&q=90'
  */
-export function simklPosterUrl(poster: string | null | undefined, size = 'm'): string {
+export function simklPosterUrl(poster: string | null | undefined, size = 'c'): string {
 	if (!poster)
-		return SIMKL_POSTER_FALLBACK
+		return SIMKL_POSTER_PLACEHOLDER
 
-	return `https://wsrv.nl/?url=${SIMKL_POSTER_BASE_URL}/${poster}_${size}.webp&q=90`
+	return `${SIMKL_IMAGE_PROXY}${SIMKL_POSTER_BASE_URL}/${poster}_${size}.webp&q=90`
+}
+
+/**
+ * Build the `srcset` for a poster so the browser can pick the size that matches the rendered tile.
+ *
+ * Simkl's sizes are fixed widths, hence width descriptors — no guessing. Grid tiles are only ever a
+ * couple of hundred pixels wide, so this mostly saves bytes on 1x displays, which otherwise get the
+ * `_m` poster at roughly twice the file size.
+ *
+ * Returns `undefined` for a missing poster: the placeholder has nothing to scale.
+ * @example simklPosterSrcset('57/5742576cd8f59fcb0') => 'https://wsrv.nl/?url=...posters/57/5742576cd8f59fcb0_s.webp&q=90 40w, …, ..._m.webp&q=90 340w'
+ */
+export function simklPosterSrcset(poster: string | null | undefined): string | undefined {
+	if (!poster)
+		return undefined
+
+	return SIMKL_POSTER_SIZES
+		.map(({ size, width }) => `${simklPosterUrl(poster, size)} ${width}w`)
+		.join(', ')
 }
 
 /**
