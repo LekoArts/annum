@@ -58,8 +58,6 @@ export const auth = betterAuth({
 					// Simkl's browser sign-in apps are public clients, so PKCE is
 					// mandatory and no client secret is configured.
 					pkce: true,
-					issuer: 'https://simkl.com',
-					requireIssuerValidation: true,
 					authorizationUrl: 'https://simkl.com/oauth2/authorize',
 					tokenUrl: 'https://api.simkl.com/oauth2/token',
 					scopes: ['media:read'],
@@ -100,9 +98,12 @@ export const auth = betterAuth({
 				},
 			],
 		}),
-		sveltekitCookies(getRequestEvent),
 		oAuthProxy({
 			productionURL: PUBLIC_BETTER_AUTH_URL,
 		}),
+		// better-auth requires the cookie integration last: plugins with `hooks.after` that run
+		// after it (like the oauth proxy, which rewrites the account cookie) could otherwise set
+		// cookies that never reach SvelteKit's cookie store.
+		sveltekitCookies(getRequestEvent),
 	],
 })

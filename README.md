@@ -41,7 +41,7 @@ This [SvelteKit](https://kit.svelte.dev/) project was bootstrapped with [`create
 
 1. Retrieve the necessary secrets:
 
-    1. `PUBLIC_SIMKL_CLIENT_ID`: Login to [Simkl](https://simkl.com/settings/developer/) and create a new application of type **browser sign-in + app callback**. Add `http://localhost:5173/api/auth/oauth2/callback/simkl` as a registered redirect URL (Simkl requires an exact match, so a different dev port needs its own callback URL). Copy the **Client ID** over to the `.env` file. Simkl's browser sign-in apps are public clients, so there is no client secret — the app authenticates with PKCE.
+    1. `PUBLIC_SIMKL_CLIENT_ID`: Login to [Simkl](https://simkl.com/settings/developer/) and create a new application of type **browser sign-in + app callback**. Add `http://localhost:5173/api/auth/callback/simkl` as a registered redirect URL (Simkl requires an exact match, so a different dev port needs its own callback URL). Copy the **Client ID** over to the `.env` file. Simkl's browser sign-in apps are public clients, so there is no client secret — the app authenticates with PKCE.
 
     1. `PRIVATE_BETTER_AUTH_SECRET`: Generate a random string which is used to encrypt tokens. Run `openssl rand -base64 32` in your terminal and copy the value over to the `.env` file.
 
