@@ -1,27 +1,22 @@
 import {
 	PRIVATE_BETTER_AUTH_SECRET,
-	PRIVATE_TRAKT_CLIENT_ID,
-	PRIVATE_TRAKT_CLIENT_SECRET,
 } from '$app/env/private'
 
-import { PUBLIC_BETTER_AUTH_URL } from '$app/env/public'
+import { PUBLIC_BETTER_AUTH_URL, PUBLIC_SIMKL_CLIENT_ID } from '$app/env/public'
 
 import { getRequestEvent } from '$app/server'
 import { betterAuth } from 'better-auth'
-import { customSession, genericOAuth, oAuthProxy } from 'better-auth/plugins'
+import { genericOAuth, oAuthProxy } from 'better-auth/plugins'
 import { sveltekitCookies } from 'better-auth/svelte-kit'
 
-interface TraktUser {
-	username: string
-	name: string
-	ids: {
-		slug: string
+interface SimklSettings {
+	user: {
+		name: string
+		avatar?: string
 	}
-	about: string
-	images: {
-		avatar: {
-			full: string
-		}
+	account: {
+		id: number
+		type: 'free' | 'pro' | 'vip'
 	}
 }
 
@@ -48,7 +43,7 @@ export const auth = betterAuth({
 	account: {
 		accountLinking: {
 			enabled: true,
-			// Required for providers that don't provide email (like Trakt)
+			// Required for providers that don't provide email (like Simkl)
 			allowDifferentEmails: true,
 		},
 		storeStateStrategy: 'cookie',
@@ -58,46 +53,52 @@ export const auth = betterAuth({
 		genericOAuth({
 			config: [
 				{
-					providerId: 'trakt',
-					clientId: PRIVATE_TRAKT_CLIENT_ID,
-					clientSecret: PRIVATE_TRAKT_CLIENT_SECRET,
-					authorizationUrl: 'https://trakt.tv/oauth/authorize',
-					tokenUrl: 'https://api.trakt.tv/oauth/token',
+					providerId: 'simkl',
+					clientId: PUBLIC_SIMKL_CLIENT_ID,
+					// Simkl's browser sign-in apps are public clients, so PKCE is
+					// mandatory and no client secret is configured.
+					pkce: true,
+					issuer: 'https://simkl.com',
+					requireIssuerValidation: true,
+					authorizationUrl: 'https://simkl.com/oauth2/authorize',
+					tokenUrl: 'https://api.simkl.com/oauth2/token',
+					scopes: ['media:read'],
 					authorizationHeaders: {
 						'User-Agent': 'annum/1.0',
 					},
 					getUserInfo: async (tokens) => {
-						const user = await fetch('https://api.trakt.tv/users/me?extended=full', {
+						const queryParams = new URLSearchParams({
+							'client_id': PUBLIC_SIMKL_CLIENT_ID,
+							'app-name': 'annum',
+							'app-version': '1.0',
+						}).toString()
+
+						const response = await fetch(`https://api.simkl.com/users/settings?${queryParams}`, {
 							method: 'GET',
 							headers: {
 								'Authorization': `Bearer ${tokens.accessToken}`,
-								'trakt-api-version': '2',
-								'trakt-api-key': PRIVATE_TRAKT_CLIENT_ID,
 								'User-Agent': 'annum/1.0',
 							},
-						}).then(res => res.json()) as TraktUser
+						})
+
+						// A failed profile lookup otherwise surfaces as an opaque Better Auth sign-in
+						// error, so fail with the actual status here.
+						if (!response.ok)
+							throw new Error(`Simkl profile request failed with HTTP ${response.status}`)
+
+						const { user, account } = await response.json() as SimklSettings
 
 						return {
-							id: user.ids.slug,
-							// Trakt does not provide user emails
-							email: user.ids.slug,
+							id: String(account.id),
+							// Simkl does not provide user emails
+							email: String(account.id),
 							emailVerified: false,
-							name: user.name || user.username,
-							image: user.images.avatar.full,
+							name: user.name,
+							image: user.avatar,
 						}
 					},
 				},
 			],
-		}),
-		customSession(async ({ session, user }) => {
-			const slug = user.email
-			return {
-				user: {
-					...user,
-					slug,
-				},
-				session,
-			}
 		}),
 		sveltekitCookies(getRequestEvent),
 		oAuthProxy({

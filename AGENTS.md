@@ -4,7 +4,22 @@ This document provides essential information for AI coding agents working on thi
 
 ## Project Overview
 
-Annum is a SvelteKit application that visualizes Trakt.tv watch history. It uses Svelte 5, TypeScript, Better Auth for authentication, and is deployed to Netlify.
+Annum is a SvelteKit application that visualizes Simkl watch history. It uses Svelte 5, TypeScript, Better Auth for authentication, and is deployed to Netlify.
+
+## Simkl Integration
+
+Annum is a read-only Simkl client. It never calls a Simkl write endpoint and never calls `/users/{user_id}/stats` (Simkl documents that call as the most expensive and unsuitable for app launch).
+
+- **Auth:** Better Auth `genericOAuth` with provider id `simkl`. AUTH V2 authorization code + mandatory PKCE `S256`, **no client secret** (browser sign-in app), scope `media:read`, `issuer: https://simkl.com` with issuer validation. Tokens live in Better Auth's stateless account cookie; server code reads them with `auth.api.getAccessToken({ body: { providerId: 'simkl' }, headers })`. Access tokens last 7 days, refresh tokens 180 days.
+- **Sync (two-phase, exactly as Simkl documents it):** first sync pulls `/sync/all-items` for movies, shows, then anime **sequentially**, then fetches `/sync/activities` once to save the bootstrap `activities.all`. Every later sync calls `/sync/activities` first and stops if `activities.all` is unchanged; otherwise it fetches a single multi-type `/sync/all-items?date_from=<saved activities.all>` delta and **merges** it (never replaces the library). Deletions never appear in a delta — when a domain's `removed_from_list` moves, the endpoint refetches `extended=simkl_ids_only` and diffs ids in `currentIds`.
+- **API rules:** every request carries `client_id`, `app-name`, `app-version` query params and a `User-Agent`; user-data calls add `Authorization: Bearer <token>`. Limits are 10 GET/s. Retry per-second `rate_limit` 429s and transient 5xx with exponential backoff (max 5 attempts, 60 s cap); **never** retry a daily-quota 429 (`user_limit_exceeded` / `app_limit_exceeded`) or a `412`.
+- **Media types:** `movies` | `shows` | `anime` (`SIMKL_MEDIA_TYPES`). Anime is a first-class third category, matching Simkl's separate catalog. In `/sync/all-items` entries movies carry a `movie` block while shows **and anime** carry `show` (anime adds a sibling `anime_type`); read ids as `simkl_id ?? simkl`.
+- **Library cache:** the normalized library plus the last `activities` snapshot live in one `localStorage` key (`annum-simkl-library`) via `src/lib/store/library.ts`. It is deliberately small (ids/title/year/poster + one watch entry per year), so no IndexedDB fallback is needed. Year grids filter this cache locally — there is no per-year API call and no infinite loading.
+- **Rendering:** the `(protected)/dashboard` subtree is client-rendered — `ssr = false` in `src/routes/(protected)/dashboard/+layout.ts` — because its data only exists in the browser (the cache above plus `/api/simkl/sync`); server rendering could only paint the empty state and then replace it during hydration. Gating is unaffected: `src/hooks.server.ts` still redirects unauthenticated requests and the sync endpoint stays server-side. Public pages (`/`, `/about`, `/sign-in`) keep SSR.
+- **Shows/anime placement:** shows and anime appear in every year in which they have episode watch activity, derived from per-episode `watched_at` (`extended=full&episode_watched_at=yes&include_all_episodes=yes`). Movies are atomic and appear only in the year of their latest watch. Timestamps before `2000-01-01` are Simkl's "watched, date unknown" placeholder and are dropped, so header counts can exceed the sum of the year grids.
+- **Images and attribution:** posters come from Simkl. Build them with `simklPosterUrl()` (`https://wsrv.nl/?url=https://simkl.in/posters/{poster}_c.webp&q=90`) and the `simklPosterSrcset()` ladder of Simkl's documented widths (`_s` 40, `_cm` 84, `_c` 170, `_ca` 190, `_m` 340), served through `Image.svelte` with `sizes='auto'` so a fluid grid tile fetches the size it actually renders at. Missing posters (and stale paths that fail to load) use the proxied `https://wsrv.nl/?url=https://simkl.in/poster_no_pic_c.png`. Simkl requires visible attribution, so every grid tile is an external link to its Simkl item page via `simklItemUrl()` (`https://simkl.com/{movies|tv|anime}/{id}/{slug}`).
+- **Stats:** counts shown in the dashboard and header are **derived from the cached library**, never from a stats endpoint.
+- **Pure logic:** normalization, merging, and year projection live in `src/lib/utils/simkl.ts` and are unit tested in `src/lib/utils/__tests__/simkl.ts`. Change them with tests.
 
 ## Build & Development Commands
 
@@ -84,9 +99,9 @@ pnpm vitest watch src/lib/utils/__tests__/index.ts
 
 - **Files:** kebab-case for most files (e.g., `custom-media-queries.css`)
 - **Components:** PascalCase for Svelte components (e.g., `Secondary.svelte`)
-- **Functions:** camelCase (e.g., `normalizeItem`, `filterForYear`)
-- **Constants:** SCREAMING_SNAKE_CASE (e.g., `PAGINATION_LIMIT`, `TRAKT_BASE_URL`)
-- **Types/Interfaces:** PascalCase (e.g., `TraktHistoryItem`, `NormalizedItemResponse`)
+- **Functions:** camelCase (e.g., `normalizeSimklItem`, `mergeSyncResponse`)
+- **Constants:** SCREAMING_SNAKE_CASE (e.g., `SIMKL_MEDIA_TYPES`, `SIMKL_API_BASE_URL`)
+- **Types/Interfaces:** PascalCase (e.g., `SimklMediaItem`, `SimklLibrary`)
 
 ### Imports
 
@@ -104,10 +119,10 @@ The former `$lib`/`$const` aliases are replaced by Node subpath imports, defined
 
 Example:
 ```typescript
-import type { Language, TraktMediaType } from '#lib/types.js'
+import type { SimklLibrary, SimklMediaItem } from '#lib/types.js'
 import type { RequestHandler } from './$types'
-import { DEFAULT_CACHE_HEADER, PAGINATION_LIMIT } from '#const'
-import { normalizeItem } from '#lib/utils/index.js'
+import { SIMKL_MEDIA_TYPES } from '#lib/utils/simkl.js'
+import { groupBy } from '#lib/utils/index.js'
 import { error } from '@sveltejs/kit'
 ```
 
@@ -193,10 +208,10 @@ catch (e) {
 Example:
 ```typescript
 /**
- * Split an array into chunks of a given size
- * @example chunks([1, 2, 3, 4, 5], 2) => [[1, 2], [3, 4], [5]]
+ * Group array elements by the given key
+ * @example groupBy([{ id: 1, name: 'John' }], 'name') => { John: [{ id: 1, name: 'John' }] }
  */
-export function chunks<T>(array: Array<T>, number: number | string): Array<Array<T>>
+export function groupBy<T extends Record<PropertyKey, any>, Key extends Filter<T>>(arr: Array<T>, key: Key): Record<T[Key], Array<T>>
 ```
 
 ## Environment Variables
@@ -204,20 +219,18 @@ export function chunks<T>(array: Array<T>, number: number | string): Array<Array
 Declared in `src/env.ts` via `defineEnvVars`. Private variables (server-only) are imported from `$app/env/private`; public ones from `$app/env/public`. Add new variables to both `src/env.ts` and `.env.example`.
 
 **Private Variables:**
-- `PRIVATE_TRAKT_CLIENT_ID`
-- `PRIVATE_TRAKT_CLIENT_SECRET`
 - `PRIVATE_BETTER_AUTH_SECRET`
-- `PRIVATE_TMDB_API_KEY`
 
 **Public Variables:**
 - `PUBLIC_BETTER_AUTH_URL`
+- `PUBLIC_SIMKL_CLIENT_ID`
 
 ## Common Patterns
 
 **Type Guards:**
 ```typescript
-function isTraktWatchedItem(item: TraktHistoryItem | TraktWatchedItem): item is TraktWatchedItem {
-	return !('type' in item)
+function isSimklMediaType(value: string): value is SimklMediaType {
+	return (SIMKL_MEDIA_TYPES as ReadonlyArray<string>).includes(value)
 }
 ```
 
@@ -229,4 +242,5 @@ function isTraktWatchedItem(item: TraktHistoryItem | TraktWatchedItem): item is 
 **Authentication:**
 - Uses Better Auth with stateless JWT sessions
 - Check `locals.user` for authenticated user
-- Trakt OAuth for provider authentication
+- Simkl OAuth (AUTH V2, authorization code + PKCE `S256`, no client secret) for provider authentication
+- Server routes that need the Simkl token call `getSimklAccessToken(event)` from `#lib/server/simkl.js`

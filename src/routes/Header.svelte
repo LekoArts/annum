@@ -1,17 +1,39 @@
 <script lang='ts'>
-	import type { TraktStats } from '#lib/types.js'
+	import type { SimklMediaType } from '#lib/types.js'
 	import { CURRENT_YEAR, TITLE } from '#const'
 	import { authClient } from '#lib/auth-client.js'
 	import Primary from '#lib/button/Primary.svelte'
 	import Spacer from '#lib/Spacer.svelte'
+	import { library } from '#lib/store/library.js'
 	import { pa } from '#lib/store/plausible.js'
-	import { stats } from '#lib/store/stats.js'
 	import Svg from '#lib/Svg.svelte'
+	import { countByType, countForYear, isSimklMediaType } from '#lib/utils/simkl.js'
 	import { page } from '$app/state'
 
-	let traktStats = $derived(page.data?.stats as TraktStats | undefined)
 	const session = authClient.useSession()
-	let isDetailPage = $derived(page.url.pathname.includes('/movies') || page.url.pathname.includes('/shows'))
+
+	const ICONS: Record<SimklMediaType, 'movie' | 'tv' | 'anime'> = {
+		movies: 'movie',
+		shows: 'tv',
+		anime: 'anime',
+	}
+
+	const LABELS: Record<SimklMediaType, string> = {
+		movies: 'movies',
+		shows: 'shows',
+		anime: 'anime',
+	}
+
+	// `/dashboard/{type}/{year}` - the type segment is the third one
+	let mediaType = $derived.by(() => {
+		const segment = page.url.pathname.split('/')[2]
+
+		return segment && isSimklMediaType(segment) ? segment : null
+	})
+
+	let isDetailPage = $derived(mediaType !== null)
+	let totals = $derived(countByType($library))
+	let currentYearCount = $derived(mediaType ? countForYear($library, mediaType, CURRENT_YEAR) : 0)
 </script>
 
 <header>
@@ -28,18 +50,11 @@
 				{#if $session.data}
 					{#if page.url.pathname.includes('/dashboard')}
 						<div class='profile text-sm-base box'>
-							{#if traktStats && isDetailPage}
+							{#if mediaType && isDetailPage}
 								<div class='stats' aria-label='User statistics and information'>
-									{#if page.url.pathname.includes('/movies')}
-										<div class='stats-item'>
-											<Svg id='movie' /> {$stats.movies > 0 ? $stats.movies : null} <span class='visually-hidden'>movies in {CURRENT_YEAR}</span><Spacer axis='horizontal' size='3xs' />({traktStats?.movies?.watched} <span class='visually-hidden'>movies in total</span>)
-										</div>
-									{/if}
-									{#if page.url.pathname.includes('/shows')}
-										<div class='stats-item'>
-											<Svg id='tv' /> {$stats.shows > 0 ? $stats.shows : null} <span class='visually-hidden'>shows in {CURRENT_YEAR}</span><Spacer axis='horizontal' size='3xs' />({traktStats?.shows?.watched} <span class='visually-hidden'>shows in total</span>)
-										</div>
-									{/if}
+									<div class='stats-item'>
+										<Svg id={ICONS[mediaType]} /> {currentYearCount > 0 ? currentYearCount : null} <span class='visually-hidden'>{LABELS[mediaType]} in {CURRENT_YEAR}</span><Spacer axis='horizontal' size='3xs' />({totals[mediaType]} <span class='visually-hidden'>{LABELS[mediaType]} in total</span>)
+									</div>
 								</div>
 							{/if}
 							<div class='font-semibold username'>{$session.data.user.name}</div>
@@ -65,11 +80,11 @@
 					<Primary type='text' onclick={async () => {
 						pa.addEvent('login', { props: { position: 'header' } })
 						await authClient.signIn.oauth2({
-							providerId: 'trakt',
+							providerId: 'simkl',
 							callbackURL: '/dashboard',
 						})
 					}}>
-						Sign In With Trakt
+						Sign In With Simkl
 					</Primary>
 				{/if}
 			</div>

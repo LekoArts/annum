@@ -2,26 +2,23 @@
 
 <p align="center">
   <strong>
-    Visualize Your Trakt.tv History
+    Visualize Your Simkl History
   </strong>
 </p>
 
 <p align="center">
-  Display your watched movies and shows in a poster grid. Easily switch between years and get an overview of all your history. Powered by:
+  Display your watched movies, shows and anime in a poster grid. Easily switch between years and get an overview of all your history. Powered by:
 </p>
 
 <p align="center">
-  <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="./.github/assets/trakt-white.svg">
-    <img alt="Trakt.tv Logo" src="./.github/assets/trakt-black.svg" width="125">
-  </picture>
+  <a href="https://simkl.com">Simkl</a>
 </p>
 
 <h2 align="center">
   <a href="https://www.annum.app">🍿 Website</a>
 </h2>
 
-This website was created by [LekoArts](https://www.lekoarts.de?utm_source=annum_readme) as a christmas project to try out SvelteKit. LekoArts loves watching movies and shows ⸺ so why not have a great overview? You can also follow me on [Trakt](https://trakt.tv/users/arsaurea) if you want.
+This website was created by [LekoArts](https://www.lekoarts.de?utm_source=annum_readme) as a christmas project to try out SvelteKit. LekoArts loves watching movies and shows ⸺ so why not have a great overview?
 
 ## Development
 
@@ -44,11 +41,9 @@ This [SvelteKit](https://kit.svelte.dev/) project was bootstrapped with [`create
 
 1. Retrieve the necessary secrets:
 
-    1. `PRIVATE_TRAKT_CLIENT_ID` and `PRIVATE_TRAKT_CLIENT_SECRET`: Login to [Trakt.tv](https://trakt.tv) and inside your settings go to your [Your API Apps](https://trakt.tv/oauth/applications) section. Create a new application. Set `http://localhost:5173/auth/callback/trakt` as one of the **Redirect URI** and set `http://localhost:5173` as one of the **JavaScript (CORS) Origins**. Copy over the **Client ID** and **Client Secret** to the `.env` file.
+    1. `PUBLIC_SIMKL_CLIENT_ID`: Login to [Simkl](https://simkl.com/settings/developer/) and create a new application of type **browser sign-in + app callback**. Add `http://localhost:5173/api/auth/oauth2/callback/simkl` as a registered redirect URL (Simkl requires an exact match, so a different dev port needs its own callback URL). Copy the **Client ID** over to the `.env` file. Simkl's browser sign-in apps are public clients, so there is no client secret — the app authenticates with PKCE.
 
     1. `PRIVATE_BETTER_AUTH_SECRET`: Generate a random string which is used to encrypt tokens. Run `openssl rand -base64 32` in your terminal and copy the value over to the `.env` file.
-
-    1. `PRIVATE_TMDB_API_KEY`: Login to your [TMDB](https://www.themoviedb.org/) account and inside your settings go to [API section](https://www.themoviedb.org/settings/api). Copy the **API Key** over to the `.env` file.
 
 ### Commands
 

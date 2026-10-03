@@ -17,9 +17,9 @@
 
 <section class='hero'>
 	<div class='text'>
-		<h2 class='text-xl'>Visualize Your Trakt.tv History</h2>
+		<h2 class='text-xl'>Visualize Your Simkl History</h2>
 		<Spacer axis='vertical' size='2xs' />
-		<p class='text-md'>Display your watched movies and shows in a poster grid. Easily switch between years and get an overview of all your history.</p>
+		<p class='text-md'>Display your watched movies, shows and anime in a poster grid. Easily switch between years and get an overview of all your history.</p>
 		<Spacer axis='vertical' size='m' />
 		{#if $session.data}
 			<Primary type='link' href='/dashboard'>
@@ -29,7 +29,7 @@
 			<Primary type='text' onclick={async () => {
 				pa.addEvent('login', { props: { position: 'hero' } })
 				await authClient.signIn.oauth2({
-					providerId: 'trakt',
+					providerId: 'simkl',
 					callbackURL: '/dashboard',
 				})
 			}}>
@@ -48,7 +48,7 @@
 	<div class='bento'>
 		<div>
 			<h3>Poster Grid</h3>
-			<p>Your Trakt History is used to display posters of movies and shows you watched in a minimalistic layout. No distractions, just posters.</p>
+			<p>Your Simkl Library is used to display posters of movies, shows and anime you watched in a minimalistic layout. No distractions, just posters.</p>
 		</div>
 		<div>
 			<h3>Screenshot Mode</h3>
@@ -56,7 +56,7 @@
 		</div>
 		<div>
 			<h3>Adjustable</h3>
-			<p>Change the color scheme of the whole website by changing its color hue. You can also switch the language for your posters.</p>
+			<p>Change the color scheme of the whole website by changing its color hue. You can also choose how many columns your poster grid uses.</p>
 		</div>
 		<div>
 			<h3>Open Source</h3>
