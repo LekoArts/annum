@@ -318,13 +318,6 @@ export function itemsForTypes(library: SimklLibrary, types: ReadonlyArray<SimklM
 }
 
 /**
- * Sum of the per-type year counts for the selected types - how many tiles the grid will contain.
- */
-export function countForTypes(library: SimklLibrary, types: ReadonlyArray<SimklMediaType>, year: number | string): number {
-	return types.reduce((total, type) => total + countForYear(library, type, year), 0)
-}
-
-/**
  * The contiguous year range the dashboard offers: `currentYear` down to the earliest watched year.
  *
  * Years after `currentYear` are ignored so one future-dated row cannot invert the range, and an empty

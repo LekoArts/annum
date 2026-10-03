@@ -14,7 +14,7 @@
 	import { settings } from '#lib/store/settings.js'
 	import { dashboardSearch } from '#lib/utils/dashboard.js'
 	import { groupBy } from '#lib/utils/index.js'
-	import { availableYears, countForTypes, itemsForTypes, simklItemUrl } from '#lib/utils/simkl.js'
+	import { availableYears, itemsForTypes, simklItemUrl } from '#lib/utils/simkl.js'
 
 	interface Props {
 		data: PageData
@@ -28,9 +28,6 @@
 	const items = $derived(itemsForTypes($library, types, year))
 	const grouped = $derived(groupBy(items, 'month'))
 	const earliestYear = $derived(years.at(-1) ?? CURRENT_YEAR)
-
-	/** One option per offered year, each with the count the current selection would show (D4). */
-	const yearOptions = $derived(years.map(candidate => ({ year: candidate, count: countForTypes($library, types, candidate) })))
 </script>
 
 <h1 class='visually-hidden'>{data.meta.title}</h1>
@@ -38,7 +35,7 @@
 <div class='wrapper flex'>
 	<div class='flex align-center navigation'>
 		<TypeToggles {types} {year} />
-		<YearSelect {year} options={yearOptions} />
+		<YearSelect {year} {years} />
 		<!--
 			Plain links on purpose: `data-sveltekit-reload` would send these through `native_navigation`
 			and reload the whole document. The year's items come from the cached library, so a client-side

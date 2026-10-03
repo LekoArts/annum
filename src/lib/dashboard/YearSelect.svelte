@@ -7,10 +7,10 @@
 
 	interface Props {
 		year: number
-		options: Array<{ year: number, count: number }>
+		years: Array<number>
 	}
 
-	let { year, options }: Props = $props()
+	let { year, years }: Props = $props()
 
 	/**
 	 * Changing the year must not lose the media selection, so it is read back from the URL (per-parameter
@@ -27,8 +27,8 @@
 <div class='year-select flex align-center'>
 	<label for='year'>Year</label>
 	<select id='year' value={year} onchange={handleChange}>
-		{#each options as option (option.year)}
-			<option value={option.year}>{option.year} ({option.count})</option>
+		{#each years as option (option)}
+			<option value={option}>{option}</option>
 		{/each}
 	</select>
 	<Svg id='chevron-right' />
