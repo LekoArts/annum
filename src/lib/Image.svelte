@@ -1,27 +1,18 @@
 <script lang='ts'>
-	import type { TmdbImageUrlsWithDimensions } from '#lib/types.js'
 	import type { HTMLImgAttributes } from 'svelte/elements'
+	import { simklPosterUrl } from '#lib/utils/simkl.js'
 	import { fade } from 'svelte/transition'
 
 	interface Props {
 		alt: string
 		loading: HTMLImgAttributes['loading']
-		images: TmdbImageUrlsWithDimensions
+		poster: string | null
 	}
 
-	let { alt, loading, images }: Props = $props()
+	let { alt, loading, poster }: Props = $props()
 
-	const maxWidth = $derived(images.w780.width)
-	const maxHeight = $derived(images.w780.height)
-	const src = $derived(images.w780.url)
-
-	const sizes = $derived(`(min-width: ${maxWidth}px) ${maxWidth}px, 100vw`)
-	const srcset = $derived([
-		`${images.w780.url} ${images.w780.width}w`,
-		`${images.w500.url} ${images.w500.width}w`,
-		`${images.w342.url} ${images.w342.width}w`,
-	].join(', '))
-	const style = $derived(`object-fit: cover; max-width: ${maxWidth}px; max-height: ${maxHeight}px; aspect-ratio: 1 / 1.5; width: 100%;`)
+	const src = $derived(simklPosterUrl(poster))
+	const style = $derived('object-fit: cover; aspect-ratio: 1 / 1.5; width: 100%;')
 </script>
 
-<img decoding='async' transition:fade {alt} {loading} {sizes} {srcset} {style} {src} />
+<img decoding='async' transition:fade {alt} {loading} {src} {style} />

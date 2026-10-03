@@ -1,77 +1,41 @@
 <script lang='ts'>
-	import type { ApiHistoryResponse, Item, StateChanger } from '#lib/types.js'
+	import type { SimklMediaType } from '#lib/types.js'
 	import type { PageData } from './$types'
 	import { CURRENT_YEAR } from '#const'
 	import Secondary from '#lib/button/Secondary.svelte'
 	import Grid from '#lib/grid/Grid.svelte'
 	import GridItem from '#lib/grid/Item.svelte'
 	import Image from '#lib/Image.svelte'
-	import InfiniteLoading from '#lib/InfiniteLoading.svelte'
 	import Spacer from '#lib/Spacer.svelte'
+	import { library, syncState } from '#lib/store/library.js'
 	import { settings } from '#lib/store/settings.js'
-	import { stats } from '#lib/store/stats.js'
 	import Svg from '#lib/Svg.svelte'
 	import Switch from '#lib/Switch.svelte'
-	import { capitalize, getStartAndEndOfYear, groupBy } from '#lib/utils/index.js'
-	import { filterUniqueItemsFromHistory } from '#lib/utils/trakt.js'
+	import { groupBy } from '#lib/utils/index.js'
+	import { itemsForYear, simklItemUrl } from '#lib/utils/simkl.js'
 	import { page } from '$app/state'
 	import { slide } from 'svelte/transition'
 
-	let infiniteLoading: { reset: () => Promise<void> }
-
-	let p = $state(1)
-	let list: Array<Item> = $state([])
 	interface Props {
 		data: PageData
 	}
 
 	let { data }: Props = $props()
 
-	let { year, type } = $derived(data)
-	let { start, end } = $derived(getStartAndEndOfYear(year))
-
-	let queryParams = $derived(new URLSearchParams({
-		page: p.toString(),
-		start_at: start,
-		end_at: end,
-		lang: $settings?.lang,
-	}).toString())
-
-	function infiniteHandler({ loaded, complete, error }: StateChanger) {
-		fetch(`/api/history/${type}?${queryParams}`)
-			.then<ApiHistoryResponse>(res => res.json())
-			.then((data) => {
-				if (p > Number(data.total_pages) || data.items?.length === 0) {
-					complete()
-				}
-				else {
-					p++
-
-					// The /history/shows endpoint returns normalized episodes, not shows. So we need to deduplicate the list to only have unique shows.
-					if (type === 'shows') {
-						list = filterUniqueItemsFromHistory([...list, ...data.items])
-						stats.setShows(list.length)
-					}
-					else {
-						list = [...list, ...data.items]
-						stats.setMovies(Number.parseInt(data.item_count))
-					}
-
-					loaded()
-				}
-			})
-			.catch((err) => {
-				console.error(err)
-				error()
-			})
+	const TYPE_LABELS: Record<SimklMediaType, string> = {
+		movies: 'Movies',
+		shows: 'Shows',
+		anime: 'Anime',
 	}
+
+	let { year, type } = $derived(data)
+
+	let list = $derived(itemsForYear($library, type, year))
+	let listGroupedByMonth = $derived(groupBy(list, 'month'))
 
 	let segments = $derived(page.url.pathname.slice(1).split('/'))
 	let isDashboard = $derived(segments.length === 1)
 	let isDetailsPage = $derived(segments.length > 1)
-	let isMovie = $derived(segments[1] === 'movies')
-	let isShow = $derived(segments[1] === 'shows')
-	let listGroupedByMonth = $derived(groupBy(list, 'last_wathed_at_month'))
 </script>
 
 <div class='wrapper flex'>
@@ -84,11 +48,7 @@
 				{#if isDetailsPage}
 					<li>
 						<Svg id='chevron-right' />
-						{#if isMovie}
-							<span>Movies</span>
-						{:else if isShow}
-							<span>Shows</span>
-						{/if}
+						<span>{TYPE_LABELS[type]}</span>
 					</li>
 					<li>
 						<Svg id='chevron-right' />
@@ -114,66 +74,37 @@
 					<input id='grid-columns' type='number' min='1' max='100' step='1' bind:value={$settings.columns} oninput={e => settings.set({ ...$settings, columns: Number.parseInt((e.target as HTMLInputElement).value) })} />
 				</div>
 			{/if}
-			<Switch label='Screenshot Mode' bind:value={$settings.screenshotMode} onClickWithValue={(value) => {
-				if (value)
-					infiniteLoading.reset()
-			}} />
+			<Switch label='Screenshot Mode' bind:value={$settings.screenshotMode} />
 		</div>
 	{/if}
 </div>
 
 <Spacer axis='vertical' size='m' />
 
-<h1 class='visually-hidden'>{capitalize(type)} from {year}</h1>
+<h1 class='visually-hidden'>{TYPE_LABELS[type]} from {year}</h1>
 
-<Grid screenshotMode={$settings.screenshotMode} columns={$settings.columns}>
-	{#if $settings.groupByMonth}
-		{#each Object.entries(listGroupedByMonth) as [month, items]}
-			<h2 class='month-heading'>{month}</h2>
-			{#each items as { images, title }, index}
-				<GridItem {index}>
-					<Image {images} alt={title} loading={index === 0 ? 'eager' : 'lazy'} />
+{#if $syncState === 'idle' && list.length === 0}
+	<p class='no-results'>No {TYPE_LABELS[type].toLowerCase()} watched in {year}. Start watching and track your progress on Simkl! 🥳</p>
+{:else}
+	<Grid screenshotMode={$settings.screenshotMode} columns={$settings.columns}>
+		{#if $settings.groupByMonth}
+			{#each Object.entries(listGroupedByMonth) as [month, items]}
+				<h2 class='month-heading'>{month}</h2>
+				{#each items as item, index}
+					<GridItem index={index} href={simklItemUrl(type, item.simklId, item.slug)}>
+						<Image poster={item.poster} alt={item.title} loading={index === 0 ? 'eager' : 'lazy'} />
+					</GridItem>
+				{/each}
+			{/each}
+		{:else}
+			{#each list as item, index}
+				<GridItem index={index} href={simklItemUrl(type, item.simklId, item.slug)}>
+					<Image poster={item.poster} alt={item.title} loading={index === 0 ? 'eager' : 'lazy'} />
 				</GridItem>
 			{/each}
-		{/each}
-	{:else}
-		{#each list as { images, title }, index}
-			<GridItem {index}>
-				<Image {images} alt={title} loading={index === 0 ? 'eager' : 'lazy'} />
-			</GridItem>
-		{/each}
-	{/if}
-</Grid>
-
-<InfiniteLoading bind:this={infiniteLoading} onInfinite={infiniteHandler}>
-	{#snippet noMore()}
-		<span></span>
-	{/snippet}
-	{#snippet error({ attemptLoad })}
-		<div>
-			Something went wrong 😢 <button onclick={() => attemptLoad()}>Retry</button>
-		</div>
-	{/snippet}
-	{#snippet noResults()}
-		<div class='infinite-no-results'>
-			No results found. Start watching and track your progress on Trakt! 🥳
-		</div>
-	{/snippet}
-	{#snippet spinner()}
-		<div>
-			<span class='loading-circles'>
-				<span class='circle-item'></span>
-				<span class='circle-item'></span>
-				<span class='circle-item'></span>
-				<span class='circle-item'></span>
-				<span class='circle-item'></span>
-				<span class='circle-item'></span>
-				<span class='circle-item'></span>
-				<span class='circle-item'></span>
-			</span>
-		</div>
-	{/snippet}
-</InfiniteLoading>
+		{/if}
+	</Grid>
+{/if}
 
 <style lang='postcss'>
 	.wrapper {
@@ -255,115 +186,9 @@
 		grid-column: 1 / -1;
 	}
 
-	.loading-circles {
-		--size: 7px;
-		--radius: 14px;
-		--delay: 0.093s;
-		--duration: 0.75s;
-		--outer-size: 28px;
-		--color-alpha: 1;
-
-		display: inline-block;
-		margin: 5px 0;
-		width: var(--outer-size);
-		height: var(--outer-size);
-		font-size: var(--outer-size);
-		line-height: var(--outer-size);
-		border-radius: 50%;
-		position: relative;
-	}
-
-	.loading-circles .circle-item {
-		width: var(--size);
-		height: var(--size);
-		animation: loading-circles linear var(--duration) infinite;
-	}
-
-	.loading-circles .circle-item:first-child {
-		margin-top: calc((-1 * var(--size) / 2) - var(--radius));
-		margin-left: calc(-1 * var(--size) / 2);
-	}
-
-	.loading-circles .circle-item:nth-child(2) {
-		margin-top: calc((-1 * var(--size) / 2) + (-1 * var(--radius)) * 0.73);
-		margin-left: calc((-1 * var(--size) / 2) + var(--radius) * 0.73);
-	}
-
-	.loading-circles .circle-item:nth-child(3) {
-		margin-top: calc(-1 * var(--size) / 2);
-		margin-left: calc((-1 * var(--size) / 2) + var(--radius));
-	}
-
-	.loading-circles .circle-item:nth-child(4) {
-		margin-top: calc((-1 * var(--size) / 2) + var(--radius) * 0.73);
-		margin-left: calc((-1 * var(--size) / 2) + var(--radius) * 0.73);
-	}
-
-	.loading-circles .circle-item:nth-child(5) {
-		margin-top: calc((-1 * var(--size) / 2) + var(--radius));
-		margin-left: calc(-1 * var(--size) / 2);
-	}
-
-	.loading-circles .circle-item:nth-child(6) {
-		margin-top: calc((-1 * var(--size) / 2) + var(--radius) * 0.73);
-		margin-left: calc((-1 * var(--size) / 2) + (-1 * var(--radius)) * 0.73);
-	}
-
-	.loading-circles .circle-item:nth-child(7) {
-		margin-top: calc(-1 * var(--size) / 2);
-		margin-left: calc((-1 * var(--size) / 2) + (-1 * var(--radius)));
-	}
-
-	.loading-circles .circle-item:last-child {
-		margin-top: calc((-1 * var(--size) / 2) + (-1 * var(--radius)) * 0.73);
-		margin-left: calc((-1 * var(--size) / 2) + (-1 * var(--radius)) * 0.73);
-	}
-
-	@keyframes loading-circles {
-		0% {
-			background: var(--color-4);
-		}
-		90% {
-			background: var(--color-12);
-		}
-		100% {
-			background: var(--color-bright);
-		}
-	}
-
-	.loading-circles .circle-item {
-		position: absolute;
-		top: 50%;
-		left: 50%;
-		display: inline-block;
-		border-radius: 50%;
-	}
-
-	.loading-circles .circle-item:nth-child(2) {
-		animation-delay: var(--delay);
-	}
-
-	.loading-circles .circle-item:nth-child(3) {
-		animation-delay: calc(var(--delay) * 2);
-	}
-
-	.loading-circles .circle-item:nth-child(4) {
-		animation-delay: calc(var(--delay) * 3);
-	}
-
-	.loading-circles .circle-item:nth-child(5) {
-		animation-delay: calc(var(--delay) * 4);
-	}
-
-	.loading-circles .circle-item:nth-child(6) {
-		animation-delay: calc(var(--delay) * 5);
-	}
-
-	.loading-circles .circle-item:nth-child(7) {
-		animation-delay: calc(var(--delay) * 6);
-	}
-
-	.loading-circles .circle-item:last-child{
-		animation-delay: calc(var(--delay) * 7);
+	.no-results {
+		--color-alpha: 0.75;
+		text-align: center;
+		padding: var(--space-m-l) 0;
 	}
 </style>

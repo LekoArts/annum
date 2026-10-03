@@ -12,6 +12,15 @@ import type {
 export const SIMKL_MEDIA_TYPES = ['movies', 'shows', 'anime'] as const satisfies ReadonlyArray<SimklMediaType>
 
 /**
+ * Narrow an arbitrary route param to a Simkl media type.
+ * @example isSimklMediaType('shows') => true
+ * @example isSimklMediaType('books') => false
+ */
+export function isSimklMediaType(value: string): value is SimklMediaType {
+	return (SIMKL_MEDIA_TYPES as ReadonlyArray<string>).includes(value)
+}
+
+/**
  * Map a media type to its segment on simkl.com
  * @example simklItemTypeMap.shows => 'tv'
  */

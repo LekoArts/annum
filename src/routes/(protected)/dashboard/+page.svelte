@@ -1,34 +1,38 @@
 <script lang='ts'>
-	import type { PageData } from './$types'
-	import { CURRENT_YEAR, LANGUAGES } from '#const'
+	import { CURRENT_YEAR } from '#const'
 	import { authClient } from '#lib/auth-client.js'
 	import Secondary from '#lib/button/Secondary.svelte'
 	import Spacer from '#lib/Spacer.svelte'
+	import { library } from '#lib/store/library.js'
 	import { settings } from '#lib/store/settings.js'
 	import Svg from '#lib/Svg.svelte'
 	import Switch from '#lib/Switch.svelte'
+	import { countByType, countForYear } from '#lib/utils/simkl.js'
 
-	interface Props {
-		data: PageData
-	}
-
-	let { data }: Props = $props()
 	const session = authClient.useSession()
 
 	const years = [CURRENT_YEAR, CURRENT_YEAR - 1]
+
+	const totals = $derived(countByType($library))
+	const currentYear = $derived({
+		movies: countForYear($library, 'movies', CURRENT_YEAR),
+		shows: countForYear($library, 'shows', CURRENT_YEAR),
+		anime: countForYear($library, 'anime', CURRENT_YEAR),
+	})
 </script>
 
 <h1 class='visually-hidden'>Dashboard</h1>
 
 <div class='prose'>
 	<p class='welcome'>Hello {$session.data?.user.name} 👋🏻</p>
-	<p>In total, you watched <Svg id='movie' /> <strong>{data.stats?.movies?.watched} movies</strong> and <strong><Svg id='tv' /> {data.stats?.shows?.watched} shows</strong> ({data.stats?.episodes.watched} episodes). You can use this app to view your movies and shows year by year in a poster grid. Here are some quick links to the current and previous year:</p>
+	<p>In total, you watched <Svg id='movie' /> <strong>{totals.movies} movies</strong>, <strong><Svg id='tv' /> {totals.shows} shows</strong> and <strong><Svg id='anime' /> {totals.anime} anime</strong>. You can use this app to view your movies, shows and anime year by year in a poster grid. Here are some quick links to the current and previous year:</p>
 </div>
 
 <div class='flex quicklinks'>
 	{#each years as year}
 		<Secondary type='link' href={`/dashboard/movies/${year}`}>Movies {year}</Secondary>
 		<Secondary type='link' href={`/dashboard/shows/${year}`}>Shows {year}</Secondary>
+		<Secondary type='link' href={`/dashboard/anime/${year}`}>Anime {year}</Secondary>
 	{/each}
 </div>
 
@@ -63,23 +67,6 @@
 			<Spacer axis='vertical' size='2xs' />
 		</div>
 		<div class='box'>
-			<p class='title'>Language</p>
-			<p>By default, all posters are in English. You can choose another language below.</p>
-			<Spacer axis='vertical' size='xs' />
-			<div class='lang-wrapper flex align-center'>
-				<label for='lang'>Poster Language</label>
-				<select id='lang' name='lang' bind:value={$settings.lang} onchange={(e) => {
-					// @ts-expect-error - TODO: Fix this
-					settings.set({ ...$settings, lang: (e.target as HTMLSelectElement).value })
-				}}>
-					{#each LANGUAGES as lang}
-						<option value={lang.id} selected={$settings.lang ? lang.id === $settings.lang : lang.id === 'en'}>{lang.name}</option>
-					{/each}
-				</select>
-			</div>
-			<Spacer axis='vertical' size='2xs' />
-		</div>
-		<div class='box'>
 			<p class='title'>Grouping</p>
 			<p>Posters will be grouped by month indicated by individual headings.</p>
 			<Spacer axis='vertical' size='xs' />
@@ -88,6 +75,12 @@
 		</div>
 	</div>
 </section>
+
+<Spacer axis='vertical' size='m' />
+
+<div class='prose'>
+	<p class='current-year'>Currently, you have <Svg id='movie' /> <strong>{currentYear.movies} movies</strong>, <strong><Svg id='tv' /> {currentYear.shows} shows</strong> and <strong><Svg id='anime' /> {currentYear.anime} anime</strong> watched in {CURRENT_YEAR}.</p>
+</div>
 
 <style lang='postcss'>
 	.settings-wrapper {
@@ -119,10 +112,6 @@
 		}
 	}
 
-	.lang-wrapper {
-		gap: var(--space-s);
-	}
-
 	.current-color-hue {
 		--color-alpha: 1;
 		min-width: 5ch;
@@ -133,5 +122,9 @@
 		border-radius: var(--space-2xs);
 		box-shadow: 0 0 8px var(--color-5);
 		text-align: center;
+	}
+
+	.current-year {
+		--color-alpha: 0.75;
 	}
 </style>
