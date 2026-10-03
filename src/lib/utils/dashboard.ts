@@ -2,13 +2,24 @@ import type { SimklMediaType } from '#lib/types.js'
 import { isSimklMediaType, MEDIA_TYPE_LABELS, SIMKL_MEDIA_TYPES } from '#lib/utils/simkl.js'
 
 /**
+ * The read surface the URL contract needs.
+ *
+ * Both a `URLSearchParams` (load functions, `window.location`) and SvelteKit's readonly
+ * `page.url.searchParams` satisfy it, and going through `get()` is what keeps SvelteKit's
+ * per-parameter tracking — and with it the client-side re-run of the load — intact.
+ */
+export interface SearchParamsReader {
+	get: (name: string) => string | null
+}
+
+/**
  * Canonical, validated media selection from `?types=`.
  *
  * Absent, empty and unknown-only values all mean "everything": the dashboard has no zero-type state,
  * so an unusable value degrades to the default instead of an error.
  * @example resolveSelectedTypes(new URLSearchParams('types=anime,movies')) => ['movies', 'anime']
  */
-export function resolveSelectedTypes(searchParams: URLSearchParams): Array<SimklMediaType> {
+export function resolveSelectedTypes(searchParams: SearchParamsReader): Array<SimklMediaType> {
 	const raw = searchParams.get('types')
 
 	const requested = (raw ?? '')
@@ -29,7 +40,7 @@ export function resolveSelectedTypes(searchParams: URLSearchParams): Array<Simkl
  * hand-edited link still renders a valid view (no redirect, no error page).
  * @example resolveYear(new URLSearchParams('year=2015'), [2024, 2023], 2024) => 2024
  */
-export function resolveYear(searchParams: URLSearchParams, availableYears: ReadonlyArray<number>, currentYear: number): number {
+export function resolveYear(searchParams: SearchParamsReader, availableYears: ReadonlyArray<number>, currentYear: number): number {
 	const raw = searchParams.get('year')
 	const year = raw === null ? Number.NaN : Number.parseInt(raw)
 
