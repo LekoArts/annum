@@ -98,9 +98,12 @@ export const auth = betterAuth({
 				},
 			],
 		}),
-		sveltekitCookies(getRequestEvent),
 		oAuthProxy({
 			productionURL: PUBLIC_BETTER_AUTH_URL,
 		}),
+		// better-auth requires the cookie integration last: plugins with `hooks.after` that run
+		// after it (like the oauth proxy, which rewrites the account cookie) could otherwise set
+		// cookies that never reach SvelteKit's cookie store.
+		sveltekitCookies(getRequestEvent),
 	],
 })
