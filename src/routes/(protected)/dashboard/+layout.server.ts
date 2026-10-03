@@ -1,6 +1,6 @@
-import type { TraktStats } from '$lib/types'
+import type { TraktStats } from '#lib/types.js'
 import type { LayoutServerLoad } from './$types'
-import { DEFAULT_CACHE_HEADER } from '$const'
+import { DEFAULT_CACHE_HEADER } from '#const'
 import { error } from '@sveltejs/kit'
 
 export const load: LayoutServerLoad = async ({ locals, fetch, setHeaders }) => {

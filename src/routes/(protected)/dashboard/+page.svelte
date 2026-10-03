@@ -1,12 +1,12 @@
 <script lang='ts'>
 	import type { PageData } from './$types'
-	import { CURRENT_YEAR, LANGUAGES } from '$const'
-	import { authClient } from '$lib/auth-client'
-	import Secondary from '$lib/button/Secondary.svelte'
-	import Spacer from '$lib/Spacer.svelte'
-	import { settings } from '$lib/store/settings'
-	import Svg from '$lib/Svg.svelte'
-	import Switch from '$lib/Switch.svelte'
+	import { CURRENT_YEAR, LANGUAGES } from '#const'
+	import { authClient } from '#lib/auth-client.js'
+	import Secondary from '#lib/button/Secondary.svelte'
+	import Spacer from '#lib/Spacer.svelte'
+	import { settings } from '#lib/store/settings.js'
+	import Svg from '#lib/Svg.svelte'
+	import Switch from '#lib/Switch.svelte'
 
 	interface Props {
 		data: PageData

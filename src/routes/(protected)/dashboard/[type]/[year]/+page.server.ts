@@ -1,5 +1,5 @@
 import type { PageServerLoad } from './$types'
-import { capitalize } from '$lib/utils'
+import { capitalize } from '#lib/utils/index.js'
 
 export const load: PageServerLoad = ({ params }) => {
 	return {

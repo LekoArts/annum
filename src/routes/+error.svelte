@@ -1,7 +1,7 @@
 <script lang='ts'>
+	import { GITHUB_REPO_URL } from '#const'
+	import { pa } from '#lib/store/plausible.js'
 	import { page } from '$app/state'
-	import { GITHUB_REPO_URL } from '$const'
-	import { pa } from '$lib/store/plausible'
 
 	if (page.status === 404) {
 		pa.addEvent('404', {

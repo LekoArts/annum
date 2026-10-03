@@ -1,5 +1,5 @@
 <script lang='ts'>
-	import type { TmdbImageUrlsWithDimensions } from '$lib/types'
+	import type { TmdbImageUrlsWithDimensions } from '#lib/types.js'
 	import type { HTMLImgAttributes } from 'svelte/elements'
 	import { fade } from 'svelte/transition'
 

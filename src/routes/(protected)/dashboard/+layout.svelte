@@ -1,8 +1,8 @@
 <script lang='ts'>
+	import { style } from '#lib/actions.js'
+	import { authClient } from '#lib/auth-client.js'
+	import { settings } from '#lib/store/settings.js'
 	import { goto } from '$app/navigation'
-	import { style } from '$lib/actions'
-	import { authClient } from '$lib/auth-client'
-	import { settings } from '$lib/store/settings'
 
 	interface Props {
 		children?: import('svelte').Snippet

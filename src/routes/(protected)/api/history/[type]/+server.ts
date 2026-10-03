@@ -1,10 +1,10 @@
-import type { Item, Language, NormalizedItemResponse, TmdbImageUrlsWithDimensions, TraktHistoryItem, TraktMediaType } from '$lib/types'
+import type { Item, Language, NormalizedItemResponse, TmdbImageUrlsWithDimensions, TraktHistoryItem, TraktMediaType } from '#lib/types.js'
 import type { RequestHandler } from './$types'
-import { DEFAULT_CACHE_HEADER, PAGINATION_LIMIT, TRAKT_BASE_URL } from '$const'
-import { TRAKT_FETCH_DEFAULTS } from '$lib/server/const'
-import { normalizeItem } from '$lib/utils'
-import { filterUniqueItemsFromHistory, traktHistoryUrl } from '$lib/utils/trakt'
-import { error, json } from '@sveltejs/kit'
+import { DEFAULT_CACHE_HEADER, PAGINATION_LIMIT, TRAKT_BASE_URL } from '#const'
+import { TRAKT_FETCH_DEFAULTS } from '#lib/server/const.js'
+import { normalizeItem } from '#lib/utils/index.js'
+import { filterUniqueItemsFromHistory, traktHistoryUrl } from '#lib/utils/trakt.js'
+import { error } from '@sveltejs/kit'
 
 async function fetchData(customFetch: typeof fetch, item: NormalizedItemResponse, lang: Language, type: TraktMediaType): Promise<Item | null> {
 	if (!item.tmdb_id) {
@@ -91,7 +91,7 @@ export const GET: RequestHandler = async ({ locals, url, fetch, setHeaders, para
 			return null
 		}).filter(Boolean) as Array<Item>
 
-		return json({
+		return Response.json({
 			page,
 			total_pages: pageCount,
 			page_limit: pageLimit,

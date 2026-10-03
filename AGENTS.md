@@ -72,7 +72,7 @@ pnpm vitest watch src/lib/utils/__tests__/index.ts
 **Type Imports:**
 - Always use `type` keyword for type-only imports:
   ```typescript
-  import type { Language, NormalizedItemResponse } from '$lib/types'
+  import type { Language, NormalizedItemResponse } from '#lib/types.js'
   import type { PageData } from './$types'
   ```
 
@@ -90,25 +90,25 @@ pnpm vitest watch src/lib/utils/__tests__/index.ts
 
 ### Imports
 
-**Path Aliases:**
-- `$lib` → `src/lib`
-- `$assets` → `src/assets`
-- `$const` → `src/const.ts`
-- Use these aliases consistently instead of relative paths
+**Subpath Imports:**
+The former `$lib`/`$const` aliases are replaced by Node subpath imports, defined under `"imports"` in `package.json`:
+- `#lib/*` → `src/lib/*` (include the file extension, e.g. `#lib/types.js`, `#lib/Meta.svelte`)
+- `#const` → `src/const.ts`
+- Use these consistently instead of relative paths
 
 **Import Order:**
 1. Type imports
-2. External dependencies
-3. Internal modules (using path aliases)
+2. Internal modules (using subpath imports)
+3. External dependencies
 4. Relative imports
 
 Example:
 ```typescript
-import type { Language, TraktMediaType } from '$lib/types'
+import type { Language, TraktMediaType } from '#lib/types.js'
 import type { RequestHandler } from './$types'
-import { DEFAULT_CACHE_HEADER, PAGINATION_LIMIT } from '$const'
-import { normalizeItem } from '$lib/utils'
-import { error, json } from '@sveltejs/kit'
+import { DEFAULT_CACHE_HEADER, PAGINATION_LIMIT } from '#const'
+import { normalizeItem } from '#lib/utils/index.js'
+import { error } from '@sveltejs/kit'
 ```
 
 ### Svelte 5 Conventions
@@ -129,7 +129,7 @@ let { data }: Props = $props()
 
 **Store Usage:**
 ```typescript
-import { settings } from '$lib/store/settings'
+import { settings } from '#lib/store/settings.js'
 
 // Access with $
 $settings.hue
@@ -201,13 +201,15 @@ export function chunks<T>(array: Array<T>, number: number | string): Array<Array
 
 ## Environment Variables
 
-**Private Variables:** Prefix with `PRIVATE_` (configured in `svelte.config.js`)
+Declared in `src/env.ts` via `defineEnvVars`. Private variables (server-only) are imported from `$app/env/private`; public ones from `$app/env/public`. Add new variables to both `src/env.ts` and `.env.example`.
+
+**Private Variables:**
 - `PRIVATE_TRAKT_CLIENT_ID`
 - `PRIVATE_TRAKT_CLIENT_SECRET`
 - `PRIVATE_BETTER_AUTH_SECRET`
 - `PRIVATE_TMDB_API_KEY`
 
-**Public Variables:** Prefix with `PUBLIC_`
+**Public Variables:**
 - `PUBLIC_BETTER_AUTH_URL`
 
 ## Common Patterns
@@ -221,7 +223,7 @@ function isTraktWatchedItem(item: TraktHistoryItem | TraktWatchedItem): item is 
 
 **API Responses:**
 - Set cache headers with `setHeaders()`
-- Return JSON with SvelteKit's `json()` helper
+- Return JSON with `Response.json()` (the `json()` helper from `@sveltejs/kit` is deprecated)
 - Use URL search params for query parameters
 
 **Authentication:**

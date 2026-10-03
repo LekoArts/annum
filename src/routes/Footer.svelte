@@ -1,7 +1,7 @@
 <script lang='ts'>
-	import { CURRENT_YEAR, GITHUB_REPO_URL } from '$const'
-	import Spacer from '$lib/Spacer.svelte'
-	import Svg from '$lib/Svg.svelte'
+	import { CURRENT_YEAR, GITHUB_REPO_URL } from '#const'
+	import Spacer from '#lib/Spacer.svelte'
+	import Svg from '#lib/Svg.svelte'
 </script>
 <footer class='container'>
 	<p>&copy; {CURRENT_YEAR} by <a href='https://www.lekoarts.de?utm_source=annum'>LekoArts</a> • <a href='/about'>About</a> • <a href={GITHUB_REPO_URL}>Source Code</a></p>

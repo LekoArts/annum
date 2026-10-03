@@ -1,4 +1,4 @@
-import type { Language } from '$lib/types'
+import type { Language } from '#lib/types.js'
 import { persisted } from './persisted'
 
 interface Settings {

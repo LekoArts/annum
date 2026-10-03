@@ -1,6 +1,6 @@
 <script lang='ts'>
+	import { TITLE } from '#const'
 	import { page } from '$app/state'
-	import { TITLE } from '$const'
 
 	const title = TITLE
 

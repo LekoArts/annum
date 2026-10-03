@@ -1,30 +1,23 @@
 <script module lang='ts'>
-	interface Options {
-		props?: Record<string, string>
-	}
-
-	interface PlausibleTracker {
-		(event: string, options?: Options): void
-	}
-
-	interface PlausibleWindow extends Window {
-		plausible: PlausibleTracker
-	}
+	interface Options { props?: Record<string, string> }
+	interface PlausibleTracker { (event: string, options?: Options): void }
+	interface PlausibleWindow extends Window { plausible: PlausibleTracker }
 
 	declare let window: PlausibleWindow
-
 	const plausible: PlausibleTracker = (event, options) => window.plausible(event, options)
 </script>
 
-<script lang='ts'>
+<script
+	lang='ts'
+>
+	import { pa } from '#lib/store/plausible.js'
+
 	/**
 	 * Adjusted from https://github.com/accuser/svelte-plausible-analytics/blob/main/src/lib/PlausibleAnalytics.svelte
 	 * LICENSE: MIT
 	 */
-
-	import { dev } from '$app/environment'
+	import { dev } from '$app/env'
 	import { page } from '$app/state'
-	import { pa } from '$lib/store/plausible'
 	import { onMount } from 'svelte'
 
 	onMount(() => {
@@ -76,7 +69,13 @@
 
 <svelte:head>
 	{#if enabled}
-		<script data-api={api} data-domain={domain.toString()} defer {src}></script>
+		<script
+			data-api={api}
+			data-domain={domain.toString()}
+			defer
+			src={src}
+		></script>
+
 		<script>
 			window.plausible =
 			window.plausible ||

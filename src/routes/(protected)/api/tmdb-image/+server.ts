@@ -1,10 +1,10 @@
-import type { TmdbItemDetails, TraktMediaType } from '$lib/types'
+import type { TmdbItemDetails, TraktMediaType } from '#lib/types.js'
 import type { RequestHandler } from './$types'
-import { TMDB_FETCH_DEFAULTS } from '$const'
-import { TMDB_QUERY_DEFAULTS } from '$lib/server/const'
-import { traktTmdbMediaMap } from '$lib/utils'
-import { tmdbImageUrlsWithDimensions, tmdbItemDetailsUrl } from '$lib/utils/tmdb'
-import { error, json } from '@sveltejs/kit'
+import { TMDB_FETCH_DEFAULTS } from '#const'
+import { TMDB_QUERY_DEFAULTS } from '#lib/server/const.js'
+import { traktTmdbMediaMap } from '#lib/utils/index.js'
+import { tmdbImageUrlsWithDimensions, tmdbItemDetailsUrl } from '#lib/utils/tmdb.js'
+import { error } from '@sveltejs/kit'
 
 export const GET: RequestHandler = async ({ url, fetch, setHeaders }) => {
 	const id = url.searchParams.get('id')
@@ -44,7 +44,7 @@ export const GET: RequestHandler = async ({ url, fetch, setHeaders }) => {
 
 		const images = tmdbImageUrlsWithDimensions(poster_path)
 
-		return json({
+		return Response.json({
 			...images,
 		})
 	}

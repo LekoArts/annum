@@ -1,9 +1,9 @@
-import type { TraktStats } from '$lib/types'
+import type { TraktStats } from '#lib/types.js'
 import type { RequestHandler } from './$types'
-import { DEFAULT_CACHE_HEADER, TRAKT_BASE_URL } from '$const'
-import { TRAKT_FETCH_DEFAULTS } from '$lib/server/const'
-import { traktStatsUrl } from '$lib/utils/trakt'
-import { error, json } from '@sveltejs/kit'
+import { DEFAULT_CACHE_HEADER, TRAKT_BASE_URL } from '#const'
+import { TRAKT_FETCH_DEFAULTS } from '#lib/server/const.js'
+import { traktStatsUrl } from '#lib/utils/trakt.js'
+import { error } from '@sveltejs/kit'
 
 export const GET: RequestHandler = async ({ params, fetch, setHeaders }) => {
 	const { id } = params
@@ -20,7 +20,7 @@ export const GET: RequestHandler = async ({ params, fetch, setHeaders }) => {
 
 		const stats = await res.json() as TraktStats
 
-		return json({
+		return Response.json({
 			stats,
 		})
 	}

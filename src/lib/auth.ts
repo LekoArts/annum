@@ -1,6 +1,12 @@
+import {
+	PRIVATE_BETTER_AUTH_SECRET,
+	PRIVATE_TRAKT_CLIENT_ID,
+	PRIVATE_TRAKT_CLIENT_SECRET,
+} from '$app/env/private'
+
+import { PUBLIC_BETTER_AUTH_URL } from '$app/env/public'
+
 import { getRequestEvent } from '$app/server'
-import { PRIVATE_BETTER_AUTH_SECRET, PRIVATE_TRAKT_CLIENT_ID, PRIVATE_TRAKT_CLIENT_SECRET } from '$env/static/private'
-import { PUBLIC_BETTER_AUTH_URL } from '$env/static/public'
 import { betterAuth } from 'better-auth'
 import { customSession, genericOAuth, oAuthProxy } from 'better-auth/plugins'
 import { sveltekitCookies } from 'better-auth/svelte-kit'
@@ -27,7 +33,7 @@ export const auth = betterAuth({
 	baseURL,
 	trustedOrigins: [
 		PUBLIC_BETTER_AUTH_URL,
-		...(__DEPLOY_PRIME_URL__ ? [__DEPLOY_PRIME_URL__] : []),
+		...__DEPLOY_PRIME_URL__ ? [__DEPLOY_PRIME_URL__] : [],
 	],
 	// Stateless mode - no database required
 	// This will automatically enable JWT-based sessions in cookies
