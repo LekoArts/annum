@@ -218,11 +218,11 @@ export function groupBy<T extends Record<PropertyKey, any>, Key extends Filter<T
 Declared in `src/env.ts` via `defineEnvVars`. Private variables (server-only) are imported from `$app/env/private`; public ones from `$app/env/public`. Add new variables to both `src/env.ts` and `.env.example`.
 
 **Private Variables:**
-- `PRIVATE_SIMKL_CLIENT_ID`
 - `PRIVATE_BETTER_AUTH_SECRET`
 
 **Public Variables:**
 - `PUBLIC_BETTER_AUTH_URL`
+- `PUBLIC_SIMKL_CLIENT_ID`
 
 ## Common Patterns
 

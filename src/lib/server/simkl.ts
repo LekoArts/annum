@@ -1,7 +1,7 @@
 import type { SimklActivities, SimklAllItemsResponse, SimklMediaType } from '#lib/types.js'
 import type { RequestEvent } from '@sveltejs/kit'
 import { auth } from '#lib/auth.js'
-import { PRIVATE_SIMKL_CLIENT_ID } from '$app/env/private'
+import { PUBLIC_SIMKL_CLIENT_ID } from '$app/env/public'
 
 export const SIMKL_API_BASE_URL = 'https://api.simkl.com'
 export const SIMKL_USER_AGENT = 'annum/1.0'
@@ -42,7 +42,7 @@ export class SimklError extends Error {
 export function simklUrl(path: string, params?: Record<string, string>): string {
 	const url = new URL(path, SIMKL_API_BASE_URL)
 
-	url.searchParams.set('client_id', PRIVATE_SIMKL_CLIENT_ID)
+	url.searchParams.set('client_id', PUBLIC_SIMKL_CLIENT_ID)
 	url.searchParams.set('app-name', SIMKL_APP_NAME)
 	url.searchParams.set('app-version', SIMKL_APP_VERSION)
 

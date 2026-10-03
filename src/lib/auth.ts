@@ -1,9 +1,8 @@
 import {
 	PRIVATE_BETTER_AUTH_SECRET,
-	PRIVATE_SIMKL_CLIENT_ID,
 } from '$app/env/private'
 
-import { PUBLIC_BETTER_AUTH_URL } from '$app/env/public'
+import { PUBLIC_BETTER_AUTH_URL, PUBLIC_SIMKL_CLIENT_ID } from '$app/env/public'
 
 import { getRequestEvent } from '$app/server'
 import { betterAuth } from 'better-auth'
@@ -55,7 +54,7 @@ export const auth = betterAuth({
 			config: [
 				{
 					providerId: 'simkl',
-					clientId: PRIVATE_SIMKL_CLIENT_ID,
+					clientId: PUBLIC_SIMKL_CLIENT_ID,
 					// Simkl's browser sign-in apps are public clients, so PKCE is
 					// mandatory and no client secret is configured.
 					pkce: true,
@@ -69,7 +68,7 @@ export const auth = betterAuth({
 					},
 					getUserInfo: async (tokens) => {
 						const queryParams = new URLSearchParams({
-							'client_id': PRIVATE_SIMKL_CLIENT_ID,
+							'client_id': PUBLIC_SIMKL_CLIENT_ID,
 							'app-name': 'annum',
 							'app-version': '1.0',
 						}).toString()
