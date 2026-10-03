@@ -58,8 +58,6 @@ export const auth = betterAuth({
 					// Simkl's browser sign-in apps are public clients, so PKCE is
 					// mandatory and no client secret is configured.
 					pkce: true,
-					issuer: 'https://simkl.com',
-					requireIssuerValidation: true,
 					authorizationUrl: 'https://simkl.com/oauth2/authorize',
 					tokenUrl: 'https://api.simkl.com/oauth2/token',
 					scopes: ['media:read'],

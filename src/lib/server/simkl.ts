@@ -134,14 +134,15 @@ export async function simklJson<T>(url: string, accessToken?: string): Promise<T
 /**
  * Resolve a valid Simkl access token for the signed-in user.
  *
- * `auth.api.getAccessToken` reads the stateless account cookie and refreshes an expired token when a
- * refresh token is available; because `storeAccountCookie` is enabled, the SvelteKit cookie plugin
- * applies the refreshed cookie to the response.
+ * `auth.api.getAccessToken` selects the account from the stateless account cookie (Better Auth 1.7
+ * resolves the provider from the stored account, so the body names the cookie rather than a provider
+ * id) and refreshes an expired token when a refresh token is available; because `storeAccountCookie`
+ * is enabled, the SvelteKit cookie plugin applies the refreshed cookie to the response.
  */
 export async function getSimklAccessToken(event: RequestEvent): Promise<string | null> {
 	try {
 		const { accessToken } = await auth.api.getAccessToken({
-			body: { providerId: 'simkl' },
+			body: { useAccountCookie: true },
 			headers: event.request.headers,
 		})
 
