@@ -38,7 +38,8 @@
 	}
 </script>
 
-<svelte:window onresize={() => expanded && place()} onscroll={() => expanded && place()} />
+<!-- Capture phase: `scroll` does not bubble, so a nested scroller would otherwise leave the panel behind. -->
+<svelte:window onresize={() => expanded && place()} onscrollcapture={() => expanded && place()} />
 
 <span class='trigger' bind:this={trigger}>
 	<Secondary
