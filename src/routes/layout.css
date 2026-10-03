@@ -1,0 +1,17 @@
+@import 'tailwindcss';
+
+/*
+ * The design is gone; what stays is the contract between behaviour and styling. `Grid` publishes the
+ * geometry it is laid out with, and the settings toolbar decides the values:
+ *
+ *   --gap       gutter between tiles            (0 in screenshot mode)
+ *   --columns   number of poster columns        (auto-fill grid, or the chosen count in screenshot mode)
+ *   --switch    1 normally, 0 in screenshot mode - for rounding/shadows a design may want to collapse
+ *
+ * Nothing consumes them yet: the new design decides what they mean.
+ */
+:root {
+  --gap: 1rem;
+  --columns: 5;
+  --switch: 1;
+}

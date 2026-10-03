@@ -9,7 +9,6 @@
 	import GridItem from '#lib/grid/Item.svelte'
 	import GridSkeleton from '#lib/grid/Skeleton.svelte'
 	import Image from '#lib/Image.svelte'
-	import Spacer from '#lib/Spacer.svelte'
 	import { library, syncCompleted, syncState } from '#lib/store/library.js'
 	import { settings } from '#lib/store/settings.js'
 	import { dashboardSearch } from '#lib/utils/dashboard.js'
@@ -30,10 +29,10 @@
 	const earliestYear = $derived(years.at(-1) ?? CURRENT_YEAR)
 </script>
 
-<h1 class='visually-hidden'>{data.meta.title}</h1>
+<h1 class='sr-only'>{data.meta.title}</h1>
 
-<div class='wrapper flex'>
-	<div class='flex align-center navigation'>
+<div class='mb-6 flex flex-wrap items-center justify-between gap-4'>
+	<div class='flex flex-wrap items-center gap-4'>
 		<TypeToggles {types} {year} />
 		<YearSelect {year} {years} />
 		<!--
@@ -41,7 +40,7 @@
 			and reload the whole document. The year's items come from the cached library, so a client-side
 			navigation re-renders the grid instantly.
 		-->
-		<div class='prev-next flex align-center'>
+		<div class='flex items-center gap-2'>
 			{#if year > earliestYear}
 				<Secondary type='link' href={`/dashboard${dashboardSearch({ year: year - 1, types, currentYear: CURRENT_YEAR })}`} aria-label='Navigate to previous year'>Previous</Secondary>
 			{/if}
@@ -53,13 +52,11 @@
 	<SettingsPopover />
 </div>
 
-<Spacer axis='vertical' size='m' />
-
 {#if items.length > 0}
 	<Grid screenshotMode={$settings.screenshotMode} columns={$settings.columns}>
 		{#if $settings.groupByMonth}
 			{#each Object.entries(grouped) as [month, monthItems]}
-				<h2 class='month-heading'>{month}</h2>
+				<h2 class='col-span-full'>{month}</h2>
 				{#each monthItems as item, index}
 					<GridItem index={index} href={simklItemUrl(item.type, item.simklId, item.slug)}>
 						<Image poster={item.poster} alt={item.title} loading={index === 0 ? 'eager' : 'lazy'} />
@@ -77,38 +74,5 @@
 {:else if $syncState !== 'error' && !$syncCompleted}
 	<GridSkeleton screenshotMode={$settings.screenshotMode} columns={$settings.columns} />
 {:else if $syncCompleted}
-	<p class='no-results'>Nothing watched in {year} for the selected categories. Start watching and track your progress on Simkl! 🥳</p>
+	<p>Nothing watched in {year} for the selected categories. Start watching and track your progress on Simkl! 🥳</p>
 {/if}
-
-<style lang='postcss'>
-	.wrapper {
-		justify-content: space-between;
-		flex-wrap: wrap;
-		gap: var(--grid-gutter);
-	}
-
-	.navigation {
-		gap: var(--space-2xs-xs);
-		flex-wrap: wrap;
-		justify-content: center;
-		flex-grow: 1;
-
-		@media (--sm) {
-			flex-grow: initial;
-		}
-	}
-
-	.prev-next {
-		gap: var(--space-3xs);
-	}
-
-	.month-heading {
-		grid-column: 1 / -1;
-	}
-
-	.no-results {
-		--color-alpha: 0.75;
-		text-align: center;
-		padding: var(--space-m-l) 0;
-	}
-</style>

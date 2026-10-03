@@ -26,12 +26,12 @@
 	}
 </script>
 
-<div class='toggles flex align-center' role='group' aria-label='Media types'>
+<div class='flex flex-wrap items-center gap-2' role='group' aria-label='Media types'>
 	{#each SIMKL_MEDIA_TYPES as type}
 		{@const selected = types.includes(type)}
 		<!-- The last selected type is disabled: an empty selection is not a state this page has. -->
 		<button
-			class='toggle'
+			class='flex items-center gap-2'
 			type='button'
 			aria-pressed={selected}
 			disabled={selected && types.length === 1}
@@ -41,42 +41,3 @@
 		</button>
 	{/each}
 </div>
-
-<style lang='postcss'>
-	.toggles {
-		gap: var(--space-3xs);
-	}
-
-	.toggle {
-		background: none;
-		border: 1px solid var(--color-6);
-		padding: var(--space-3xs) var(--space-xs);
-		border-radius: var(--space-2xs);
-		color: var(--color-0);
-		box-shadow: var(--shadow-elevation-low);
-		display: inline-flex;
-		appearance: none;
-		align-items: center;
-		gap: var(--space-3xs);
-		font: inherit;
-		line-height: 1.25;
-		white-space: nowrap;
-		cursor: pointer;
-		transition: background .3s cubic-bezier(.73,.26,.42,1.24), border .3s cubic-bezier(.73,.26,.42,1.24), opacity .3s;
-
-		&[aria-pressed='true'] {
-			background: var(--color-8);
-			border-color: var(--color-4);
-		}
-
-		&:hover:not(:disabled) {
-			background: var(--color-8);
-			border-color: var(--color-4);
-		}
-
-		&:disabled {
-			opacity: 0.6;
-			cursor: not-allowed;
-		}
-	}
-</style>

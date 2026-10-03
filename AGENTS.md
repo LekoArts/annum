@@ -59,7 +59,7 @@ pnpm vitest watch src/lib/utils/__tests__/index.ts
 
 **Test Configuration:**
 - Test files: `src/**/__tests__/*.ts`
-- Coverage includes: `src/lib/utils/*.ts` and `src/lib/actions.ts`
+- Coverage includes: `src/lib/utils/*.ts`
 - Test environment: happy-dom
 - Framework: vitest
 
@@ -98,7 +98,7 @@ pnpm vitest watch src/lib/utils/__tests__/index.ts
 
 ### Naming Conventions
 
-- **Files:** kebab-case for most files (e.g., `custom-media-queries.css`)
+- **Files:** kebab-case for most files (e.g., `#lib/server/simkl.ts`)
 - **Components:** PascalCase for Svelte components (e.g., `Secondary.svelte`)
 - **Functions:** camelCase (e.g., `normalizeSimklItem`, `mergeSyncResponse`)
 - **Constants:** SCREAMING_SNAKE_CASE (e.g., `SIMKL_MEDIA_TYPES`, `SIMKL_API_BASE_URL`)
@@ -148,32 +148,28 @@ let { data }: Props = $props()
 import { settings } from '#lib/store/settings.js'
 
 // Access with $
-$settings.hue
-settings.set({ ...$settings, hue: 240 })
+$settings.columns
+settings.set({ ...$settings, columns: 3 })
 ```
 
 ### CSS/Styling
 
-**PostCSS:** Uses `postcss-preset-env` with custom media queries
+**Tailwind CSS v4:** styling goes through Tailwind, loaded once in `src/routes/layout.css`
+(`@import 'tailwindcss'`) and built by the `@tailwindcss/vite` plugin. There is no PostCSS pipeline, no
+separate stylesheet layer and no design tokens yet: components carry the few utilities they need inline.
 
-**Custom Media Queries:**
-- `--sm` (min-width: 640px)
-- `--md` (min-width: 768px)
-- `--lg` (min-width: 1024px)
-- `--xl` (min-width: 1350px)
+Layout is deliberately generic - a flex column shell in `src/routes/+layout.svelte`, a centered
+max-width container, and a CSS grid for the posters. `src/lib/grid/Grid.svelte` publishes the geometry
+the settings toolbar decides as CSS variables, because the grid, its skeleton and the toolbar all read
+the same contract:
 
-**Usage:**
-```css
-.element {
-  display: block;
+- `--gap` - gutter between tiles (`0px` in screenshot mode; `1rem` otherwise)
+- `--columns` - column count, used by the fixed template in screenshot mode
 
-  @media (--md) {
-    display: flex;
-  }
-}
-```
-
-**CSS Variables:** Project uses extensive CSS custom properties defined in `src/styles/variables.css`
+Notes:
+- Prefer a handful of inline utilities over a new abstraction; there is no component style layer.
+- Keep the shell and containers in `+layout.svelte`; components only carry what they need themselves.
+- When a value must stay in sync between components, pass it as a CSS variable rather than as a class.
 
 ### Error Handling
 

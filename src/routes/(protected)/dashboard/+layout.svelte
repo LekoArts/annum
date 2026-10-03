@@ -1,8 +1,6 @@
 <script lang='ts'>
-	import { style } from '#lib/actions.js'
 	import { authClient } from '#lib/auth-client.js'
 	import { hasData, sync, syncState } from '#lib/store/library.js'
-	import { settings } from '#lib/store/settings.js'
 	import { goto } from '$app/navigation'
 	import { untrack } from 'svelte'
 
@@ -54,55 +52,14 @@
 </script>
 
 {#if $syncState === 'error'}
-	<div class='sync-status box flex align-center' role='alert'>
+	<div class='flex items-center gap-2' role='alert'>
 		Couldn't sync your Simkl library.
 		<button onclick={() => sync()}>Retry</button>
 	</div>
 {:else if showSyncStatus}
-	<div class='sync-status box flex align-center' role='status'>
-		<span class='sync-spinner'></span>
+	<div class='flex items-center gap-2' role='status'>
 		Syncing your Simkl library…
 	</div>
 {/if}
 
 {@render children?.()}
-
-<svelte:body use:style={`--color-hue: ${$settings.hue};${$settings.grayscaleMode ? ' --color-chroma: 0;' : ''}`} />
-
-<style lang='postcss'>
-	.sync-status {
-		position: fixed;
-		inset-block-end: var(--space-s);
-		inset-inline-start: var(--space-s);
-		z-index: 10;
-		--color-alpha: 1;
-
-		& button {
-			background: none;
-			border: none;
-			color: var(--color-0);
-			font: inherit;
-			padding: 0;
-			cursor: pointer;
-			text-decoration: underline;
-			text-underline-offset: 2px;
-		}
-	}
-
-	.sync-spinner {
-		--color-alpha: 1;
-		width: var(--space-xs-s);
-		height: var(--space-xs-s);
-		min-width: var(--space-xs-s);
-		border: 2px solid var(--color-6);
-		border-top-color: var(--color-1);
-		border-radius: 50%;
-		animation: sync-spin 0.75s linear infinite;
-	}
-
-	@keyframes sync-spin {
-		to {
-			transform: rotate(360deg);
-		}
-	}
-</style>

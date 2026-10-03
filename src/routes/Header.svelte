@@ -32,168 +32,66 @@
 </script>
 
 <header>
-	<div class='container'>
-		<div class='wrapper flex'>
-			<div class='title text-md-lg font-semibold'>
+	<div class='flex flex-wrap items-center justify-between gap-4 py-4'>
+		<div class='font-semibold'>
+			{#if page.url.pathname.includes('/dashboard')}
+				<a href='/dashboard' aria-label='Dashboard'>{TITLE}</a>
+			{:else}
+				<a href='/' aria-label='Back to homepage'>{TITLE}</a>
+			{/if}
+		</div>
+		<div class='flex items-center gap-4'>
+			{#if $session.data}
 				{#if page.url.pathname.includes('/dashboard')}
-					<a class='title-link' href='/dashboard' aria-label='Dashboard'>{TITLE}</a>
-				{:else}
-					<a class='title-link' href='/' aria-label='Back to homepage'>{TITLE}</a>
-				{/if}
-			</div>
-			<div class='cta flex align-center'>
-				{#if $session.data}
-					{#if page.url.pathname.includes('/dashboard')}
-						<div class='profile text-sm-base box'>
-							<div class='stats' aria-label='User statistics and information'>
-								{#each types as type (type)}
-									<!--
-										The count is rendered even when it is 0: with the all-time total gone, an
-										icon followed by nothing would read as a rendering bug rather than as "none".
-									-->
-									<div class='stats-item'>
-										<Svg id={MEDIA_TYPE_ICONS[type]} /> {countForYear($library, type, year)} <span class='visually-hidden'>{MEDIA_TYPE_LABELS[type].toLowerCase()} in {year}</span>
-									</div>
-								{/each}
-							</div>
-							{#if avatar}
-								<img class='avatar' src={avatar} alt='' width='24' height='24' />
-							{:else}
-								<span class='initials' aria-hidden='true'>{initials}</span>
-							{/if}
-							<div class='font-semibold username'>{$session.data.user.name}</div>
+					<div class='flex items-center gap-4'>
+						<div class='flex items-center gap-2' aria-label='User statistics and information'>
+							{#each types as type (type)}
+								<!--
+									The count is rendered even when it is 0: with the all-time total gone, an
+									icon followed by nothing would read as a rendering bug rather than as "none".
+								-->
+								<div>
+									<Svg id={MEDIA_TYPE_ICONS[type]} /> {countForYear($library, type, year)} <span class='sr-only'>{MEDIA_TYPE_LABELS[type].toLowerCase()} in {year}</span>
+								</div>
+							{/each}
 						</div>
-						<Primary type='text' onclick={async () => {
-							pa.addEvent('logout', { props: { position: 'header' } })
-							await authClient.signOut({
-								fetchOptions: {
-									onSuccess: () => {
-										window.location.href = '/'
-									},
-								},
-							})
-						}}>
-							Sign Out
-						</Primary>
-					{:else}
-						<Primary type='link' href='/dashboard'>
-							Dashboard
-						</Primary>
-					{/if}
-				{:else}
+						<div class='flex items-center gap-2'>
+							{#if avatar}
+								<img src={avatar} alt='' width='24' height='24' />
+							{:else}
+								<span aria-hidden='true'>{initials}</span>
+							{/if}
+							<span class='font-semibold'>{$session.data.user.name}</span>
+						</div>
+					</div>
 					<Primary type='text' onclick={async () => {
-						pa.addEvent('login', { props: { position: 'header' } })
-						await authClient.signIn.social({
-							provider: 'simkl',
-							callbackURL: '/dashboard',
+						pa.addEvent('logout', { props: { position: 'header' } })
+						await authClient.signOut({
+							fetchOptions: {
+								onSuccess: () => {
+									window.location.href = '/'
+								},
+							},
 						})
 					}}>
-						Sign In With Simkl
+						Sign Out
+					</Primary>
+				{:else}
+					<Primary type='link' href='/dashboard'>
+						Dashboard
 					</Primary>
 				{/if}
-			</div>
+			{:else}
+				<Primary type='text' onclick={async () => {
+					pa.addEvent('login', { props: { position: 'header' } })
+					await authClient.signIn.social({
+						provider: 'simkl',
+						callbackURL: '/dashboard',
+					})
+				}}>
+					Sign In With Simkl
+				</Primary>
+			{/if}
 		</div>
 	</div>
 </header>
-
-<style lang='postcss'>
-	header {
-		padding-top: var(--space-m);
-		padding-bottom: var(--space-m);
-	}
-
-  .wrapper {
-    justify-content: space-between;
-    align-items: flex-start;
-    flex-wrap: wrap;
-    gap: var(--space-2xs);
-
-    @media (--sm) {
-      gap: 0;
-    }
-  }
-
-  .title {
-    --color-alpha: 1;
-    flex-grow: 1;
-    min-width: 100%;
-    color: var(--color-1);
-    letter-spacing: -0.02em;
-    @media (--sm) {
-      flex-grow: initial;
-      min-width: initial;
-    }
-  }
-
-  .title-link {
-    text-decoration: none;
-
-    &:hover {
-      text-decoration: underline;
-    }
-  }
-
-  .cta {
-    gap: var(--space-s-m);
-    line-height: 1.25;
-    justify-content: space-between;
-    flex-grow: 1;
-
-    @media (--sm) {
-      flex-grow: initial;
-    }
-  }
-
-  .username {
-    --color-alpha: 1;
-    color: var(--color-0);
-    position: relative;
-    top: -1px;
-  }
-
-  .profile, .stats, .stats-item {
-    display: flex;
-    align-items: center;
-    line-height: 1.25;
-  }
-
-  /* Only the profile box spaces its children; `.stats-item` spaces its icon through the `svg` margin. */
-  .profile {
-    gap: var(--space-xs-s);
-  }
-
-  .stats {
-    --color-alpha: 1;
-    gap: var(--space-xs-s);
-    color: var(--color-1);
-  }
-
-  .stats-item {
-    --icon-color: var(--color-1);
-    --color-alpha: 0.75;
-  }
-
-	.stats-item :global(svg) {
-		margin-right: var(--space-2xs);
-	}
-
-	.avatar {
-		--color-alpha: 1;
-		border-radius: 50%;
-	}
-
-	.initials {
-		--color-alpha: 1;
-		display: inline-flex;
-		align-items: center;
-		justify-content: center;
-		width: 24px;
-		height: 24px;
-		border-radius: 50%;
-		background: var(--color-8);
-		color: var(--color-0);
-		font-size: var(--step--1);
-		font-weight: 600;
-		line-height: 1;
-	}
-</style>

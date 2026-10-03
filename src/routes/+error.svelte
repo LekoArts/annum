@@ -12,7 +12,7 @@
 	}
 </script>
 
-<div class='error-page'>
+<div class='space-y-4'>
 	{#if page.error?.message}
 		<h1>{page.status}: {page.error.message}</h1>
 		{#if page.status === 404}
@@ -30,9 +30,3 @@
 		<p>Something went wrong. Please try again, and if that doesn't help please create a bug report on <a href={GITHUB_REPO_URL}>GitHub</a>. Thanks!</p>
 	{/if}
 </div>
-
-<style lang='postcss'>
-	.error-page {
-		text-align: center;
-	}
-</style>

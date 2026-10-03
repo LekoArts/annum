@@ -6,7 +6,7 @@
 	import { page } from '$app/state'
 	import Footer from './Footer.svelte'
 	import Header from './Header.svelte'
-	import './style.css'
+	import './layout.css'
 
 	interface Props {
 		children?: import('svelte').Snippet
@@ -19,10 +19,12 @@
 <PlausibleAnalytics apiHost={`${page.url.protocol}//${page.url.host}`} domain={page.url.hostname} />
 <SkipToContent />
 
-<Header />
+<div class='flex min-h-dvh flex-col'>
+	<Header />
 
-<Content class='container'>
-	{@render children?.()}
-</Content>
+	<Content class='mx-auto w-full max-w-5xl grow px-4'>
+		{@render children?.()}
+	</Content>
 
-<Footer />
+	<Footer />
+</div>

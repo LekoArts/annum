@@ -36,5 +36,5 @@ export default antfu({
 		'unused-imports/no-unused-vars': 'off',
 		'style/quotes': ['error', 'single', { avoidEscape: true }],
 	},
-	ignores: ['**/.DS_Store', '**/node_modules', '/build', '/.svelte-kit', '/.mastracode', 'pnpm-lock.yaml', 'AGENTS.md', 'README.md'],
+	ignores: ['**/.DS_Store', '**/node_modules', '/build', '/.svelte-kit', '**/.mastracode/**', '**/.impeccable/**', '**/.agents/**', '**/.claude/**', '**/.github/agents/**', '**/.github/skills/**', '**/.github/hooks/**', '**/*.md', 'pnpm-lock.yaml', 'skills-lock.json'],
 })

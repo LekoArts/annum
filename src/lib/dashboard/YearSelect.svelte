@@ -24,7 +24,7 @@
 	}
 </script>
 
-<div class='year-select flex align-center'>
+<div class='flex items-center gap-2'>
 	<label for='year'>Year</label>
 	<select id='year' value={year} onchange={handleChange}>
 		{#each years as option (option)}
@@ -33,40 +33,3 @@
 	</select>
 	<Svg id='chevron-right' />
 </div>
-
-<style lang='postcss'>
-	.year-select {
-		--color-alpha: 1;
-		position: relative;
-
-		& label {
-			--color-alpha: 0.75;
-			margin-right: var(--space-2xs);
-		}
-
-		& select {
-			appearance: none;
-			background: var(--color-0);
-			color: var(--color-13);
-			border: 1px solid var(--color-6);
-			border-radius: var(--space-2xs);
-			padding: var(--space-3xs) var(--space-l) var(--space-3xs) var(--space-xs);
-			font: inherit;
-			line-height: 1.25;
-			cursor: pointer;
-
-			&:hover {
-				border-color: var(--color-4);
-			}
-		}
-
-		& :global(svg) {
-			--icon-color: var(--color-13);
-			position: absolute;
-			right: var(--space-2xs);
-			top: 50%;
-			transform: translateY(-50%) rotate(90deg);
-			pointer-events: none;
-		}
-	}
-</style>

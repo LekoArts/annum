@@ -19,7 +19,6 @@
 	 * pre-`srcset` behaviour: no `sizes` means 100vw, which selects the largest available poster.
 	 */
 	const sizes = $derived(loading === 'lazy' ? 'auto' : undefined)
-	const style = $derived('object-fit: cover; aspect-ratio: 1 / 1.5; width: 100%;')
 	let failed = $state(false)
 
 	/**
@@ -47,4 +46,4 @@
 	when picking a candidate, so high-DPI screens get the largest poster Simkl has (340px) rather than
 	one matching the tile in CSS pixels.
 -->
-<img decoding='async' transition:fade {alt} {loading} {src} {srcset} {sizes} {style} onerror={handleError} />
+<img class='aspect-[2/3] w-full object-cover' decoding='async' transition:fade {alt} {loading} {src} {srcset} {sizes} onerror={handleError} />
