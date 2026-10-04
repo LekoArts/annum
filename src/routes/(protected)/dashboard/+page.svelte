@@ -52,7 +52,7 @@
 	</div>
 {:else if !$hasSynced}
 	<GridSkeleton screenshotMode={$settings.screenshotMode} columns={$settings.columns} />
-{:else if $hasSynced}
+{:else}
 	<div class='mx-auto max-w-md py-24 text-center'><h2 class='text-lg font-medium'>No posters for {year}</h2><p class='mt-2 text-sm leading-relaxed text-(--muted)'>Try another year or include more media types. Your watched titles will appear here when you track them on Simkl.</p>
 		{#if types.length < 3}<a class='mt-5 inline-flex min-h-10 items-center rounded-full bg-(--ink) px-4 text-sm font-medium text-(--page)' href={`/dashboard${dashboardSearch({ year, types: ['movies', 'shows', 'anime'], currentYear: CURRENT_YEAR })}`}>Show all types</a>{/if}
 	</div>

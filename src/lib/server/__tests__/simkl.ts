@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { fetchSimklActivities, fetchSimklAllItems, fetchSimklDelta, fetchSimklIdSets } from '../simkl'
+import { fetchSimklActivities, fetchSimklAllItems, fetchSimklDelta, fetchSimklIdSets, SimklError } from '../simkl'
 
 const TOKEN = 'test-token'
 let calls: Array<string> = []
@@ -100,6 +100,24 @@ describe('simkl retry handling', () => {
 
 		await vi.runAllTimersAsync()
 		await pending
+	})
+
+	it('fails a daily quota 429 immediately, keeping Retry-After for the message', async () => {
+		vi.spyOn(console, 'warn').mockImplementation(() => {})
+		let requests = 0
+
+		vi.stubGlobal('fetch', async () => {
+			requests += 1
+
+			return new Response(JSON.stringify({ error: 'user_limit_exceeded' }), { status: 429, headers: { 'content-type': 'application/json', 'retry-after': '3600' } })
+		})
+
+		const error = await fetchSimklActivities(TOKEN).catch((cause: unknown) => cause)
+
+		expect(requests).toBe(1)
+		expect(error).toBeInstanceOf(SimklError)
+		expect((error as SimklError).retryAfterSeconds).toBe(3600)
+		expect((error as SimklError).message).toContain('Try again in 3600 seconds')
 	})
 
 	it('fails a deterministic error on the first response and logs it with the request URL', async () => {

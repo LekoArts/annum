@@ -5,7 +5,7 @@
 	import Dock from '#lib/dashboard/Dock.svelte'
 	import Icon from '#lib/dashboard/Icon.svelte'
 	import Popover from '#lib/dashboard/Popover.svelte'
-	import { clearLibrary } from '#lib/store/library.js'
+	import { claimLibrary, clearLibrary } from '#lib/store/library.js'
 	import { pa } from '#lib/store/plausible.js'
 	import { accountInitials, accountName, membershipLabel } from '#lib/utils/account.js'
 	import { simklAvatarUrl } from '#lib/utils/simkl.js'
@@ -33,6 +33,8 @@
 			const result = await authClient.signOut()
 			if (result.error)
 				throw new Error('Sign out failed')
+			// Release the claim first so a sync still in flight cannot write the cache back
+			claimLibrary(null)
 			clearLibrary()
 			window.location.href = '/'
 		}

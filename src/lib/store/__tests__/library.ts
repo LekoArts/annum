@@ -21,10 +21,18 @@ function stubResponse(response: SimklSyncResponse): void {
 	vi.stubGlobal('fetch', async () => new Response(JSON.stringify(response), { status: 200, headers: { 'content-type': 'application/json' } }))
 }
 
+let lockRequests: Array<{ name: string, options: unknown }> = []
+
 function stubLock(available: boolean): void {
 	Object.defineProperty(navigator, 'locks', {
 		configurable: true,
-		value: { request: async (_name: string, _options: unknown, callback: (lock: unknown) => Promise<unknown>) => available ? await callback({ name: 'annum-sync' }) : null },
+		value: {
+			request: async (name: string, options: unknown, callback: (lock: unknown) => Promise<unknown>) => {
+				lockRequests.push({ name, options })
+
+				return available ? await callback({ name: 'annum-sync' }) : null
+			},
+		},
 	})
 }
 
@@ -35,6 +43,7 @@ beforeEach(() => {
 	clearLibrary()
 	claimLibrary(null)
 	syncState.set('idle')
+	lockRequests = []
 	delete (navigator as { locks?: unknown }).locks
 	stubResponse(UP_TO_DATE)
 })
@@ -75,6 +84,38 @@ describe('library account scoping', () => {
 
 		expect(JSON.parse(localStorage.getItem(STORAGE_KEY) ?? '{}')).toMatchObject({ accountId: OTHER_ACCOUNT })
 		expect(get(library).movies.map(item => item.simklId)).toEqual([2])
+	})
+
+	it('does not keep a response that lands after sign-out', async () => {
+		let release: (response: Response) => void = () => {}
+		vi.stubGlobal('fetch', async () => await new Promise<Response>((resolve) => {
+			release = resolve
+		}))
+		claimLibrary(ACCOUNT)
+
+		const pending = sync()
+		// The tab signs out while the request is still in flight
+		claimLibrary(null)
+		clearLibrary()
+		release(new Response(JSON.stringify(UP_TO_DATE), { status: 200 }))
+		await pending
+
+		expect(JSON.parse(localStorage.getItem(STORAGE_KEY) ?? '{}')).toMatchObject({ accountId: null, lastSyncedAt: null })
+	})
+
+	it('renders the library another tab wrote through the storage event', () => {
+		seed({ lastSyncedAt: Date.now() - MINUTE })
+		claimLibrary(ACCOUNT)
+		const seen: Array<Array<number>> = []
+		// A mounted component holds the subscription, which is what keeps the cross-tab listener alive
+		const unsubscribe = library.subscribe(($library) => {
+			seen.push($library.movies.map(item => item.simklId))
+		})
+
+		window.dispatchEvent(new StorageEvent('storage', { key: STORAGE_KEY, newValue: JSON.stringify({ accountId: ACCOUNT, activities: null, lastSyncedAt: Date.now(), movies: [media(9)], shows: [], anime: [] }) }))
+		unsubscribe()
+
+		expect(seen.at(-1)).toEqual([9])
 	})
 
 	it('drops the cache on sign-out', () => {
@@ -145,6 +186,15 @@ describe('library sync throttling', () => {
 		expect(get(library).lastSyncedAt).toBeGreaterThanOrEqual(before)
 	})
 
+	it('keeps the saved activities snapshot when Simkl reports up-to-date', async () => {
+		seed({ lastSyncedAt: Date.now() - 16 * MINUTE })
+		claimLibrary(ACCOUNT)
+
+		await sync()
+
+		expect(get(library).activities).toMatchObject({ movies: { removed_from_list: '2026-09-01T00:00:00Z' } })
+	})
+
 	it('sends the claimed activities snapshot as the delta anchor', async () => {
 		seed({ lastSyncedAt: Date.now() - 16 * MINUTE })
 		claimLibrary(ACCOUNT)
@@ -179,6 +229,7 @@ describe('library sync throttling', () => {
 
 		expect(fetchMock).not.toHaveBeenCalled()
 		expect(get(syncState)).toBe('idle')
+		expect(lockRequests).toEqual([{ name: 'annum-sync', options: { ifAvailable: true } }])
 	})
 
 	it('syncs when it holds the lock itself', async () => {

@@ -111,6 +111,11 @@ export async function sync({ force = false }: { force?: boolean } = {}): Promise
 			const response = await requestSync()
 
 			cache.update((current) => {
+				// A sign-out or account switch landed while the request was in flight, so this response
+				// belongs to nobody: keeping it would leave an empty library marked as freshly synced
+				if (get(accountId) !== account)
+					return current
+
 				// Another account's cache is replaced rather than merged, so its anchor cannot leak
 				const base = current.accountId === account ? current : EMPTY_LIBRARY
 
