@@ -1,92 +1,81 @@
 <script lang='ts'>
-	import { CURRENT_YEAR, TITLE } from '#const'
+	import { TITLE } from '#const'
 	import { authClient } from '#lib/auth-client.js'
-	import Primary from '#lib/button/Primary.svelte'
-	import { library } from '#lib/store/library.js'
+
+	import Dock from '#lib/dashboard/Dock.svelte'
+	import Icon from '#lib/dashboard/Icon.svelte'
+	import Popover from '#lib/dashboard/Popover.svelte'
 	import { pa } from '#lib/store/plausible.js'
-	import Svg from '#lib/Svg.svelte'
-	import { resolveSelectedTypes, resolveYear } from '#lib/utils/dashboard.js'
-	import { availableYears, countForYear, MEDIA_TYPE_ICONS, MEDIA_TYPE_LABELS, simklAvatarUrl } from '#lib/utils/simkl.js'
+	import { accountInitials, accountName, membershipLabel } from '#lib/utils/account.js'
+	import { simklAvatarUrl } from '#lib/utils/simkl.js'
 	import { page } from '$app/state'
 
 	const session = authClient.useSession()
+	const user = $derived($session.data?.user)
+	const dashboard = $derived(page.url.pathname === '/dashboard')
+	const avatar = $derived(simklAvatarUrl(user?.image))
+	const plan = $derived(user?.simklPlan)
+	const joinedAt = $derived(user?.simklJoinedAt)
+	const joinedLabel = $derived(membershipLabel(joinedAt))
+	const name = $derived(accountName(user?.name))
+	const initials = $derived(accountInitials(user?.name))
+	let failedAvatar = $state<string | null>(null)
+	let signingOut = $state(false)
+	let signOutError = $state(false)
 
-	/** Display names come from Simkl as words; be lenient about runs of whitespace between them. */
-	const NAME_WORD_SEPARATOR = /\s+/
-
-	// The selection lives in the query string, so the header reads it from the URL rather than a route
-	// segment: the counts must follow the grid on screen. Derived here (not passed down) so the header
-	// stays reactive to `page.url` on every navigation.
-	const types = $derived(resolveSelectedTypes(page.url.searchParams))
-	const year = $derived(resolveYear(page.url.searchParams, availableYears($library, CURRENT_YEAR), CURRENT_YEAR))
-
-	/** Simkl serves avatars directly; when there is none, the initials of the name stand in for it. */
-	const avatar = $derived(simklAvatarUrl($session.data?.user.image))
-	const initials = $derived.by(() => {
-		const words = ($session.data?.user.name ?? '').trim().split(NAME_WORD_SEPARATOR).filter(Boolean)
-
-		return words.slice(0, 2).map(word => word.charAt(0).toUpperCase()).join('')
-	})
+	async function signOut(): Promise<void> {
+		signingOut = true
+		signOutError = false
+		try {
+			pa.addEvent('logout', { props: { position: 'header' } })
+			const result = await authClient.signOut()
+			if (result.error)
+				throw new Error('Sign out failed')
+			window.location.href = '/'
+		}
+		catch {
+			signingOut = false
+			signOutError = true
+		}
+	}
 </script>
 
-<header>
-	<div class='flex flex-wrap items-center justify-between gap-4 py-4'>
-		<div class='font-semibold'>
-			{#if page.url.pathname.includes('/dashboard')}
-				<a href='/dashboard' aria-label='Dashboard'>{TITLE}</a>
-			{:else}
-				<a href='/' aria-label='Back to homepage'>{TITLE}</a>
-			{/if}
-		</div>
-		<div class='flex items-center gap-4'>
-			{#if $session.data}
-				{#if page.url.pathname.includes('/dashboard')}
-					<div class='flex items-center gap-4'>
-						<div class='flex items-center gap-2' aria-label='User statistics and information'>
-							{#each types as type (type)}
-								<!-- Render 0 too: without the all-time total an icon followed by nothing reads as a bug -->
-								<div>
-									<Svg id={MEDIA_TYPE_ICONS[type]} /> {countForYear($library, type, year)} <span class='sr-only'>{MEDIA_TYPE_LABELS[type].toLowerCase()} in {year}</span>
-								</div>
-							{/each}
-						</div>
-						<div class='flex items-center gap-2'>
-							{#if avatar}
-								<img src={avatar} alt='' width='24' height='24' />
-							{:else}
-								<span aria-hidden='true'>{initials}</span>
+<header class={`mx-auto flex w-full flex-wrap items-center justify-between gap-2 px-3 pt-4 pb-7 sm:px-6 sm:pt-5 sm:pb-10 lg:px-9 ${dashboard ? 'max-w-[1800px] sm:grid sm:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)]' : 'max-w-5xl'}`}>
+	<a href={dashboard ? '/dashboard' : '/'} aria-label={dashboard ? 'Dashboard' : 'Back to homepage'} class={`w-fit font-(family-name:--font-wordmark) text-[23px] font-semibold tracking-[-0.03em] ${dashboard ? 'hidden sm:block' : ''}`}>{TITLE}</a>
+	{#if dashboard}<Dock />{/if}
+	<div class='flex shrink-0 justify-end'>
+		{#if user}
+			<Popover label='Account' align='end' width='w-60'>
+				{#snippet trigger(open, toggle, id)}
+					<button type='button' onclick={toggle} data-press aria-label='Account menu' popovertarget={id} aria-controls={id} aria-expanded={open} aria-haspopup='dialog' class='flex size-10 items-center justify-center rounded-full hover:bg-(--active)'>
+						{#if avatar && failedAvatar !== avatar}<img onerror={() => { failedAvatar = avatar }} src={avatar} alt='' width='32' height='32' class='size-8 rounded-full object-cover outline-1 -outline-offset-1 outline-(--image-edge)' />{:else}<span class='flex size-8 items-center justify-center rounded-full bg-(--active) text-xs font-medium'>{initials}</span>{/if}
+					</button>
+				{/snippet}
+				{#snippet children(close)}
+					<div class='px-3 py-2.5'>
+						<div class='flex items-start gap-2'>
+							<p dir='auto' class='min-w-0 flex-1 font-medium [overflow-wrap:anywhere]'>{name}</p>
+							{#if plan === 'pro' || plan === 'vip'}
+								<span aria-label={`Simkl ${plan.toUpperCase()} plan`} class='shrink-0 rounded-md bg-(--active) px-1.5 py-0.5 text-[0.625rem] font-semibold tracking-wide text-(--muted)'>{plan.toUpperCase()}</span>
 							{/if}
-							<span class='font-semibold'>{$session.data.user.name}</span>
 						</div>
+						<p class='mt-1 text-xs text-(--muted)'>Connected to Simkl</p>
 					</div>
-					<Primary type='text' onclick={async () => {
-						pa.addEvent('logout', { props: { position: 'header' } })
-						await authClient.signOut({
-							fetchOptions: {
-								onSuccess: () => {
-									window.location.href = '/'
-								},
-							},
-						})
-					}}>
-						Sign Out
-					</Primary>
-				{:else}
-					<Primary type='link' href='/dashboard'>
-						Dashboard
-					</Primary>
-				{/if}
-			{:else}
-				<Primary type='text' onclick={async () => {
-					pa.addEvent('login', { props: { position: 'header' } })
-					await authClient.signIn.social({
-						provider: 'simkl',
-						callbackURL: '/dashboard',
-					})
-				}}>
-					Sign In With Simkl
-				</Primary>
-			{/if}
-		</div>
+					{#if joinedLabel}
+						<p class='px-3 pt-1 pb-3 text-xs leading-relaxed text-(--muted)'>Member since <time datetime={joinedAt}>{joinedLabel}</time></p>
+					{/if}
+					{#if !dashboard}<a href='/dashboard' onclick={close} class='flex min-h-11 items-center gap-3 rounded-lg px-3 hover:bg-(--active)'><Icon name='filter' />Dashboard</a>{/if}
+					<div class='border-t border-(--border)'>
+						<button type='button' disabled={signingOut} onclick={signOut} class='mt-1 flex min-h-11 w-full items-center gap-3 rounded-lg px-3 text-left hover:bg-(--active) disabled:opacity-50'><Icon name='exit' />{signingOut ? 'Signing out…' : 'Sign out'}</button>
+					</div>
+					{#if signOutError}<p role='alert' class='px-3 py-2 text-xs text-(--muted)'>Couldn’t sign out. Please try again.</p>{/if}
+				{/snippet}
+			</Popover>
+		{:else}
+			<button type='button' class='min-h-10 rounded-full bg-(--ink) px-4 text-sm font-medium text-(--page) hover:opacity-85' onclick={async () => {
+				pa.addEvent('login', { props: { position: 'header' } })
+				await authClient.signIn.social({ provider: 'simkl', callbackURL: '/dashboard' })
+			}}>Sign in with Simkl</button>
+		{/if}
 	</div>
 </header>

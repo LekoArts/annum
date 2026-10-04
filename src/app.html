@@ -6,7 +6,15 @@
 		<link rel="icon" type="image/png" sizes="32x32" href="%sveltekit.assets%/favicon-32x32.png">
 		<link rel="icon" type="image/png" sizes="16x16" href="%sveltekit.assets%/favicon-16x16.png">
 		<link rel="manifest" href="%sveltekit.assets%/site.webmanifest">
-		<meta name="theme-color" content="#001739">
+		<meta name="theme-color" content="#f7f8fa">
+		<script>
+			try {
+				const theme = JSON.parse(localStorage.getItem('annum-theme') || '"system"')
+				document.documentElement.dataset.theme = theme === 'dark' || (theme !== 'light' && matchMedia('(prefers-color-scheme: dark)').matches) ? 'dark' : 'light'
+				document.querySelector('meta[name="theme-color"]').content = document.documentElement.dataset.theme === 'dark' ? '#111216' : '#f7f8fa'
+			}
+			catch {}
+		</script>
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		%sveltekit.head%
 	</head>

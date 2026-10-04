@@ -8,6 +8,6 @@ interface Settings {
 
 export const settings = persisted<Settings>('annum-settings', {
 	screenshotMode: false,
-	columns: 5,
+	columns: 0,
 	groupByMonth: false,
 })

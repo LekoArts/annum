@@ -50,13 +50,13 @@
 	})
 </script>
 
-{#if $syncState === 'error'}
-	<div class='fixed right-4 bottom-4 z-10 flex items-center gap-2' role='alert'>
+{#if $syncState === 'error' && $hasData}
+	<div class='fixed right-4 bottom-4 z-10 flex max-w-[calc(100vw-32px)] items-center gap-3 rounded-xl border border-(--border) bg-(--menu) px-4 py-3 text-sm shadow-(--menu-shadow)' role='alert'>
 		Couldn't sync your Simkl library.
-		<button onclick={() => sync()}>Retry</button>
+		<button class='rounded-md px-2 py-1 font-medium text-(--accent) hover:bg-(--active)' onclick={() => sync()}>Retry</button>
 	</div>
 {:else if showSyncStatus}
-	<div class='fixed right-4 bottom-4 z-10 flex items-center gap-2' role='status'>
+	<div class='fixed right-4 bottom-4 z-10 flex max-w-[calc(100vw-32px)] items-center gap-3 rounded-xl border border-(--border) bg-(--menu) px-4 py-3 text-sm shadow-(--menu-shadow)' role='status'>
 		Syncing your Simkl library…
 	</div>
 {/if}

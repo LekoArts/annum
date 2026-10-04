@@ -13,3 +13,4 @@ vite.config.ts.timestamp-*
 coverage
 .mastracode
 debug-vector-index.jsonl
+.impeccable

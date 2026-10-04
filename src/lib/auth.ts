@@ -13,6 +13,7 @@ interface SimklSettings {
 	user: {
 		name: string
 		avatar?: string
+		joined_at?: string
 	}
 	account: {
 		id: number
@@ -30,6 +31,12 @@ export const auth = betterAuth({
 		PUBLIC_BETTER_AUTH_URL,
 		...__DEPLOY_PRIME_URL__ ? [__DEPLOY_PRIME_URL__] : [],
 	],
+	user: {
+		additionalFields: {
+			simklPlan: { type: 'string', required: false },
+			simklJoinedAt: { type: 'string', required: false },
+		},
+	},
 	// Stateless: no database, so sessions are encrypted JWT cookies
 	session: {
 		cookieCache: {
@@ -62,6 +69,10 @@ export const auth = betterAuth({
 					authorizationHeaders: {
 						'User-Agent': 'annum/1.0',
 					},
+					mapProfileToUser: profile => ({
+						simklPlan: profile.simklPlan,
+						simklJoinedAt: profile.simklJoinedAt,
+					}),
 					getUserInfo: async (tokens) => {
 						const queryParams = new URLSearchParams({
 							'client_id': PUBLIC_SIMKL_CLIENT_ID,
@@ -90,6 +101,8 @@ export const auth = betterAuth({
 							emailVerified: false,
 							name: user.name,
 							image: user.avatar,
+							simklPlan: account.type,
+							simklJoinedAt: user.joined_at,
 						}
 					},
 				},

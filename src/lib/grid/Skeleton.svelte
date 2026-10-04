@@ -19,7 +19,7 @@
 	<p class='sr-only'>Loading your library…</p>
 	<Grid {screenshotMode} {columns}>
 		{#each tiles as tile (tile)}
-			<div class='aspect-[2/3] w-full bg-current/10' aria-hidden='true'></div>
+			<div class='aspect-[2/3] w-full rounded-(--poster-radius) bg-(--active)' aria-hidden='true'></div>
 		{/each}
 	</Grid>
 </div>

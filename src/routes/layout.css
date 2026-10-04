@@ -1,7 +1,113 @@
+@import '@fontsource-variable/inter';
+@import '@fontsource-variable/bricolage-grotesque';
 @import 'tailwindcss';
 
-/* `Grid` publishes the geometry it lays out with; these are just the fallbacks before it does. */
 :root {
-	--gap: 1rem;
+	font-family: 'Inter Variable', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+	font-synthesis: none;
+	--font-wordmark: 'Bricolage Grotesque Variable', ui-sans-serif, sans-serif;
+	--ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+	--gap: 12px;
 	--columns: 5;
+	--page: #f7f8fa;
+	--dock: #ffffff;
+	--menu: #ffffff;
+	--ink: #27282f;
+	--muted: #676b78;
+	--active: #f0f1f4;
+	--border: #e0e2e8;
+	--accent: #6666b8;
+	--on-accent: #ffffff;
+	--switch-track: #858a97;
+	--image-edge: rgb(0 0 0 / 10%);
+	--poster-hover-edge: rgb(255 255 255 / 65%);
+	--poster-elevation: 0 1px 2px rgb(28 32 48 / 12%), 0 3px 6px -2px rgb(28 32 48 / 14%), 0 10px 18px -8px rgb(28 32 48 / 20%);
+	--dock-shadow: 0 2px 8px rgb(28 32 48 / 5%);
+	--menu-shadow: 0 8px 24px rgb(28 32 48 / 12%), 0 2px 6px rgb(28 32 48 / 4%);
+	color-scheme: light;
+	background: var(--page);
+	color: var(--ink);
+	accent-color: var(--accent);
+	caret-color: var(--accent);
+	scrollbar-color: var(--border) var(--page);
+}
+
+:root[data-theme='dark'] {
+	--page: #111216;
+	--dock: #202127;
+	--menu: #24252d;
+	--ink: #ecedef;
+	--muted: #a5a8b5;
+	--active: #30313a;
+	--border: #35363d;
+	--accent: #a4a7ff;
+	--on-accent: #111216;
+	--switch-track: #4b4e5a;
+	--image-edge: rgb(255 255 255 / 10%);
+	--poster-hover-edge: rgb(255 255 255 / 65%);
+	--poster-elevation: 0 1px 2px rgb(0 0 0 / 35%), 0 3px 6px -2px rgb(0 0 0 / 40%), 0 10px 18px -8px rgb(0 0 0 / 55%);
+	--dock-shadow: 0 2px 8px rgb(0 0 0 / 12%);
+	--menu-shadow: 0 8px 24px rgb(0 0 0 / 28%), 0 2px 6px rgb(0 0 0 / 16%);
+	color-scheme: dark;
+}
+
+::selection {
+	background: var(--accent);
+	color: var(--on-accent);
+}
+
+:focus-visible {
+	outline: 2px solid var(--accent);
+	outline-offset: 3px;
+}
+
+button, a, input {
+	-webkit-tap-highlight-color: transparent;
+}
+
+button:not(:disabled), a {
+	cursor: pointer;
+}
+
+[popover] {
+	opacity: 0;
+	transform: translateY(-2px) scale(0.98);
+	transition: opacity 90ms ease, transform 90ms var(--ease-out), display 90ms allow-discrete, overlay 90ms allow-discrete;
+}
+
+[popover]:popover-open {
+	opacity: 1;
+	transform: none;
+	transition-duration: 140ms;
+}
+
+@starting-style {
+	[popover]:popover-open {
+		opacity: 0;
+		transform: translateY(-2px) scale(0.98);
+	}
+}
+
+[data-press] {
+	transition: transform 120ms var(--ease-out);
+}
+
+:root[data-input='pointer'] [data-press]:not(:disabled):active {
+	transform: scale(0.97);
+}
+
+:root[data-input='keyboard'] [popover],
+:root[data-input='keyboard'] button,
+:root[data-input='keyboard'] button span,
+:root[data-input='keyboard'] [role='radiogroup'] span {
+	transition: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	[popover], [data-press] {
+		transition: none;
+	}
+	[popover], :root[data-input='pointer'] [data-press]:not(:disabled):active {
+		transform: none;
+	}
 }

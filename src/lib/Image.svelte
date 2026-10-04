@@ -1,7 +1,6 @@
 <script lang='ts'>
 	import type { HTMLImgAttributes } from 'svelte/elements'
 	import { SIMKL_POSTER_PLACEHOLDER, simklPosterSrcset, simklPosterUrl } from '#lib/utils/simkl.js'
-	import { fade } from 'svelte/transition'
 
 	interface Props {
 		alt: string
@@ -34,4 +33,4 @@
 
 <!-- `sizes='auto'` lets the browser measure the tile, which only the fluid grid knows. The browser
      multiplies the CSS width by the device pixel ratio, so high-DPI screens get Simkl's largest (340px) -->
-<img class='aspect-2/3 w-full object-cover' decoding='async' transition:fade {alt} {loading} {src} {srcset} {sizes} onerror={handleError} />
+<img class='aspect-2/3 w-full object-cover' decoding='async' {alt} {loading} {src} {srcset} {sizes} onerror={handleError} />
