@@ -5,12 +5,11 @@
 <path d="M10 36L0 16l19 9 24-16-22 33Zm158 8-35-26 29 11 18-21v20Z" fill="#7c9276"/>
 <path d="M0 164q74-27 180 7v61H0Z" fill="#829373"/>
 <path d="M0 198q87-35 180-9v43H0Z" fill="#657d60"/>
-<g transform="translate(0 51)">
+<g transform="translate(0 51)"><g class="cover-rex-breath">
 <path d="M17 77q26 7 47-14 12-12 32-10l9-20 18-10 28 5 11 10-4 14-26 1-12 8 12 5 20-4-4 11-25 4-20-6-11 19 15 25-5 19H81l3-8h9l-12-17-13-7-5 23-15 10H32l3-7 14-4 7-29Q31 99 17 77Z" fill="#354e3f"/>
 <path d="M98 75l11 9 8-3m-5 1 4 4" fill="none" stroke="#354e3f" stroke-width="4" stroke-linecap="round"/>
 <circle cx="143" cy="37" r="2" fill="#d8c18e"/><path d="M136 52l2 4 3-4m4 0 2 4 3-4m-20 13 2-4 3 4" fill="#dfd0ab"/>
-</g>
+</g></g>
 <path d="M20 220q4-25 32-32-11 19-30 23m-2 9q-2-35-18-48 0 31 18 48Zm145 12q-2-34-27-46 3 23 24 35m2 0q-1-28 16-44v28Z" fill="#45644c"/>
-<ellipse class="cover-footfall" cx="88" cy="192" rx="24" ry="4" fill="none" stroke="#c3c5a3" stroke-width="1.5"/>
 <path d="M45 204h17m66-5h15" stroke="#9daf8b" stroke-width="1"/>
 </g></svg>

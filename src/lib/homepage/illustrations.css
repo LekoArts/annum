@@ -2,6 +2,10 @@
 	animation: cover-drive 12s linear -5s infinite;
 }
 
+.home-illustrations .cover-rv-body {
+	animation: cover-rv-suspension 12s ease-in-out -5s infinite;
+}
+
 .home-illustrations .cover-train {
 	animation: cover-train-pass 10s linear -3.5s infinite;
 }
@@ -37,8 +41,44 @@
 	animation: cover-orbit 24s linear infinite;
 }
 
-.home-illustrations .cover-light {
-	animation: cover-light 7s ease-in-out -2s infinite;
+.home-illustrations .cover-window-light {
+	opacity: .9;
+}
+
+.home-illustrations .cover-headlight {
+	opacity: 1;
+}
+
+.home-illustrations .cover-ring-light {
+	animation: cover-ring-light 11s ease-in-out -4s infinite;
+}
+
+.home-illustrations .cover-lightning {
+	animation: cover-lightning 13s linear -5s infinite;
+}
+
+.home-illustrations .cover-star-light {
+	animation: cover-star-light 7s ease-in-out -1s infinite;
+}
+
+.home-illustrations .cover-star-light:nth-child(2) {
+	animation-duration: 9s;
+	animation-delay: -4s;
+}
+
+.home-illustrations .cover-star-light:nth-child(3) {
+	animation-duration: 11s;
+	animation-delay: -7s;
+}
+
+.home-illustrations .cover-star-light:nth-child(4) {
+	animation-duration: 8s;
+	animation-delay: -3s;
+}
+
+.home-illustrations .cover-star-light:nth-child(5) {
+	animation-duration: 10s;
+	animation-delay: -6s;
 }
 
 .home-illustrations .cover-water {
@@ -50,7 +90,7 @@
 }
 
 .home-illustrations .cover-flight {
-	animation: cover-flight 12s ease-in-out -3s infinite;
+	animation: cover-bebop-flight 12s ease-in-out -3s infinite;
 }
 
 .home-illustrations .cover-engine {
@@ -66,7 +106,7 @@
 }
 
 .home-illustrations .cover-refine {
-	animation: cover-refine 9s linear infinite;
+	animation: cover-refine 9s var(--ease-out) infinite;
 }
 
 .home-illustrations .cover-screen-scan {
@@ -116,9 +156,21 @@
 	to { transform: rotate(360deg); }
 }
 
-@keyframes cover-light {
-	0%, 100% { opacity: .7; }
+@keyframes cover-ring-light {
+	0%, 100% { opacity: .8; }
 	50% { opacity: 1; }
+}
+
+@keyframes cover-lightning {
+	0%, 70%, 78%, 100% { opacity: .45; }
+	72% { opacity: .95; }
+	74% { opacity: .6; }
+	76% { opacity: .8; }
+}
+
+@keyframes cover-star-light {
+	0%, 100% { opacity: .55; }
+	50% { opacity: .95; }
 }
 
 @keyframes cover-water {
@@ -128,7 +180,12 @@
 
 @keyframes cover-spinner {
 	0%, 100% { transform: translate(0, 0); }
-	50% { transform: translate(3px, -3px); }
+	50% { transform: translate(7px, -6px); }
+}
+
+@keyframes cover-bebop-flight {
+	0%, 100% { transform: translate(0, 0); }
+	50% { transform: translate(8px, -8px); }
 }
 
 @keyframes cover-flight {
@@ -155,10 +212,10 @@
 
 @keyframes cover-refine {
 	0%, 12% { opacity: 0; transform: translate(0, 0); }
-	20%, 38% { opacity: 1; transform: translate(0, 0); }
-	48%, 60% { opacity: 1; transform: translate(-24px, 12px); }
-	75%, 85% { opacity: 1; transform: translate(8px, 24px); }
-	93%, 100% { opacity: 0; transform: translate(8px, 24px); }
+	15%, 38% { opacity: 1; transform: translate(0, 0); }
+	40.5%, 65% { opacity: 1; transform: translate(-24px, 12px); }
+	67.5%, 85% { opacity: 1; transform: translate(8px, 24px); }
+	88%, 100% { opacity: 0; transform: translate(8px, 24px); }
 }
 
 @keyframes cover-screen-scan {
@@ -194,15 +251,38 @@
 	animation: cover-flight 12s ease-in-out infinite;
 }
 
-.home-illustrations .cover-wings {
-	transform-origin: 84px 116px;
-	animation: cover-wingbeat .7s ease-in-out infinite;
+.home-illustrations .cover-wing-front-left,
+.home-illustrations .cover-wing-front-right,
+.home-illustrations .cover-wing-rear-left,
+.home-illustrations .cover-wing-rear-right {
+	transform-box: view-box;
+	animation: cover-wing-left .7s ease-in-out infinite;
 }
 
-.home-illustrations .cover-footfall {
-	transform-box: fill-box;
-	transform-origin: center;
-	animation: cover-footfall 5s ease-out infinite;
+.home-illustrations .cover-wing-front-left {
+	transform-origin: 79px 114px;
+}
+
+.home-illustrations .cover-wing-front-right {
+	transform-origin: 90px 114px;
+	animation-name: cover-wing-right;
+}
+
+.home-illustrations .cover-wing-rear-left {
+	transform-origin: 77px 117px;
+	animation-delay: -.175s;
+}
+
+.home-illustrations .cover-wing-rear-right {
+	transform-origin: 90px 117px;
+	animation-name: cover-wing-right;
+	animation-delay: -.175s;
+}
+
+.home-illustrations .cover-rex-breath {
+	transform-box: view-box;
+	transform-origin: 88px 135px;
+	animation: cover-rex-breath 4.5s ease-in-out -2s infinite;
 }
 
 .home-illustrations .cover-terminal .cover-code {
@@ -215,20 +295,29 @@
 	to { transform: translateX(180px); }
 }
 
+@keyframes cover-rv-suspension {
+	0%, 34%, 39%, 55%, 60%, 100% { transform: translateY(0); }
+	36%, 57% { transform: translateY(1.5px); }
+}
+
 @keyframes cover-totoro-sway {
 	0%, 100% { transform: rotate(-3deg); }
 	50% { transform: rotate(3deg); }
 }
 
-@keyframes cover-wingbeat {
-	0%, 100% { transform: scaleY(.55); }
-	50% { transform: scaleY(1); }
+@keyframes cover-wing-left {
+	0%, 100% { transform: rotate(-7deg); }
+	50% { transform: rotate(7deg); }
 }
 
-@keyframes cover-footfall {
-	0% { transform: scale(.7); opacity: 0; }
-	20% { opacity: .5; }
-	100% { transform: scale(1.4); opacity: 0; }
+@keyframes cover-wing-right {
+	0%, 100% { transform: rotate(7deg); }
+	50% { transform: rotate(-7deg); }
+}
+
+@keyframes cover-rex-breath {
+	0%, 100% { transform: scaleY(1); }
+	50% { transform: scaleY(1.055); }
 }
 
 @media (prefers-reduced-motion: reduce) {

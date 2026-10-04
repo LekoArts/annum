@@ -5,7 +5,12 @@
 <path d="M0 196Q79 151 180 184V232H0Z" fill="#885d43"/>
 <g class="cover-thopter">
 <ellipse cx="79" cy="132" rx="39" ry="3" fill="#885d43" opacity=".18"/>
-<g class="cover-wings" fill="#776f5c"><path d="M81 111L27 91l-7 4 56 22ZM88 110l56-18 9 4-62 21ZM77 120l-47 21-7-3 53-23ZM90 120l49 18 10-4-58-20Z"/></g>
+<g fill="#776f5c">
+	<g class="cover-wing-front-left"><path d="M81 111L27 91l-7 4 56 22Z"/></g>
+	<g class="cover-wing-front-right"><path d="M88 110l56-18 9 4-62 21Z"/></g>
+	<g class="cover-wing-rear-left"><path d="M77 120l-47 21-7-3 53-23Z"/></g>
+	<g class="cover-wing-rear-right"><path d="M90 120l49 18 10-4-58-20Z"/></g>
+</g>
 <path d="M80 104l11 3 5 13-9 11-11-8 1-12Z" fill="#484b44"/><path d="M80 107l8 2 3 9-11-3Z" fill="#9bbaa9"/><path d="M84 130l-3 18h4l4-19ZM76 123l-7 9m25-8 7 8" fill="none" stroke="#484b44" stroke-width="2"/>
 </g><path d="M131 151l3-8 3 8v10h-6Z" fill="#38383a"/><path d="M135 162l13 3-12 1Z" fill="#4b4036"/>
 <g class="cover-sand" fill="none" stroke="#edc5a1" stroke-width="1" opacity=".6"><path d="M8 209q43-10 74-6m24-18q27-8 62-2M18 150q25-10 43-9"/></g>

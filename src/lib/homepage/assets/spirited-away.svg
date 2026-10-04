@@ -3,7 +3,7 @@
 <path d="M0 141Q38 97 78 130T180 124V232H0Z" fill="#849793"/>
 <path d="M30 130h118v48H30Z" fill="#a75d59"/><path d="M40 102h98v29H40Z" fill="#bb7267"/><path d="M60 79h58v25H60Z" fill="#c48070"/>
 <g fill="#544955"><path d="M18 131l24-15h94l26 15Z"/><path d="M30 103l22-14h76l22 14Z"/><path d="M49 80l20-13h41l20 13Z"/></g>
-<g fill="#ebc8a0" class="cover-light"><path d="M49 141h10v16H49ZM76 141h10v16H76ZM104 141h10v16h-10ZM58 108h9v12h-9ZM88 108h9v12h-9ZM114 108h9v12h-9ZM78 82h10v11H78ZM97 82h10v11H97Z"/></g>
+<g fill="#ebc8a0" class="cover-window-light" opacity=".9"><path d="M49 141h10v16H49ZM76 141h10v16H76ZM104 141h10v16h-10ZM58 108h9v12h-9ZM88 108h9v12h-9ZM114 108h9v12h-9ZM78 82h10v11H78ZM97 82h10v11H97Z"/></g>
 <path d="M0 182h180v50H0Z" fill="#aac1c5"/>
 <path d="M0 205h180" stroke="#dce2db" stroke-width="1" opacity=".5"/><path d="M0 199h180" stroke="#687c83" stroke-width="2"/>
 <g class="cover-train"><path d="M22 206h65v2H22Z" fill="#736b7c" opacity=".22"/><rect x="21" y="188" width="66" height="15" rx="3" fill="#736b7c"/><path d="M28 191h10v6H28ZM43 191h10v6H43ZM58 191h10v6H58ZM73 191h8v6h-8Z" fill="#e8d7c0"/></g>
