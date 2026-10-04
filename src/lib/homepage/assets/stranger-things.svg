@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 232" width="180" height="270" preserveAspectRatio="xMidYMid slice" role="img" aria-labelledby="cover-6-title"><title id="cover-6-title">Stranger Things — illustrated shows cover</title><defs><clipPath id="cover-6-art"><rect width="180" height="232"/></clipPath></defs><rect width="180" height="270" fill="#333443"/><g clip-path="url(#cover-6-art)">
+<circle cx="100" cy="85" r="43" fill="#ad6565" class="cover-portal"/>
+<path d="M64 154V89a35 35 0 0170 0v65Z" fill="#ad6b70"/><path d="M71 154V89a28 28 0 0156 0v65Z" fill="#452f3b"/>
+<path d="M78 146q6-25 16-34m20 37q-5-22-12-35" stroke="#704652" stroke-width="2" fill="none"/><path d="M98 64l-4 16 12 13-9 15 8 16-10 21" fill="none" stroke="#d39a91" stroke-width="2" class="cover-lightning" opacity=".65"/>
+<g fill="#242e36"><path d="M10 232V89h6v143ZM30 232V51h7v181ZM148 232V47h7v185ZM171 232V99h6v133Z"/><path d="M32 89L8 60l24 16 27-35-21 48ZM151 109l-25-32 24 18 26-29-20 43Z"/></g>
+<g class="cover-spores" fill="#bf8b85"><circle cx="79" cy="173" r="1.3"/><circle cx="121" cy="161" r="1"/><circle cx="56" cy="150" r="1.2"/></g><path d="M0 206Q73 182 180 207V232H0Z" fill="#526269"/>
+<g fill="none" stroke="#dfc6ac" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="64" cy="196" r="12"/><circle cx="105" cy="196" r="12"/><path d="M64 196l18-24 13 24H64l13-17h23l5 17m-5-17-3-13h9m-32 6h13"/></g>
+</g></svg>

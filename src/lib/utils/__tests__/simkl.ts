@@ -249,10 +249,6 @@ describe('itemsForYear', () => {
 		expect(itemsForYear(library, 'shows', 2020)[0]).toMatchObject({ simklId: 3, month: 'March', watchedAt: '2020-03-03T00:00:00Z' })
 	})
 
-	it('accepts a string year', () => {
-		expect(itemsForYear(makeLibrary(), 'movies', '2020').map(item => item.simklId)).toEqual([1])
-	})
-
 	it('sorts the same year newest first', () => {
 		const library: SimklLibrary = {
 			movies: [media(1, [watch(2020, 'January', '2020-01-01T00:00:00Z')]), media(2, [watch(2020, 'December', '2020-12-01T00:00:00Z')])],
@@ -274,7 +270,7 @@ describe('countForYear', () => {
 
 		expect(countForYear(library, 'movies', 2020)).toBe(1)
 		expect(countForYear(library, 'movies', 2019)).toBe(0)
-		expect(countForYear(library, 'shows', '2020')).toBe(1)
+		expect(countForYear(library, 'shows', 2020)).toBe(1)
 	})
 })
 

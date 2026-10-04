@@ -35,10 +35,7 @@ export class SimklError extends Error {
 	}
 }
 
-/**
- * Build a Simkl API URL. Every request needs `client_id`, `app-name`, and `app-version`.
- * @example simklUrl('/sync/activities') => 'https://api.simkl.com/sync/activities?client_id=...&app-name=annum&app-version=1.0'
- */
+/** Simkl API URL with the `client_id`, `app-name` and `app-version` every request needs. */
 export function simklUrl(path: string, params?: Record<string, string>): string {
 	const url = new URL(path, SIMKL_API_BASE_URL)
 
@@ -52,9 +49,7 @@ export function simklUrl(path: string, params?: Record<string, string>): string 
 	return url.toString()
 }
 
-/**
- * Perform a single Simkl GET request. The bearer token is only sent for user-data endpoints.
- */
+/** A single Simkl GET; the bearer token is only sent for user-data endpoints. */
 export function simklFetch(url: string, accessToken?: string): Promise<Response> {
 	const headers: Record<string, string> = {
 		'User-Agent': SIMKL_USER_AGENT,
@@ -85,11 +80,8 @@ function sleep(ms: number): Promise<void> {
 }
 
 /**
- * Run a Simkl GET request, retrying genuinely transient failures.
- *
- * A per-second `rate_limit` 429 clears almost immediately, so it gets a short pause. Daily-quota 429s
- * (`user_limit_exceeded` / `app_limit_exceeded`) reset at midnight and are surfaced instead of retried.
- * Transient 5xx responses use exponential backoff (max 5 attempts, 60s cap).
+ * Simkl GET with retries for transient failures: a per-second `rate_limit` 429 gets a short pause, 5xx
+ * an exponential backoff (max 5 attempts, 60s). Daily-quota 429s reset at midnight and are surfaced.
  */
 export async function withRetry(url: string, accessToken?: string): Promise<Response> {
 	let attempt = 0
@@ -131,14 +123,7 @@ export async function simklJson<T>(url: string, accessToken?: string): Promise<T
 	return await response.json() as T
 }
 
-/**
- * Resolve a valid Simkl access token for the signed-in user.
- *
- * `auth.api.getAccessToken` selects the account from the stateless account cookie (Better Auth 1.7
- * resolves the provider from the stored account, so the body names the cookie rather than a provider
- * id) and refreshes an expired token when a refresh token is available; because `storeAccountCookie`
- * is enabled, the SvelteKit cookie plugin applies the refreshed cookie to the response.
- */
+/** Resolve (and refresh) the signed-in user's Simkl token from Better Auth's stateless account cookie. */
 export async function getSimklAccessToken(event: RequestEvent): Promise<string | null> {
 	try {
 		const { accessToken } = await auth.api.getAccessToken({
@@ -155,33 +140,24 @@ export async function getSimklAccessToken(event: RequestEvent): Promise<string |
 	}
 }
 
-/**
- * `GET /sync/activities` - the cheapest call, and the gate for every repeat sync.
- */
+/** `GET /sync/activities` - the cheapest call and the gate for every repeat sync. */
 export function fetchSimklActivities(token: string): Promise<SimklActivities> {
 	return simklJson<SimklActivities>(simklUrl('/sync/activities'), token)
 }
 
-/**
- * `GET /sync/all-items/{type}` - the phase 1 full pull for one type. Shows and anime request episode data;
- * movies are atomic and use the default summary.
- */
+/** `GET /sync/all-items/{type}` - the full pull for one type; only shows and anime need episode data. */
 export function fetchSimklAllItems({ type, token }: { type: SimklMediaType, token: string }): Promise<SimklAllItemsResponse> {
 	const params = type === 'movies' ? undefined : { ...EPISODE_ENRICHMENT }
 
 	return simklJson<SimklAllItemsResponse>(simklUrl(`/sync/all-items/${type}`, params), token)
 }
 
-/**
- * `GET /sync/all-items?date_from=...` - the phase 2 delta across all three types.
- */
+/** `GET /sync/all-items?date_from=...` - the delta across all three types. */
 export function fetchSimklDelta({ dateFrom, token }: { dateFrom: string, token: string }): Promise<SimklAllItemsResponse> {
 	return simklJson<SimklAllItemsResponse>(simklUrl('/sync/all-items', { date_from: dateFrom, ...EPISODE_ENRICHMENT }), token)
 }
 
-/**
- * `GET /sync/all-items?extended=simkl_ids_only` - the tiny ID-only payload used to diff deletions.
- */
+/** `GET /sync/all-items?extended=simkl_ids_only` - the ID-only payload used to diff deletions. */
 export function fetchSimklIdSets(token: string): Promise<SimklAllItemsResponse> {
 	return simklJson<SimklAllItemsResponse>(simklUrl('/sync/all-items', { extended: 'simkl_ids_only' }), token)
 }

@@ -53,10 +53,8 @@ function removalMoved(previous: SimklActivities | null, current: SimklActivities
 	)
 }
 
-/**
- * The full pull drops list-only entries (they were never watched), while the delta path keeps them so the
- * client can remove a cached item that was un-watched.
- */
+// The full pull drops never-watched (list-only) entries; the delta keeps them so the client can remove a
+// cached item that was un-watched.
 function normalizeItems(items: Array<SimklRawItem> | undefined, { dropUnwatched }: { dropUnwatched: boolean }): Array<SimklMediaItem> {
 	return (items ?? [])
 		.map(normalizeSimklItem)

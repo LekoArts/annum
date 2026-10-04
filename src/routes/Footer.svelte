@@ -1,56 +1,27 @@
 <script lang='ts'>
 	import { CURRENT_YEAR, GITHUB_REPO_URL } from '#const'
-	import Spacer from '#lib/Spacer.svelte'
+	import { homepageMotionPaused } from '#lib/store/homepage-motion.js'
 	import Svg from '#lib/Svg.svelte'
+	import { page } from '$app/state'
 </script>
-<footer class='container'>
-	<p>&copy; {CURRENT_YEAR} by <a href='https://www.lekoarts.de?utm_source=annum'>LekoArts</a> • <a href='/about'>About</a> • <a href={GITHUB_REPO_URL}>Source Code</a></p>
-	<Spacer axis='vertical' size='xs' />
-	<div class='logos flex align-center'>
-		Powered by <div class='svg-wrapper'><Svg id='simkl' aria-label='Simkl' /></div>
-	</div>
-	<Spacer axis='vertical' size='xs' />
-	<div class='attribution'>
+
+{#if page.url.pathname === '/'}
+	<footer class='mx-auto mt-[72px] flex w-full max-w-[1600px] items-start justify-between gap-5 px-9 pt-6 pb-8 text-sm text-(--muted) max-[1050px]:mt-[52px] max-[1050px]:px-6 max-[600px]:mt-[34px] max-[600px]:block max-[600px]:px-[22px] [&_a]:whitespace-nowrap [&_a]:underline [&_a]:decoration-(--border) [&_a]:underline-offset-3 [&_a:hover]:text-(--ink)'>
+		<div>
+			<p>&copy; {CURRENT_YEAR} by <a href='https://www.lekoarts.de?utm_source=annum'>LekoArts</a> · <a href='/about'>About</a> · <a href={GITHUB_REPO_URL}>Source code</a></p>
+			<button type='button' aria-pressed={$homepageMotionPaused} onclick={() => homepageMotionPaused.update(value => !value)} class='mt-3 min-h-8 text-sm hover:text-(--ink) motion-reduce:hidden'>{$homepageMotionPaused ? 'Resume animations' : 'Pause animations'}</button>
+		</div>
+		<div class='max-w-80 text-right text-xs max-[600px]:mt-[18px] max-[600px]:text-left'>
+			<p>Read-only access to your Simkl history</p>
+			<p class='mt-1'>Powered by Simkl · Not endorsed or certified by Simkl.</p>
+		</div>
+	</footer>
+{:else}
+	<footer class={`mx-auto w-full space-y-2 px-4 pt-16 pb-8 text-center ${page.url.pathname === '/about' ? 'text-sm' : 'text-xs'} leading-relaxed text-(--muted) [&_a]:underline [&_a]:decoration-(--border) [&_a]:underline-offset-3 [&_a:hover]:text-(--ink)`}>
+		<p>&copy; {CURRENT_YEAR} by <a href='https://www.lekoarts.de?utm_source=annum'>LekoArts</a> • <a href='/about'>About</a> • <a href={GITHUB_REPO_URL}>Source Code</a></p>
+		<div class='flex items-center justify-center gap-2'>
+			Powered by <Svg id='simkl' aria-label='Simkl' />
+		</div>
 		<p>This website uses the Simkl API but is not endorsed or certified by Simkl.</p>
-	</div>
-</footer>
-
-<style lang='postcss'>
-	footer {
-		padding-top: var(--space-3xl);
-		padding-bottom: var(--space-xl);
-		text-align: center;
-	}
-
-	.logos {
-		font-size: var(--step--1);
-		justify-content: center;
-	}
-
-	.logos :global(svg) {
-		height: var(--space-s-m);
-		width: var(--space-s-m);
-	}
-
-	.logos :global(svg[data-icon-name='simkl']) {
-		color: var(--color-13);
-	}
-
-	.svg-wrapper {
-		margin: 0 var(--space-2xs);
-		background: var(--color-1);
-		box-shadow: 0 0 0 2px var(--color-1);
-		border-radius: 100%;
-
-		@media (--sm) {
-			box-shadow: 0 0 0 4px var(--color-1);
-		}
-	}
-
-	.attribution {
-		& p {
-			font-size: var(--step--1);
-			color: var(--color-2);
-		}
-	}
-</style>
+	</footer>
+{/if}

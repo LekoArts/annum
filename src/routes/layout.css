@@ -1,0 +1,321 @@
+@import '@fontsource-variable/inter/opsz.css';
+@import '@fontsource-variable/bricolage-grotesque/opsz.css';
+@import 'tailwindcss';
+
+:root {
+	font-family: 'Inter Variable', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+	font-synthesis: none;
+	font-optical-sizing: none;
+	--font-wordmark: 'Bricolage Grotesque Variable', ui-sans-serif, sans-serif;
+	--ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+	--gap: 12px;
+	--columns: 5;
+	--page: #f7f8fa;
+	--dock: #ffffff;
+	--menu: #ffffff;
+	--ink: #27282f;
+	--muted: #676b78;
+	--active: #f0f1f4;
+	--border: #e0e2e8;
+	--accent: #6666b8;
+	--on-accent: #ffffff;
+	--switch-track: #858a97;
+	--image-edge: rgb(0 0 0 / 10%);
+	--poster-hover-edge: rgb(255 255 255 / 65%);
+	--poster-elevation: 0 1px 2px rgb(28 32 48 / 12%), 0 3px 6px -2px rgb(28 32 48 / 14%), 0 10px 18px -8px rgb(28 32 48 / 20%);
+	--dock-shadow: 0 2px 8px rgb(28 32 48 / 5%);
+	--menu-shadow: 0 8px 24px rgb(28 32 48 / 12%), 0 2px 6px rgb(28 32 48 / 4%);
+	--home-cover-shadow: 0 1px 2px #20263218, 0 5px 8px #20263212, 0 14px 20px #2026320d;
+	--home-guide: #cdd1df;
+	--home-marker: #8388a3;
+	color-scheme: light;
+	background: var(--page);
+	color: var(--ink);
+	accent-color: var(--accent);
+	caret-color: var(--accent);
+	scrollbar-color: var(--border) var(--page);
+}
+
+:root[data-theme='dark'] {
+	--page: #111216;
+	--dock: #202127;
+	--menu: #24252d;
+	--ink: #ecedef;
+	--muted: #a5a8b5;
+	--active: #30313a;
+	--border: #35363d;
+	--accent: #a4a7ff;
+	--on-accent: #111216;
+	--switch-track: #4b4e5a;
+	--image-edge: rgb(255 255 255 / 10%);
+	--poster-hover-edge: rgb(255 255 255 / 65%);
+	--poster-elevation: 0 1px 2px rgb(0 0 0 / 35%), 0 3px 6px -2px rgb(0 0 0 / 40%), 0 10px 18px -8px rgb(0 0 0 / 55%);
+	--dock-shadow: 0 2px 8px rgb(0 0 0 / 12%);
+	--menu-shadow: 0 8px 24px rgb(0 0 0 / 28%), 0 2px 6px rgb(0 0 0 / 16%);
+	--home-cover-shadow: 0 1px 2px #0004, 0 6px 12px #0003, 0 16px 24px #0002;
+	--home-guide: #414654;
+	--home-marker: #858ba9;
+	color-scheme: dark;
+}
+
+.home-typography {
+	font-optical-sizing: auto;
+}
+
+::selection {
+	background: var(--accent);
+	color: var(--on-accent);
+}
+
+.home-illustrations[data-paused='true'] * {
+	animation-play-state: paused !important;
+}
+
+.home-guide::before, .home-guide::after {
+	content: '';
+	position: absolute;
+	color: var(--home-guide);
+}
+
+.home-guide::before {
+	width: var(--line-x);
+	height: 1px;
+	left: calc(var(--line-x) / -2);
+	background: repeating-linear-gradient(to right, currentColor 0 5px, transparent 5px 11px);
+}
+
+.home-guide::after {
+	height: var(--line-y);
+	width: 1px;
+	top: calc(var(--line-y) / -2);
+	background: repeating-linear-gradient(to bottom, currentColor 0 5px, transparent 5px 11px);
+}
+
+.home-guide i {
+	position: absolute;
+	left: -5px;
+	top: -5px;
+	width: 11px;
+	height: 11px;
+	background: var(--page);
+	color: var(--home-marker);
+	z-index: 1;
+}
+
+.home-guide i::before, .home-guide i::after {
+	content: '';
+	position: absolute;
+	background: currentColor;
+}
+
+.home-guide i::before {
+	left: 1px;
+	right: 1px;
+	top: 5px;
+	height: 1px;
+}
+
+.home-guide i::after {
+	top: 1px;
+	bottom: 1px;
+	left: 5px;
+	width: 1px;
+}
+
+@media (max-width: 600px) {
+	.home-guide {
+		--line-x: 100px !important;
+		--line-y: 75px !important;
+	}
+}
+
+:focus-visible {
+	outline: 2px solid var(--accent);
+	outline-offset: 3px;
+}
+
+button, a, input {
+	-webkit-tap-highlight-color: transparent;
+}
+
+button:not(:disabled), a {
+	cursor: pointer;
+}
+
+[popover] {
+	opacity: 0;
+	transform: translateY(-2px) scale(0.98);
+	transition: opacity 90ms ease, transform 90ms var(--ease-out), display 90ms allow-discrete, overlay 90ms allow-discrete;
+}
+
+[popover]:popover-open {
+	opacity: 1;
+	transform: none;
+	transition-duration: 140ms;
+}
+
+@starting-style {
+	[popover]:popover-open {
+		opacity: 0;
+		transform: translateY(-2px) scale(0.98);
+	}
+}
+
+[data-press] {
+	transition: transform 120ms var(--ease-out);
+}
+
+:root[data-input='pointer'] [data-press]:not(:disabled):active {
+	transform: scale(0.97);
+}
+
+:root[data-input='keyboard'] [popover],
+:root[data-input='keyboard'] button,
+:root[data-input='keyboard'] button span,
+:root[data-input='keyboard'] [role='radiogroup'] span {
+	transition: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	[popover], [data-press] {
+		transition: none;
+	}
+	[popover], :root[data-input='pointer'] [data-press]:not(:disabled):active {
+		transform: none;
+	}
+}
+
+#dashboard-preview {
+	transform: scale(0.97);
+	transform-origin: center;
+	transition: opacity 160ms var(--ease-out), transform 160ms var(--ease-out), display 160ms allow-discrete, overlay 160ms allow-discrete;
+}
+
+#dashboard-preview:popover-open {
+	transform: none;
+	transition-duration: 220ms;
+}
+
+#dashboard-preview::backdrop {
+	opacity: 0;
+	transition: opacity 160ms var(--ease-out), display 160ms allow-discrete, overlay 160ms allow-discrete;
+}
+
+#dashboard-preview:popover-open::backdrop {
+	opacity: 1;
+	transition-duration: 220ms;
+}
+
+@starting-style {
+	#dashboard-preview:popover-open {
+		opacity: 0;
+		transform: scale(0.97);
+	}
+
+	#dashboard-preview:popover-open::backdrop {
+		opacity: 0;
+	}
+}
+
+.home-faq-indicator {
+	transform-box: fill-box;
+	transform-origin: center;
+	transform: scaleY(1);
+	opacity: 1;
+	transition: transform 160ms var(--ease-out), opacity 160ms var(--ease-out);
+}
+
+.home-faq[open] .home-faq-indicator {
+	transform: scaleY(0);
+	opacity: 0;
+}
+
+@supports selector(::details-content) and (interpolate-size: allow-keywords) {
+	.home-faq {
+		interpolate-size: allow-keywords;
+	}
+
+	.home-faq::details-content {
+		block-size: 0;
+		content-visibility: hidden;
+		overflow: clip;
+		transition: block-size 220ms var(--ease-out), content-visibility 220ms allow-discrete;
+	}
+
+	.home-faq[open]::details-content {
+		block-size: auto;
+		content-visibility: visible;
+	}
+}
+
+:root[data-input='keyboard'] #dashboard-preview,
+:root[data-input='keyboard'] #dashboard-preview::backdrop,
+:root[data-input='keyboard'] .home-faq-indicator {
+	transition: none;
+}
+
+:root[data-input='keyboard'] .home-faq::details-content {
+	transition: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	#dashboard-preview,
+	#dashboard-preview::backdrop,
+	.home-faq-indicator {
+		transition: none;
+	}
+
+	#dashboard-preview {
+		transform: none;
+	}
+
+	.home-faq::details-content {
+		transition: none;
+	}
+}
+
+.home-cta {
+	background-color: color-mix(in srgb, var(--accent) 94%, var(--ink));
+	background-image: linear-gradient(to bottom, rgb(255 255 255 / 8%), transparent 45%, rgb(0 0 0 / 10%));
+	box-shadow: inset 0 1px 0 rgb(255 255 255 / 36%), inset 0 2px 4px rgb(255 255 255 / 12%), inset 0 -1px 0 rgb(0 0 0 / 20%), inset 0 -3px 5px rgb(0 0 0 / 9%), 0 2px 3px -1px color-mix(in srgb, var(--accent) 28%, transparent), 0 7px 14px -5px color-mix(in srgb, var(--accent) 32%, transparent);
+	transition: transform 120ms var(--ease-out), box-shadow 180ms var(--ease-out), background-color 180ms ease;
+}
+
+.home-cta-icon {
+	transition: transform 160ms var(--ease-out);
+}
+
+@media (hover: hover) and (pointer: fine) {
+	.home-cta:not(:disabled):hover {
+		background-color: var(--accent);
+		box-shadow: inset 0 1px 0 rgb(255 255 255 / 42%), inset 0 2px 4px rgb(255 255 255 / 16%), inset 0 -1px 0 rgb(0 0 0 / 20%), inset 0 -3px 5px rgb(0 0 0 / 10%), 0 3px 5px -2px color-mix(in srgb, var(--accent) 35%, transparent), 0 10px 20px -6px color-mix(in srgb, var(--accent) 42%, transparent);
+	}
+
+	.home-cta:not(:disabled):hover .home-cta-icon {
+		transform: rotate(-8deg);
+	}
+}
+
+.home-cta:not(:disabled):active {
+	box-shadow: inset 0 1px 0 rgb(255 255 255 / 12%), inset 0 2px 4px rgb(0 0 0 / 15%), inset 0 -1px 0 rgb(0 0 0 / 12%), inset 0 -1px 2px rgb(0 0 0 / 5%), 0 1px 2px -1px color-mix(in srgb, var(--accent) 20%, transparent), 0 3px 6px -3px color-mix(in srgb, var(--accent) 25%, transparent);
+}
+
+:root[data-input='keyboard'] .home-cta,
+:root[data-input='keyboard'] .home-cta-icon {
+	transition: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.home-cta,
+	.home-cta-icon {
+		transition: none;
+	}
+
+	.home-cta:not(:disabled):hover .home-cta-icon {
+		transform: none;
+	}
+}
+
+.home-preview:not(:disabled) {
+	cursor: zoom-in;
+}

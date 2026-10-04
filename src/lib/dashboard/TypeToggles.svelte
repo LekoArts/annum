@@ -1,9 +1,12 @@
 <script lang='ts'>
 	import type { SimklMediaType } from '#lib/types.js'
 	import { CURRENT_YEAR } from '#const'
-	import Svg from '#lib/Svg.svelte'
+
+	import Icon from '#lib/dashboard/Icon.svelte'
+	import Popover from '#lib/dashboard/Popover.svelte'
+	import { library } from '#lib/store/library.js'
 	import { dashboardSearch } from '#lib/utils/dashboard.js'
-	import { MEDIA_TYPE_ICONS, MEDIA_TYPE_LABELS, SIMKL_MEDIA_TYPES } from '#lib/utils/simkl.js'
+	import { countForYear, MEDIA_TYPE_LABELS, SIMKL_MEDIA_TYPES } from '#lib/utils/simkl.js'
 	import { goto } from '$app/navigation'
 
 	interface Props {
@@ -12,71 +15,40 @@
 	}
 
 	let { types, year }: Props = $props()
+	const descriptionId = $props.id()
+	const countFormatter = new Intl.NumberFormat()
+	const summary = $derived(types.length === 3 ? 'All types' : types.length === 1 ? MEDIA_TYPE_LABELS[types[0]] : '2 types')
 
-	/**
-	 * The selection lives in the URL, so a toggle is a navigation. `reset: false` keeps the scroll
-	 * position and focus where they were - the grid swaps underneath without the page jumping.
-	 */
-	function toggle(type: SimklMediaType) {
-		const next = types.includes(type)
-			? types.filter(selected => selected !== type)
-			: [...types, type]
-
-		goto(`/dashboard${dashboardSearch({ year, types: next, currentYear: CURRENT_YEAR })}`, { reset: false })
+	function toggle(type: SimklMediaType): void {
+		const next = types.includes(type) ? types.filter(selected => selected !== type) : [...types, type]
+		if (next.length)
+			goto(`/dashboard${dashboardSearch({ year, types: next, currentYear: CURRENT_YEAR })}`, { reset: false })
 	}
 </script>
 
-<div class='toggles flex align-center' role='group' aria-label='Media types'>
-	{#each SIMKL_MEDIA_TYPES as type}
-		{@const selected = types.includes(type)}
-		<!-- The last selected type is disabled: an empty selection is not a state this page has. -->
-		<button
-			class='toggle'
-			type='button'
-			aria-pressed={selected}
-			disabled={selected && types.length === 1}
-			onclick={() => toggle(type)}>
-			<Svg id={MEDIA_TYPE_ICONS[type]} />
-			{MEDIA_TYPE_LABELS[type]}
+<span id={descriptionId} class='sr-only'>Media types: {types.map(type => MEDIA_TYPE_LABELS[type]).join(', ')}</span>
+
+<Popover label='Media types' width='w-60'>
+	{#snippet trigger(open, toggleMenu, id)}
+		<button type='button' data-press onclick={toggleMenu} popovertarget={id} aria-controls={id} aria-expanded={open} aria-haspopup='dialog' aria-describedby={descriptionId}
+			class={`flex h-10 min-w-[4.5rem] min-[360px]:min-w-[6.125rem] items-center justify-center gap-1.5 rounded-full whitespace-nowrap text-sm sm:min-w-[8.25rem] sm:gap-2 ${open ? 'bg-(--active)' : 'hover:bg-(--active)'}`}>
+			<Icon name='filter' class='hidden size-[18px] min-[360px]:block' />
+			<span class='sm:hidden'>{types.length === 1 ? summary : types.length === 2 ? 'Types (2)' : 'Types'}</span>
+			<span class='hidden sm:inline'>{summary}</span>
+			<Icon name='down' class={`size-3.5 text-(--muted) transition-transform duration-150 ease-(--ease-out) motion-reduce:transition-none [[data-input=keyboard]_&]:transition-none ${open ? '[transform:rotate(180deg)]' : ''}`} />
 		</button>
-	{/each}
-</div>
-
-<style lang='postcss'>
-	.toggles {
-		gap: var(--space-3xs);
-	}
-
-	.toggle {
-		background: none;
-		border: 1px solid var(--color-6);
-		padding: var(--space-3xs) var(--space-xs);
-		border-radius: var(--space-2xs);
-		color: var(--color-0);
-		box-shadow: var(--shadow-elevation-low);
-		display: inline-flex;
-		appearance: none;
-		align-items: center;
-		gap: var(--space-3xs);
-		font: inherit;
-		line-height: 1.25;
-		white-space: nowrap;
-		cursor: pointer;
-		transition: background .3s cubic-bezier(.73,.26,.42,1.24), border .3s cubic-bezier(.73,.26,.42,1.24), opacity .3s;
-
-		&[aria-pressed='true'] {
-			background: var(--color-8);
-			border-color: var(--color-4);
-		}
-
-		&:hover:not(:disabled) {
-			background: var(--color-8);
-			border-color: var(--color-4);
-		}
-
-		&:disabled {
-			opacity: 0.6;
-			cursor: not-allowed;
-		}
-	}
-</style>
+	{/snippet}
+	{#snippet children()}
+		<div role='group' aria-label='Include media types'>
+			{#each SIMKL_MEDIA_TYPES as type}
+				{@const selected = types.includes(type)}
+				<label class='flex min-h-11 cursor-pointer items-center gap-3 rounded-lg px-3 hover:bg-(--active) has-disabled:cursor-default has-disabled:hover:bg-transparent has-disabled:opacity-60'>
+					<input class='size-4.5 shrink-0 accent-(--accent)' type='checkbox' checked={selected} disabled={selected && types.length === 1} onchange={() => toggle(type)} />
+					<span class='text-[0.9375rem]'>{MEDIA_TYPE_LABELS[type]}</span>
+					<span class='ml-auto text-[0.8125rem] text-(--muted) tabular-nums'>{countFormatter.format(countForYear($library, type, year))}</span>
+				</label>
+			{/each}
+		</div>
+		{#if types.length === 1}<p class='px-3 pt-2 pb-1 text-xs text-(--muted)'>Keep at least one type selected.</p>{/if}
+	{/snippet}
+</Popover>

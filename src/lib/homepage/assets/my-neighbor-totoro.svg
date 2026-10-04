@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 232" width="180" height="270" preserveAspectRatio="xMidYMid slice" role="img" aria-labelledby="cover-4-title"><title id="cover-4-title">My Neighbor Totoro — illustrated anime cover</title><defs><clipPath id="cover-4-art"><rect width="180" height="232"/></clipPath></defs><rect width="180" height="270" fill="#c5d0b7"/><g clip-path="url(#cover-4-art)">
+<circle cx="136" cy="40" r="20" fill="#e9e4cd"/>
+<path d="M0 166Q57 134 106 161T180 152V232H0Z" fill="#90a98b"/>
+<g fill="#638474"><path d="M14 0h10v232H14ZM154 0h12v232h-12Z"/><path d="M19 39L0 22l19 9 39-25-30 31ZM160 84l-27-37 26 22 21-19-18 32Z"/></g>
+<g class="cover-totoro"><path d="M50 95Q86 42 128 95Z" fill="#475e59"/><path d="M87 92v76q0 9 7 9" fill="none" stroke="#eadbc4" stroke-width="3"/>
+<path d="M68 128l-4-24 16 15q9-3 19 0l17-15-5 26q18 13 19 47 0 28-41 28-40 0-40-28 0-35 19-49Z" fill="#7f8b85"/><ellipse cx="89" cy="171" rx="28" ry="28" fill="#e0dfc8"/>
+<g fill="#404e48"><path d="M73 160l6-4 6 4-6-1ZM91 160l6-4 6 4-6-1ZM81 170l7-4 7 4-7-1Z"/><g><circle cx="77" cy="135" r="2"/><circle cx="101" cy="135" r="2"/></g><path d="M87 141l4 0-2 3Z"/></g><path d="M47 96q8 5 15 0m46 0q8 5 16 0" stroke="#d7dfcc" stroke-width="1" fill="none"/></g>
+<g class="cover-rain" fill="none" stroke="#e8edde" stroke-width="1.2" opacity=".55"><path d="M15 -45l-2 8M43 -23l-2 8M72 -36l-2 8M101 -12l-2 8M131 -43l-2 8M160 -20l-2 8M15 3l-2 8M43 25l-2 8M72 12l-2 8M101 36l-2 8M131 5l-2 8M160 28l-2 8M15 51l-2 8M43 73l-2 8M72 60l-2 8M101 84l-2 8M131 53l-2 8M160 76l-2 8M15 99l-2 8M43 121l-2 8M72 108l-2 8M101 132l-2 8M131 101l-2 8M160 124l-2 8M15 147l-2 8M43 169l-2 8M72 156l-2 8M101 180l-2 8M131 149l-2 8M160 172l-2 8M15 195l-2 8M43 217l-2 8M72 204l-2 8M101 228l-2 8M131 197l-2 8M160 220l-2 8M15 243l-2 8M43 265l-2 8M72 252l-2 8M101 276l-2 8M131 245l-2 8M160 268l-2 8M15 291l-2 8M43 313l-2 8M72 300l-2 8M101 324l-2 8M131 293l-2 8M160 316l-2 8"/></g>
+<path d="M0 214q91-21 180-5v23H0Z" fill="#547466"/>
+</g></svg>

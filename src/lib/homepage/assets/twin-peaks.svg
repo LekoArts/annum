@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 232" width="180" height="270" preserveAspectRatio="xMidYMid slice" role="img" aria-labelledby="cover-10-title"><title id="cover-10-title">Twin Peaks — illustrated shows cover</title><defs><clipPath id="cover-10-art"><rect width="180" height="232"/></clipPath></defs><rect width="180" height="270" fill="#ac7775"/><g clip-path="url(#cover-10-art)">
+<path d="M0 0h180v172H0Z" fill="#8b4e53"/>
+<g fill="#b47773" class="cover-curtain"><path d="M0 0h13v172H0m27-172h13v172H27m27-172h13v172H54m27-172h13v172H81m27-172h13v172h-13m27-172h13v172h-13m27-172h13v172h-13"/></g>
+<path d="M0 172h180v60H0Z" fill="#e1d7c1"/><g fill="#434643"><path d="M0 185l30-13 30 13 30-13 30 13 30-13 30 13v8l-30-13-30 13-30-13-30 13-30-13-30 13Zm0 27 30-14 30 14 30-14 30 14 30-14 30 14v10l-30-14-30 14-30-14-30 14-30-14-30 14Z"/></g>
+<path d="M24 144h49v31H24Z" fill="#584c48"/><path d="M20 169h57v11H20Z" fill="#64574f"/><path d="M25 180v18m48-18v18" stroke="#584c48" stroke-width="4"/>
+<path d="M91 181v19" stroke="#4b4640" stroke-width="3"/><ellipse cx="91" cy="180" rx="13" ry="3" fill="#5c5046"/><ellipse cx="91" cy="178" rx="8" ry="2" fill="#292f2c"/><path d="M86 169h10v7H86Z" fill="#e2d7bc"/><path d="M96 170q6 0 2 4h-2" stroke="#e2d7bc" stroke-width="1.5" fill="none"/><path class="cover-smoke" d="M91 167q-4-5 0-9t0-9" fill="none" stroke="#ded0b9" stroke-width="1.2"/><circle cx="128" cy="148" r="18" fill="#d8c7a8"/><path d="M128 169v28" stroke="#b5a78c" stroke-width="4"/>
+</g></svg>

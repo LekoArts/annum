@@ -1,178 +1,123 @@
 <script lang='ts'>
-	/* eslint-disable svelte/valid-compile */
-	import { GITHUB_REPO_URL, TITLE } from '#const'
-	import { classList } from '#lib/actions.js'
 	import { authClient } from '#lib/auth-client.js'
-	import Primary from '#lib/button/Primary.svelte'
-	import Spacer from '#lib/Spacer.svelte'
+	import akira from '#lib/homepage/assets/akira.svg?raw'
+	import blade_runner from '#lib/homepage/assets/blade-runner.svg?raw'
+	import breaking_bad from '#lib/homepage/assets/breaking-bad.svg?raw'
+	import cowboy_bebop from '#lib/homepage/assets/cowboy-bebop.svg?raw'
+	import dune from '#lib/homepage/assets/dune.svg?raw'
+	import interstellar from '#lib/homepage/assets/interstellar.svg?raw'
+	import jurassic_park from '#lib/homepage/assets/jurassic-park.svg?raw'
+	import lord_of_the_rings from '#lib/homepage/assets/lord-of-the-rings.svg?raw'
+	import my_neighbor_totoro from '#lib/homepage/assets/my-neighbor-totoro.svg?raw'
+	import severance from '#lib/homepage/assets/severance.svg?raw'
+	import spirited_away from '#lib/homepage/assets/spirited-away.svg?raw'
+	import stranger_things from '#lib/homepage/assets/stranger-things.svg?raw'
+	import the_matrix from '#lib/homepage/assets/the-matrix.svg?raw'
+	import twin_peaks from '#lib/homepage/assets/twin-peaks.svg?raw'
+	import HomeDetails from '#lib/homepage/HomeDetails.svelte'
+	import { homepageMotionPaused } from '#lib/store/homepage-motion.js'
 	import { pa } from '#lib/store/plausible.js'
-	import Svg from '#lib/Svg.svelte'
+	import '#lib/homepage/illustrations.css'
 
 	const session = authClient.useSession()
+	let signingIn = $state(false)
+	let signInError = $state<'hero' | 'preview' | null>(null)
+	const covers = [
+		{ artwork: interstellar, position: 'left-0 top-[8%] max-[600px]:left-0 max-[600px]:top-6' },
+		{ artwork: dune, position: 'left-[13%] top-[32%] max-[600px]:left-[20%] max-[600px]:top-[66px]' },
+		{ artwork: breaking_bad, position: 'left-[20%] top-0 max-[600px]:left-[43%] max-[600px]:top-[7px]' },
+		{ artwork: spirited_away, position: 'left-[34%] top-[3%] max-[600px]:left-[65%] max-[600px]:top-[125px]' },
+		{ artwork: my_neighbor_totoro, position: 'left-[57%] top-[5%] max-[600px]:left-auto max-[600px]:right-0 max-[600px]:top-0' },
+		{ artwork: the_matrix, position: 'left-[71%] top-0 max-[1050px]:left-[68%] max-[600px]:hidden' },
+		{ artwork: stranger_things, position: 'left-[81%] top-[10%] max-[1050px]:left-[79%] max-[600px]:hidden' },
+		{ artwork: jurassic_park, position: 'right-0 top-[13%] max-[600px]:hidden' },
+		{ artwork: blade_runner, position: 'left-[79%] top-[47%] max-[1050px]:left-[78%] max-[600px]:hidden' },
+		{ artwork: lord_of_the_rings, position: 'right-0 top-[50%] max-[600px]:right-auto max-[600px]:left-[2%] max-[600px]:top-[566px]' },
+		{ artwork: twin_peaks, position: 'left-0 top-[60%] max-[600px]:left-[27%] max-[600px]:top-[615px]' },
+		{ artwork: severance, position: 'left-[13%] top-[65%] max-[600px]:left-[53%] max-[600px]:top-[555px]' },
+		{ artwork: akira, position: 'left-[25%] top-[78%] max-[600px]:hidden' },
+		{ artwork: cowboy_bebop, position: 'left-[88%] top-[80%] max-[1050px]:left-[87%] max-[600px]:left-auto max-[600px]:right-0 max-[600px]:top-[639px]' },
+	]
+
+	async function signIn(position: 'hero' | 'preview'): Promise<void> {
+		signingIn = true
+		signInError = null
+		try {
+			pa.addEvent('login', { props: { position } })
+			const result = await authClient.signIn.social({ provider: 'simkl', callbackURL: '/dashboard' })
+			if (result.error)
+				throw new Error('Simkl sign-in failed')
+		}
+		catch {
+			signInError = position
+			signingIn = false
+		}
+	}
 </script>
 
-<h1 class='visually-hidden'>{TITLE}</h1>
+{#snippet connectAction(position: 'hero' | 'preview')}
+	{#snippet actionIcon()}
+		<svg class='home-cta-icon size-5' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round' aria-hidden='true'><path d='m10 13 4-4m-6 2-2 2a4 4 0 0 0 6 6l2-2m-4-10 2-2a4 4 0 0 1 6 6l-2 2' /></svg>
+	{/snippet}
+	{#if $session.data}
+		<a data-press class='home-cta inline-flex min-h-12 items-center justify-center gap-3 rounded-full bg-(--accent) px-[27px] py-[13px] text-base font-semibold text-(--on-accent) max-[600px]:min-h-[46px] max-[600px]:text-[15px]' href='/dashboard'>Dashboard</a>
+	{:else}
+		<button type='button' disabled={signingIn || $session.isPending} onclick={() => signIn(position)} data-press class='home-cta inline-flex min-h-12 items-center justify-center gap-3 rounded-full bg-(--accent) pr-[27px] pl-6 py-[13px] text-base font-semibold text-(--on-accent) disabled:cursor-wait disabled:opacity-60 max-[600px]:min-h-[46px] max-[600px]:text-[15px]'>{@render actionIcon()}{signingIn ? 'Connecting…' : 'Connect with Simkl'}</button>
+	{/if}
+	{#if signInError === position}<p role='alert' class='mt-4 text-sm text-(--muted)'>Couldn’t connect to Simkl. Please try again.</p>{/if}
+{/snippet}
 
-<Spacer axis='vertical' size='m' />
-
-<section class='hero'>
-	<div class='text'>
-		<h2 class='text-xl'>Visualize Your Simkl History</h2>
-		<Spacer axis='vertical' size='2xs' />
-		<p class='text-md'>Display your watched movies, shows and anime in a poster grid. Easily switch between years and categories to browse everything you watched.</p>
-		<Spacer axis='vertical' size='m' />
-		{#if $session.data}
-			<Primary type='link' href='/dashboard'>
-				Show me my Poster Grid <Svg id='arrow-right' />
-			</Primary>
-		{:else}
-			<Primary type='text' onclick={async () => {
-				pa.addEvent('login', { props: { position: 'hero' } })
-				await authClient.signIn.social({
-					provider: 'simkl',
-					callbackURL: '/dashboard',
-				})
-			}}>
-				Show me my Poster Grid <Svg id='arrow-right' />
-			</Primary>
-		{/if}
+<div class='home-typography px-9 pt-5 max-[1050px]:px-6 max-[600px]:px-4 max-[600px]:pt-0'>
+	<div class='home-illustrations relative isolate h-[clamp(650px,53vw,790px)] max-[1050px]:h-[660px] max-[600px]:h-[790px]' data-paused={$homepageMotionPaused}>
+		{#each covers as cover, i (i)}
+			<div class={`absolute w-[9.2%] max-w-[137px] overflow-hidden rounded-[7px] shadow-(--home-cover-shadow) max-[1050px]:w-[9.5%] max-[600px]:w-[20%] max-[600px]:max-w-20 [&>svg]:block [&>svg]:h-auto [&>svg]:w-full ${cover.position}`}>
+				<!-- eslint-disable-next-line svelte/no-at-html-tags -- SVG is authored and bundled, never user content. -->
+				{@html cover.artwork}
+			</div>
+		{/each}
+		<div aria-hidden='true' class='home-guides pointer-events-none absolute inset-0 -z-10'>
+			<span class='home-guide absolute left-[46%] top-[17%] max-[600px]:left-[38%] max-[600px]:top-[203px]' style='--line-x:150px;--line-y:160px'><i></i></span>
+			<span class='home-guide absolute left-[24%] top-[28%] max-[600px]:hidden' style='--line-x:110px;--line-y:240px'><i></i></span>
+			<span class='home-guide absolute left-[77%] top-[64%] max-[600px]:left-[40%] max-[600px]:top-[539px]' style='--line-x:150px;--line-y:255px'><i></i></span>
+			<span class='home-guide absolute left-[40%] top-[88%] max-[600px]:hidden' style='--line-x:210px;--line-y:90px'><i></i></span>
+			<span class='home-guide absolute left-[9%] top-[44%] max-[600px]:hidden' style='--line-x:140px;--line-y:120px'><i></i></span>
+			<span class='home-guide absolute left-[76%] top-[90%] max-[600px]:hidden' style='--line-x:170px;--line-y:100px'><i></i></span>
+			<span class='home-guide absolute left-[13%] top-[8%] opacity-45 max-[600px]:left-[30%] max-[600px]:top-4' style='--line-x:64px;--line-y:72px'><i></i></span>
+			<span class='home-guide absolute left-[62%] top-[29%] opacity-45 max-[600px]:hidden' style='--line-x:94px;--line-y:46px'><i></i></span>
+			<span class='home-guide absolute left-[94%] top-[39%] opacity-45 max-[600px]:hidden' style='--line-x:58px;--line-y:84px'><i></i></span>
+			<span class='home-guide absolute left-[58%] top-[79%] opacity-40 max-[600px]:left-[15%] max-[600px]:top-[730px]' style='--line-x:82px;--line-y:62px'><i></i></span>
+			<svg class='absolute left-[18.5%] top-[-2%] h-5 w-5 text-(--home-marker) opacity-35 max-[600px]:left-[40%] max-[600px]:top-[-5px]' viewBox='0 0 20 20' fill='none' stroke='currentColor'><path d='M1 14V1h13' /></svg>
+			<svg class='absolute right-[-1%] top-[35%] h-5 w-5 text-(--home-marker) opacity-35 max-[600px]:hidden' viewBox='0 0 20 20' fill='none' stroke='currentColor'><path d='M6 19h13V6' /></svg>
+			<svg class='absolute left-[23.5%] top-[97%] h-5 w-5 text-(--home-marker) opacity-30 max-[600px]:hidden' viewBox='0 0 20 20' fill='none' stroke='currentColor'><path d='M1 6v13h13' /></svg>
+			<svg class='absolute left-[51%] top-[8%] h-8 w-5 text-(--home-marker) opacity-30 max-[600px]:left-[8%] max-[600px]:top-[220px]' viewBox='0 0 20 32' fill='currentColor'>
+				{#each [4, 12, 20, 28] as y}<circle cx='6' cy={y} r='1' /><circle cx='14' cy={y} r='1' />{/each}
+			</svg>
+			<svg class='absolute left-[5%] top-[87%] h-5 w-8 text-(--home-marker) opacity-30 max-[600px]:left-[78%] max-[600px]:top-[530px]' viewBox='0 0 32 20' fill='currentColor'>
+				{#each [4, 12, 20, 28] as x}<circle cx={x} cy='6' r='1' /><circle cx={x} cy='14' r='1' />{/each}
+			</svg>
+			<div class='absolute inset-0 hidden min-[1440px]:block'>
+				<span class='home-guide absolute left-[30%] top-[12%] opacity-40' style='--line-x:68px;--line-y:106px'><i></i></span>
+				<span class='home-guide absolute left-[66%] top-[8%] opacity-35' style='--line-x:80px;--line-y:60px'><i></i></span>
+				<span class='home-guide absolute left-[26%] top-[57%] opacity-40' style='--line-x:88px;--line-y:126px'><i></i></span>
+				<span class='home-guide absolute left-[70%] top-[44%] opacity-35' style='--line-x:64px;--line-y:94px'><i></i></span>
+				<span class='home-guide absolute left-[47%] top-[96%] opacity-40' style='--line-x:112px;--line-y:52px'><i></i></span>
+				<span class='home-guide absolute left-[83%] top-[86%] opacity-35' style='--line-x:56px;--line-y:78px'><i></i></span>
+				<svg class='absolute left-[35%] top-[72%] h-5 w-8 text-(--home-marker) opacity-30' viewBox='0 0 32 20' fill='currentColor'>
+					{#each [4, 12, 20, 28] as x}<circle cx={x} cy='6' r='1' /><circle cx={x} cy='14' r='1' />{/each}
+				</svg>
+				<svg class='absolute left-[68%] top-[74%] h-8 w-5 text-(--home-marker) opacity-30' viewBox='0 0 20 32' fill='currentColor'>
+					{#each [4, 12, 20, 28] as y}<circle cx='6' cy={y} r='1' /><circle cx='14' cy={y} r='1' />{/each}
+				</svg>
+			</div>
+		</div>
+		<div class='absolute top-[35%] left-1/4 z-2 w-1/2 text-center max-[1050px]:top-[36%] max-[1050px]:left-[24%] max-[1050px]:w-[52%] max-[600px]:top-[235px] max-[600px]:left-0 max-[600px]:w-full max-[600px]:px-[7px]'>
+			<h1 class='m-0 font-(family-name:--font-wordmark) text-[clamp(34px,4.15vw,60px)] leading-[1.06] font-[750] tracking-[-0.035em] text-balance max-[1050px]:text-[38px] max-[600px]:text-[36px] max-[600px]:leading-[1.09]'><span class='block'>Everything you </span><span class='block'>watched. Collected.</span></h1>
+			<p class='mx-auto mt-6 mb-7 max-w-[530px] text-[clamp(16px,1.4vw,20px)] leading-[1.55] text-balance text-(--muted) max-[1050px]:text-base max-[600px]:mt-[22px] max-[600px]:mb-[26px] max-[600px]:max-w-[330px] max-[600px]:leading-normal'>Explore your Simkl history as a yearly collection of movies, shows, and anime.</p>
+			{@render connectAction('hero')}
+		</div>
 	</div>
-	<enhanced:img src='../assets/default-preview.png' sizes='(min-width: 1374px) 1374px, 100vw' alt='Screenshot of the poster-grid dashboard you see once logged in: watched movies in a 5 column grid for the year 2023, with previous/next buttons to switch years and a "Screenshot Mode" that removes the gaps between the columns and rows.' loading='eager' />
-</section>
+</div>
 
-<Spacer axis='vertical' size='3xl' />
-
-<section class='features'>
-	<h2 class='text-xl'>Features</h2>
-	<Spacer axis='vertical' size='m' />
-	<div class='bento'>
-		<div>
-			<h3>Poster Grid</h3>
-			<p>Your Simkl Library is used to display posters of movies, shows and anime you watched in a minimalistic layout. No distractions, just posters.</p>
-		</div>
-		<div>
-			<h3>Screenshot Mode</h3>
-			<p>Want to create your own “Year in Review”? Enable Screenshot Mode and take a picture 📸</p>
-		</div>
-		<div>
-			<h3>Adjustable</h3>
-			<p>Change the color scheme of the whole website by changing its color hue. You can also choose how many columns your poster grid uses.</p>
-		</div>
-		<div>
-			<h3>Open Source</h3>
-			<p>The whole website is available on <a href={GITHUB_REPO_URL}>GitHub</a> for you to read. Contributions welcome 🥳</p>
-		</div>
-	</div>
-</section>
-
-<Spacer axis='vertical' size='2xl' />
-
-<section class='screenshots'>
-	<h2 class='text-xl'>Screenshots</h2>
-	<Spacer axis='vertical' size='m' />
-	<div class='screenshots-img'>
-		<enhanced:img src='../assets/color-modes.png' sizes='(min-width: 768px) 768px, 100vw' alt='Screenshot of the dashboard divided into 4 equal columns. Each column shows the dashboard in a different color (the first one is grayscale) to highlight that you can change the color mode for the whole app.' loading='lazy' />
-		<enhanced:img src='../assets/screenshot-mode.png' sizes='(min-width: 768px) 768px, 100vw' alt='Showcasing the "Screenshot Mode". The gutters from the poster grid are removed and you can choose how many columns you want to display.' loading='lazy' />
-	</div>
-</section>
-
-<Spacer axis='vertical' size='2xl' />
-
-<svelte:body use:classList={'homepage'} />
-
-<style lang='postcss'>
-  :global(body.homepage) {
-    --color-chroma: 0.09;
-  }
-  :global(body.homepage > div) {
-    --color-chroma: initial;
-  }
-
-  :global(.hero svg[data-icon-name='arrow-right']) {
-    height: var(--space-s-m);
-    width: var(--space-s-m);
-    margin-left: var(--space-2xs);
-    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  }
-
-  :global(.hero .button-primary:hover svg[data-icon-name='arrow-right']) {
-    transform: translateX(3px);
-  }
-
-  .hero {
-    display: grid;
-    gap: calc(var(--grid-gutter) * 2);
-    grid-template-columns: repeat(1, 1fr);
-
-    @media (--md) {
-      grid-template-columns: 1.75fr 2fr;
-    }
-
-    .text {
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: flex-start;
-      text-shadow: 0px 2px 6px rgba(0, 0, 0, 0.25);
-
-      & p {
-        line-height: 1.25;
-      }
-
-      & h2 {
-        line-height: 1.2;
-      }
-    }
-
-    & img {
-      height: auto;
-      box-shadow: var(--shadow-elevation-medium);
-      border-radius: var(--space-xs);
-    }
-  }
-
-  .features, .screenshots {
-    & h2 {
-      text-align: center;
-    }
-  }
-
-  .bento {
-    display: grid;
-    gap: var(--grid-gutter);
-    grid-template-columns: repeat(1, 1fr);
-
-    & > div {
-      --color-alpha: 0.5;
-      border: 1px solid var(--color-9);
-      background: linear-gradient(0deg, var(--color-12) 0%, var(--color-13) 8%, var(--color-13) 92%, var(--color-14) 100%);
-      padding: var(--space-s);
-      border-radius: var(--space-xs);
-      box-shadow: var(--shadow-elevation-medium);
-    }
-
-    & h3 {
-      margin-top: 0;
-    }
-
-    @media (--md) {
-      grid-template-columns: repeat(2, 1fr);
-    }
-  }
-
-  .screenshots-img {
-    display: grid;
-    gap: var(--grid-gutter);
-    grid-template-columns: repeat(1, 1fr);
-
-    @media (--md) {
-      grid-template-columns: repeat(2, 1fr);
-    }
-
-    & img {
-      height: auto;
-      box-shadow: var(--shadow-elevation-medium);
-      border-radius: var(--space-xs);
-    }
-  }
-</style>
+<HomeDetails>
+	{@render connectAction('preview')}
+</HomeDetails>

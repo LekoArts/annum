@@ -3,7 +3,6 @@ import { describe, expect, it } from 'vitest'
 import { dashboardSearch, describeSelection, resolveSelectedTypes, resolveYear } from '../dashboard'
 
 const ALL_TYPES: Array<SimklMediaType> = ['movies', 'shows', 'anime']
-const YEARS = [2024, 2023, 2022]
 
 function params(search = ''): URLSearchParams {
 	return new URLSearchParams(search)
@@ -45,36 +44,44 @@ describe('resolveSelectedTypes', () => {
 
 describe('resolveYear', () => {
 	it('defaults to the current year when absent', () => {
-		expect(resolveYear(params(), YEARS, 2024)).toBe(2024)
+		expect(resolveYear(params(), 2024)).toBe(2024)
 	})
 
 	it('defaults to the current year for an empty value', () => {
-		expect(resolveYear(params('year='), YEARS, 2024)).toBe(2024)
+		expect(resolveYear(params('year='), 2024)).toBe(2024)
 	})
 
 	it('defaults to the current year for a non-numeric value', () => {
-		expect(resolveYear(params('year=abc'), YEARS, 2024)).toBe(2024)
+		expect(resolveYear(params('year=abc'), 2024)).toBe(2024)
 	})
 
 	it('accepts a year inside the available range', () => {
-		expect(resolveYear(params('year=2022'), YEARS, 2024)).toBe(2022)
+		expect(resolveYear(params('year=2022'), 2024)).toBe(2022)
 	})
 
-	it('falls back to the current year below the available range', () => {
-		expect(resolveYear(params('year=1999'), YEARS, 2024)).toBe(2024)
+	// The library is what fills the year options, but it arrives after the first sync. Resolving against it
+	// would let the grid and the controls disagree on a deep link, so any 4-digit year up to the current one
+	// is accepted even when the user has nothing in it.
+	it('accepts a year the user has no items in', () => {
+		expect(resolveYear(params('year=2010'), 2024)).toBe(2010)
+	})
+
+	it('falls back to the current year below the range Simkl can express', () => {
+		// Simkl only stores timestamps before 2000-01-01 as "watched, date unknown", and those are dropped
+		expect(resolveYear(params('year=1999'), 2024)).toBe(2024)
 	})
 
 	it('falls back to the current year above the current year', () => {
-		expect(resolveYear(params('year=2030'), YEARS, 2024)).toBe(2024)
+		expect(resolveYear(params('year=2030'), 2024)).toBe(2024)
 	})
 
 	it('accepts the current year itself', () => {
-		expect(resolveYear(params('year=2024'), YEARS, 2024)).toBe(2024)
+		expect(resolveYear(params('year=2024'), 2024)).toBe(2024)
 	})
 
 	it('does not read a hex-looking value as a year', () => {
 		// `0x7e6` is 2022 in hex; parsed without a radix it would resolve to an available year
-		expect(resolveYear(params('year=0x7e6'), YEARS, 2024)).toBe(2024)
+		expect(resolveYear(params('year=0x7e6'), 2024)).toBe(2024)
 	})
 })
 
