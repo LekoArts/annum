@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 232" width="180" height="270" preserveAspectRatio="xMidYMid slice" role="img" aria-labelledby="cover-12-title"><title id="cover-12-title">Akira — illustrated anime cover</title><defs><clipPath id="cover-12-art"><rect width="180" height="232"/></clipPath></defs><rect width="180" height="270" fill="#d5abb0"/><g clip-path="url(#cover-12-art)">
+<circle cx="134" cy="48" r="23" fill="#ead1b9"/>
+<path d="M0 101h19V81h20v37h14V61h25v49h21V87h19v34h24V70h17v46h21v116H0Z" fill="#8a7c92"/>
+<path d="M0 144h32v-25h18v43h30v-29h29v24h24v-31h24v32h23v74H0Z" fill="#5c6075"/>
+<path d="M0 196h180v36H0Z" fill="#3f485c"/><g class="cover-road" stroke="#e1c6bb" stroke-width="2"><path d="M-60 217h27M0 217h27M60 217h27M120 217h27M180 217h27M240 217h27M300 217h27"/></g>
+<circle cx="50" cy="196" r="15" fill="#293746"/><circle cx="129" cy="196" r="15" fill="#293746"/><circle cx="50" cy="196" r="7" fill="#bac0c2"/><circle cx="129" cy="196" r="7" fill="#bac0c2"/>
+<path d="M28 192h15m-26 5h21" stroke="#d39289" stroke-width="2" opacity=".6"/><path d="M48 182l24-13h29l25 12 8 12h-30l-13-9H65l-10 11H40Z" fill="#b96662"/><path d="M85 169l8-18h14l4 22Z" fill="#cb8174"/><path d="M97 151l4-9h13" fill="none" stroke="#ddd0c4" stroke-width="2"/>
+<path d="M57 177l12-5h25" stroke="#e9a49a" stroke-width="2" fill="none"/><path d="M128 179l11 2" stroke="#f1dfba" stroke-width="3" class="cover-light"/>
+</g></svg>

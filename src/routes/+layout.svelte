@@ -28,7 +28,7 @@
 <div class='flex min-h-dvh flex-col'>
 	<Header />
 
-	<Content class={`mx-auto w-full grow ${page.url.pathname === '/dashboard' ? 'max-w-[1800px] px-3 sm:px-6 lg:px-9' : 'max-w-5xl px-4'}`}>
+	<Content class={`mx-auto w-full grow ${page.url.pathname === '/' ? 'max-w-[1600px]' : page.url.pathname === '/dashboard' ? 'max-w-[1800px] px-3 sm:px-6 lg:px-9' : 'max-w-5xl px-4'}`}>
 		{@render children?.()}
 	</Content>
 

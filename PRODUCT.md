@@ -17,6 +17,7 @@ Annum lets users sign in with Simkl and see the posters of what they watched. Su
 ## Operating Context
 
 - Users need a Simkl account and sign in through Simkl.
+- The approved homepage is a compact landing page for existing Simkl users. It explains yearly collections through animated illustrations and one “Connect with Simkl” action; signed-in visitors can view the homepage and use its “Dashboard” CTA to reach `/dashboard`. This approved homepage is implemented; signed-in visitors are not automatically redirected.
 - Browsing happens in a web browser and must work at mobile viewport sizes as well as desktop sizes.
 - The interface supports System, Light, and Dark theme preferences. System follows the device preference; explicit choices persist across visits.
 - Users take screenshots themselves. Screenshot mode removes grid gutters, rounded corners, resting outlines, and shadows. Columns can follow the screen automatically or be set manually from 1 to 100; controls stay above the grid.
@@ -37,6 +38,7 @@ Annum lets users sign in with Simkl and see the posters of what they watched. Su
 - Initial sync failures offer retry. Filtered empty results offer “Show all types”; background sync failures preserve cached posters for browsing.
 - Authentication is stateless through Better Auth cookies. The server gates protected routes and performs Simkl sync; the dashboard renders in the browser.
 - Posters and metadata come from Simkl. Every poster links to its Simkl item page for attribution.
+- Homepage illustrations are authored SVG scenes inspired by recognizable movies, shows, and anime. They are illustrative product communication, not real account history or Simkl-supplied posters. Each design appears once, without visible month or category labels.
 - The application uses SvelteKit 3, Svelte 5, strict TypeScript, and Tailwind v4, and deploys to Netlify.
 
 ## Brand Commitments
@@ -46,6 +48,7 @@ Annum lets users sign in with Simkl and see the posters of what they watched. Su
 - The approved Soft capsule design is now implemented and is the identity to preserve during refinements. DESIGN.md records its visual tokens and component behavior.
 - The collection is poster-only, without visible title captions or metadata overlays. Accessible poster names remain available to assistive technology.
 - Controls should be understandable without tooltips; the owner explicitly chose to omit them.
+- The approved homepage uses a quiet central offer surrounded by scattered illustrated covers, with sparse dotted guides and “+” markers. The wordmark and footer have generous breathing room. Scene details animate continuously, with reduced-motion stills and a quiet footer Pause/Resume button; the offer stays stationary.
 - Annum is an open-source personal project by LekoArts. Existing author credit, source links, and Simkl attribution are factual content.
 
 ## Evidence on Hand
@@ -54,6 +57,9 @@ Annum lets users sign in with Simkl and see the posters of what they watched. Su
 - The current routes and components implement working poster browsing, controls, and screenshot mode.
 - Live library data and posters are supplied by the signed-in user's Simkl account.
 - Earlier deployed screenshots and images in src/assets are historical references, not the current design authority. The approved Soft capsule comps and dashboard brief record the design direction; current components and DESIGN.md capture subsequent approved refinements.
+- The implemented homepage uses fourteen unique authored SVG artworks on desktop and nine on mobile. Its Connect action guards session loading and pending sign-in, sends the existing Simkl social auth flow to the dashboard callback, and provides failure feedback.
+- The homepage brief and final animated prototype under `.impeccable/mocks/illustrations/` record the approved homepage composition and fourteen unique cover designs. Earlier homepage decision images predate the removal of months, category labels, and the demo caption.
+- Full-page implementation captures live under `.impeccable/review/homepage/`. Finish review returned ship with no material fixes; the check suite passed (82 tests, zero Svelte diagnostics, typecheck, lint, and build). External OAuth completion and native reduced-motion browser behavior were not retested; reduced-motion rules were verified in source.
 - No customer testimonials, adoption figures, or performance claims have been provided.
 
 ## Product Principles

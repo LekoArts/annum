@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 232" width="180" height="270" preserveAspectRatio="xMidYMid slice" role="img" aria-labelledby="cover-0-title"><title id="cover-0-title">Interstellar — illustrated movies cover</title><defs><clipPath id="cover-0-art"><rect width="180" height="232"/></clipPath></defs><rect width="180" height="270" fill="#293747"/><g clip-path="url(#cover-0-art)">
+<g fill="#dee2d9"><circle cx="27" cy="31" r="1"/><circle cx="133" cy="23" r="1"/><circle cx="158" cy="74" r="1"/><circle cx="34" cy="106" r="1"/><circle cx="105" cy="42" r=".8"/></g>
+<g><ellipse cx="96" cy="99" rx="68" ry="13" fill="#b8b5ce" transform="rotate(-12 96 99)"/><circle cx="96" cy="96" r="35" fill="#c5bdd1"/><circle cx="96" cy="96" r="29" fill="#182332"/>
+<ellipse cx="96" cy="99" rx="67" ry="6" fill="none" stroke="#e6dcd0" stroke-width="1" opacity=".5" transform="rotate(-12 96 99)"/><path d="M30 112Q96 87 164 86" fill="none" stroke="#e6dcd0" stroke-width="3"/></g>
+<g transform="translate(49 160)"><g class="cover-orbit" fill="#dce0d9"><circle r="13" fill="none" stroke="#dce0d9" stroke-width="3"/><path d="M-3-16h6v7h-6ZM-3 9h6v7h-6ZM-16-3h7v6h-7ZM9-3h7v6h-7Z"/><circle r="2"/><path d="M-11-11l4 4m14 14 4 4m-22 0 4-4m14-14-4 4" stroke="#81969f" stroke-width="2"/></g></g>
+<path d="M0 205Q48 181 100 202T180 194V232H0Z" fill="#788da0"/><path d="M0 220Q53 204 180 211V232H0Z" fill="#bac6cc"/>
+</g></svg>

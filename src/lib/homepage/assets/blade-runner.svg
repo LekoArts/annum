@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 232" width="180" height="270" preserveAspectRatio="xMidYMid slice" role="img" aria-labelledby="cover-8-title"><title id="cover-8-title">Blade Runner — illustrated movies cover</title><defs><clipPath id="cover-8-art"><rect width="180" height="232"/></clipPath></defs><rect width="180" height="270" fill="#72889d"/><g clip-path="url(#cover-8-art)">
+<circle cx="125" cy="46" r="24" fill="#c6b3b5"/>
+<path d="M0 115h25V90h20v35h19V79h26v-9h17v53h14V97h25v38h34v97H0Z" fill="#4b6075"/>
+<path d="M0 179h30v-41h19v28h20v-22h26v27h14v-45h27v23h17v30h27v53H0Z" fill="#31495d"/>
+<g class="cover-light" fill="#d4a89b"><path d="M71 151h7v27h-7m33-42h5v23h-5m34-9h7v33h-7M13 188h4v18h-4m72-15h5v23h-5"/></g>
+<g class="cover-rain" fill="none" stroke="#c6d4d5" stroke-width="1.2" opacity=".55"><path d="M15 -45l-2 14M43 -23l-2 14M72 -36l-2 14M101 -12l-2 14M131 -43l-2 14M160 -20l-2 14M15 3l-2 14M43 25l-2 14M72 12l-2 14M101 36l-2 14M131 5l-2 14M160 28l-2 14M15 51l-2 14M43 73l-2 14M72 60l-2 14M101 84l-2 14M131 53l-2 14M160 76l-2 14M15 99l-2 14M43 121l-2 14M72 108l-2 14M101 132l-2 14M131 101l-2 14M160 124l-2 14M15 147l-2 14M43 169l-2 14M72 156l-2 14M101 180l-2 14M131 149l-2 14M160 172l-2 14M15 195l-2 14M43 217l-2 14M72 204l-2 14M101 228l-2 14M131 197l-2 14M160 220l-2 14M15 243l-2 14M43 265l-2 14M72 252l-2 14M101 276l-2 14M131 245l-2 14M160 268l-2 14M15 291l-2 14M43 313l-2 14M72 300l-2 14M101 324l-2 14M131 293l-2 14M160 316l-2 14"/></g>
+<g class="cover-spinner"><path d="M101 106l23-6 18 6-9 6h-23Z" fill="#d6cdc1"/><path d="M119 101l6-4 7 4Z" fill="#718494"/><path d="M112 112h4m14 0h4" stroke="#eac1a5" stroke-width="2"/></g>
+</g></svg>
