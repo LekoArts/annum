@@ -47,7 +47,7 @@
 {:else if $syncState.status === 'error' && !$hasSynced}
 	<div class='mx-auto max-w-md py-24 text-center' role='alert'>
 		<h2 class='text-lg font-medium'>Couldn’t load your library</h2>
-		<p class='mt-2 text-sm leading-relaxed text-(--muted)'>Your Simkl library is unavailable right now. Try syncing again.</p>
+		<p class='mt-2 text-sm leading-relaxed text-(--muted)'>{$syncState.message}</p>
 		<button type='button' onclick={() => sync({ force: true })} class='mt-5 min-h-10 rounded-full bg-(--ink) px-4 text-sm font-medium text-(--page)'>Retry sync</button>
 	</div>
 {:else if !$hasSynced}

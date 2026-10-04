@@ -264,6 +264,12 @@ describe('library sync throttling', () => {
 		await sync()
 
 		expect(get(syncState)).toEqual({ status: 'error', message: 'The Simkl daily request quota is exhausted. Try again in 3600 seconds.' })
+
+		vi.stubGlobal('fetch', async () => new Response(JSON.stringify(UP_TO_DATE), { status: 200 }))
+
+		await sync({ force: true })
+
+		expect(get(syncState)).toEqual({ status: 'idle', message: null })
 	})
 
 	it('falls back to the HTTP status when a failure carries no message', async () => {
@@ -280,7 +286,7 @@ describe('library sync throttling', () => {
 describe('library sync lease without Web Locks', () => {
 	it('skips while another tab holds the lease', async () => {
 		claimLibrary(ACCOUNT)
-		localStorage.setItem(LEASE_KEY, String(Date.now()))
+		localStorage.setItem(LEASE_KEY, `${Date.now()}:another-tab`)
 		const fetchMock = vi.fn()
 		vi.stubGlobal('fetch', fetchMock)
 
@@ -292,7 +298,34 @@ describe('library sync lease without Web Locks', () => {
 
 	it('syncs once the lease has expired', async () => {
 		claimLibrary(ACCOUNT)
-		localStorage.setItem(LEASE_KEY, String(Date.now() - 60_000))
+		localStorage.setItem(LEASE_KEY, `${Date.now() - 60_000}:stale-tab`)
+		const fetchMock = vi.fn(async (_input: RequestInfo | URL) => new Response(JSON.stringify(UP_TO_DATE), { status: 200 }))
+		vi.stubGlobal('fetch', fetchMock)
+
+		await sync()
+
+		expect(fetchMock).toHaveBeenCalledTimes(1)
+	})
+
+	it('leaves a lease another tab took over after it expired in place', async () => {
+		claimLibrary(ACCOUNT)
+		const takenOver = `${Date.now()}:later-tab`
+
+		vi.stubGlobal('fetch', async () => {
+			// This sync outlived its own lease, so another tab claimed it meanwhile
+			localStorage.setItem(LEASE_KEY, takenOver)
+
+			return new Response(JSON.stringify(UP_TO_DATE), { status: 200 })
+		})
+
+		await sync()
+
+		expect(localStorage.getItem(LEASE_KEY)).toBe(takenOver)
+	})
+
+	it('treats an unreadable lease value as no lease at all', async () => {
+		claimLibrary(ACCOUNT)
+		localStorage.setItem(LEASE_KEY, 'not-a-lease')
 		const fetchMock = vi.fn(async (_input: RequestInfo | URL) => new Response(JSON.stringify(UP_TO_DATE), { status: 200 }))
 		vi.stubGlobal('fetch', fetchMock)
 

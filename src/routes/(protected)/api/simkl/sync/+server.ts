@@ -134,6 +134,8 @@ export const GET: RequestHandler = async (event) => {
 		if (e instanceof SimklError)
 			error(e.status === 429 ? 429 : 502, e.message)
 
-		error(502, `Failed to sync your Simkl library. ${e}`)
+		// The response carries only the reason; the log keeps the whole error for diagnosis
+		console.warn('[simkl] sync failed unexpectedly', e)
+		error(502, `Failed to sync your Simkl library. ${e instanceof Error ? e.message : String(e)}`)
 	}
 }

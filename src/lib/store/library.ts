@@ -65,55 +65,81 @@ export const hasData = derived(library, $library =>
 const SYNC_LOCK = 'annum-sync'
 /** Browsers without the Web Locks API coordinate through a lease that expires on its own. */
 const SYNC_LEASE_KEY = 'annum-simkl-sync-lease'
-/** Long enough for a full pull, short enough that a tab that died mid-sync does not block the others. */
+/**
+ * Short enough that a tab that died mid-sync unblocks the others quickly. A retrying or very large
+ * sync can outlive it, and then a second tab may join in — the price of a lease that cannot renew.
+ */
 const SYNC_LEASE_MS = 30_000
 
 let syncing = false
 
 /**
  * One tab syncs at a time; the other skips and picks the result up through the `storage` event. Web
- * Locks does that atomically; the lease is best effort, so a second tab can still slip through, which
- * only costs a duplicate request that the throttle bounds.
+ * Locks does that atomically; the lease is best effort, so two tabs claiming at once can still slip
+ * through, which only costs a duplicate request that the throttle bounds.
  */
 async function withSyncLock<T>(run: () => Promise<T>): Promise<T | null> {
 	if (navigator.locks)
 		return await navigator.locks.request(SYNC_LOCK, { ifAvailable: true }, async lock => lock ? await run() : null)
 
-	if (!claimSyncLease())
+	const lease = claimSyncLease()
+
+	if (lease === null)
 		return null
 
 	try {
 		return await run()
 	}
 	finally {
-		releaseSyncLease()
+		releaseSyncLease(lease)
 	}
 }
 
-function claimSyncLease(): boolean {
+/** Returns the claim's token, so the sync that made it clears its own lease and not a later tab's. */
+function claimSyncLease(): string | null {
 	try {
-		const claimedAt = Number(localStorage.getItem(SYNC_LEASE_KEY) ?? 0)
+		const held = readSyncLease()
 
-		if (Number.isFinite(claimedAt) && Date.now() - claimedAt < SYNC_LEASE_MS)
-			return false
+		if (held !== null && held.expiresAt > Date.now())
+			return null
 
-		localStorage.setItem(SYNC_LEASE_KEY, String(Date.now()))
+		const token = crypto.randomUUID()
 
-		return true
+		localStorage.setItem(SYNC_LEASE_KEY, `${Date.now()}:${token}`)
+
+		return token
 	}
 	catch {
-		// Unavailable storage means there is nothing to coordinate with, so syncing beats never syncing
-		return true
+		// Unavailable storage leaves nothing to coordinate with, so syncing beats never syncing
+		return ''
 	}
 }
 
-function releaseSyncLease(): void {
+function releaseSyncLease(token: string): void {
 	try {
-		localStorage.removeItem(SYNC_LEASE_KEY)
+		if (readSyncLease()?.token === token)
+			localStorage.removeItem(SYNC_LEASE_KEY)
 	}
 	catch {
 		// The lease is an optimisation; failing to clear it only delays another tab by its expiry
 	}
+}
+
+/** A lease reads `<claimed-at-epoch-ms>:<token>`; anything else is treated as no lease. */
+function readSyncLease(): { expiresAt: number, token: string } | null {
+	const raw = localStorage.getItem(SYNC_LEASE_KEY)
+	const separator = raw?.indexOf(':') ?? -1
+
+	if (raw === null || separator === -1)
+		return null
+
+	const claimedAt = Number.parseInt(raw.slice(0, separator), 10)
+	const token = raw.slice(separator + 1)
+
+	if (!Number.isFinite(claimedAt) || token === '')
+		return null
+
+	return { expiresAt: claimedAt + SYNC_LEASE_MS, token }
 }
 
 /** SvelteKit sends route errors as JSON, so Simkl's own explanation reaches the UI instead of a status. */
