@@ -22,6 +22,8 @@ beforeEach(() => {
 })
 
 afterEach(() => {
+	vi.useRealTimers()
+	vi.restoreAllMocks()
 	vi.unstubAllGlobals()
 })
 
@@ -74,5 +76,46 @@ describe('simkl sync request shapes', () => {
 		expect(url.pathname).toBe('/sync/all-items')
 		expect(url.searchParams.get('extended')).toBe('simkl_ids_only')
 		expect(url.searchParams.has('date_from')).toBe(false)
+	})
+})
+
+describe('simkl retry handling', () => {
+	it('pauses briefly on a per-second rate_limit instead of honouring Retry-After', async () => {
+		vi.useFakeTimers()
+		let requests = 0
+
+		vi.stubGlobal('fetch', async () => {
+			requests += 1
+
+			return requests === 1
+				// On `rate_limit` a `Retry-After` carries the daily reset, not this pause
+				? new Response(JSON.stringify({ error: 'rate_limit' }), { status: 429, headers: { 'content-type': 'application/json', 'retry-after': '45000' } })
+				: new Response('{}', { status: 200, headers: { 'content-type': 'application/json' } })
+		})
+
+		const pending = fetchSimklActivities(TOKEN)
+
+		await vi.advanceTimersByTimeAsync(5_000)
+		expect(requests).toBe(2)
+
+		await vi.runAllTimersAsync()
+		await pending
+	})
+
+	it('fails a deterministic error on the first response and logs it with the request URL', async () => {
+		const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
+		let requests = 0
+
+		vi.stubGlobal('fetch', async () => {
+			requests += 1
+
+			return new Response(JSON.stringify({ error: 'client_id_failed' }), { status: 412, headers: { 'content-type': 'application/json' } })
+		})
+
+		await expect(fetchSimklActivities(TOKEN)).rejects.toThrow('412')
+
+		expect(requests).toBe(1)
+		expect(warn).toHaveBeenCalledWith(expect.stringContaining('client_id_failed'))
+		expect(warn).toHaveBeenCalledWith(expect.stringContaining('/sync/activities'))
 	})
 })

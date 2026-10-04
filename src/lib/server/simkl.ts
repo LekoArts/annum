@@ -17,6 +17,9 @@ const EPISODE_ENRICHMENT = {
 
 const MAX_ATTEMPTS = 5
 const MAX_BACKOFF_MS = 60_000
+/** Simkl asks for a short pause on a per-second `rate_limit`, not a backoff. */
+const RATE_LIMIT_PAUSE_MS = 1000
+const RATE_LIMIT_JITTER_MS = 250
 const TRANSIENT_STATUSES = new Set([500, 502, 503])
 const RATE_LIMIT_ERROR = 'rate_limit'
 const DAILY_QUOTA_ERRORS = new Set(['user_limit_exceeded', 'app_limit_exceeded'])
@@ -79,6 +82,11 @@ function sleep(ms: number): Promise<void> {
 	return new Promise(resolve => setTimeout(resolve, ms))
 }
 
+/** Simkl's debugging contract: log the `error` value and status next to the URL that produced them. */
+function logSimklFailure(url: string, status: number, code?: string): void {
+	console.warn(`Simkl request failed: ${status}${code ? ` (${code})` : ''} ${url}`)
+}
+
 /**
  * Simkl GET with retries for transient failures: a per-second `rate_limit` 429 gets a short pause, 5xx
  * an exponential backoff (max 5 attempts, 60s). Daily-quota 429s reset at midnight and are surfaced.
@@ -97,6 +105,8 @@ export async function withRetry(url: string, accessToken?: string): Promise<Resp
 		const retryAfterSeconds = parseRetryAfter(response.headers.get('retry-after'))
 
 		if (response.status === 429 && code && DAILY_QUOTA_ERRORS.has(code)) {
+			logSimklFailure(url, response.status, code)
+
 			throw new SimklError(response.status, `The Simkl daily request quota is exhausted (${code}). Try again in ${retryAfterSeconds ?? 'an unknown number of'} seconds.`, { code, retryAfterSeconds })
 		}
 
@@ -106,11 +116,14 @@ export async function withRetry(url: string, accessToken?: string): Promise<Resp
 		attempt += 1
 
 		if ((!isRateLimit && !isTransient) || attempt >= MAX_ATTEMPTS) {
+			logSimklFailure(url, response.status, code)
+
 			throw new SimklError(response.status, `Simkl request failed with HTTP ${response.status}${code ? ` (${code})` : ''}.`, { code, retryAfterSeconds })
 		}
 
+		// `Retry-After` on a `rate_limit` carries the daily reset, so it must not be honoured here
 		const waitMs = isRateLimit
-			? Math.min((retryAfterSeconds ?? 1) * 1000, MAX_BACKOFF_MS)
+			? RATE_LIMIT_PAUSE_MS + Math.random() * RATE_LIMIT_JITTER_MS
 			: Math.min(2 ** attempt * 1000 + Math.random() * 1000, MAX_BACKOFF_MS)
 
 		await sleep(waitMs)
