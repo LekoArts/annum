@@ -8,6 +8,7 @@ const ACCOUNT = '12345'
 const OTHER_ACCOUNT = '67890'
 const STORAGE_KEY = 'annum-simkl-library'
 const MINUTE = 60_000
+const LEASE_KEY = 'annum-simkl-sync-lease'
 
 function media(id: number) {
 	return { simklId: id, slug: `title-${id}`, title: `Title ${id}`, year: 2020, poster: null, watched: [{ year: 2020, month: 'May', watchedAt: '2020-05-05T00:00:00Z' }] }
@@ -42,7 +43,7 @@ beforeEach(() => {
 	localStorage.clear()
 	clearLibrary()
 	claimLibrary(null)
-	syncState.set('idle')
+	syncState.set({ status: 'idle', message: null })
 	lockRequests = []
 	delete (navigator as { locks?: unknown }).locks
 	stubResponse(UP_TO_DATE)
@@ -159,7 +160,7 @@ describe('library sync throttling', () => {
 		await sync()
 
 		expect(fetchMock).not.toHaveBeenCalled()
-		expect(get(syncState)).toBe('idle')
+		expect(get(syncState).status).toBe('idle')
 	})
 
 	it('syncs again once the interval has passed', async () => {
@@ -228,7 +229,7 @@ describe('library sync throttling', () => {
 		await sync()
 
 		expect(fetchMock).not.toHaveBeenCalled()
-		expect(get(syncState)).toBe('idle')
+		expect(get(syncState).status).toBe('idle')
 		expect(lockRequests).toEqual([{ name: 'annum-sync', options: { ifAvailable: true } }])
 	})
 
@@ -251,7 +252,65 @@ describe('library sync throttling', () => {
 
 		await sync()
 
-		expect(get(syncState)).toBe('error')
+		expect(get(syncState).status).toBe('error')
 		expect(get(library).movies).toHaveLength(1)
+	})
+
+	it('carries the server\'s reason for a failure into the state', async () => {
+		claimLibrary(ACCOUNT)
+		vi.stubGlobal('fetch', async () => Response.json({ message: 'The Simkl daily request quota is exhausted. Try again in 3600 seconds.' }, { status: 429 }))
+		vi.spyOn(console, 'warn').mockImplementation(() => {})
+
+		await sync()
+
+		expect(get(syncState)).toEqual({ status: 'error', message: 'The Simkl daily request quota is exhausted. Try again in 3600 seconds.' })
+	})
+
+	it('falls back to the HTTP status when a failure carries no message', async () => {
+		claimLibrary(ACCOUNT)
+		vi.stubGlobal('fetch', async () => new Response('nope', { status: 502 }))
+		vi.spyOn(console, 'warn').mockImplementation(() => {})
+
+		await sync()
+
+		expect(get(syncState)).toEqual({ status: 'error', message: 'Sync request failed with HTTP 502' })
+	})
+})
+
+describe('library sync lease without Web Locks', () => {
+	it('skips while another tab holds the lease', async () => {
+		claimLibrary(ACCOUNT)
+		localStorage.setItem(LEASE_KEY, String(Date.now()))
+		const fetchMock = vi.fn()
+		vi.stubGlobal('fetch', fetchMock)
+
+		await sync()
+
+		expect(fetchMock).not.toHaveBeenCalled()
+		expect(get(syncState).status).toBe('idle')
+	})
+
+	it('syncs once the lease has expired', async () => {
+		claimLibrary(ACCOUNT)
+		localStorage.setItem(LEASE_KEY, String(Date.now() - 60_000))
+		const fetchMock = vi.fn(async (_input: RequestInfo | URL) => new Response(JSON.stringify(UP_TO_DATE), { status: 200 }))
+		vi.stubGlobal('fetch', fetchMock)
+
+		await sync()
+
+		expect(fetchMock).toHaveBeenCalledTimes(1)
+	})
+
+	it('hands the lease back when the sync ends, however it ends', async () => {
+		claimLibrary(ACCOUNT)
+
+		await sync()
+		expect(localStorage.getItem(LEASE_KEY)).toBeNull()
+
+		vi.stubGlobal('fetch', async () => new Response('nope', { status: 502 }))
+		vi.spyOn(console, 'warn').mockImplementation(() => {})
+
+		await sync({ force: true })
+		expect(localStorage.getItem(LEASE_KEY)).toBeNull()
 	})
 })

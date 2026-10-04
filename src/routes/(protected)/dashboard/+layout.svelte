@@ -9,6 +9,7 @@
 
 	let { children }: Props = $props()
 	const session = authClient.useSession()
+	const failed = $derived($syncState.status === 'error')
 
 	/** Grace period before a warm cache shows the chip, so a reload that syncs quickly stays still. */
 	const SYNC_STATUS_DELAY = 400
@@ -28,10 +29,10 @@
 	// background refresh that only speaks up after the grace period. The chip is fixed, so it never
 	// shifts the page either way.
 	$effect(() => {
-		const state = $syncState
+		const status = $syncState.status
 		const cold = !$hasData
 
-		if (state !== 'syncing') {
+		if (status !== 'syncing') {
 			showSyncStatus = false
 			return
 		}
@@ -49,14 +50,18 @@
 	})
 </script>
 
-{#if $syncState === 'error' && $hasData}
-	<div class='fixed right-4 bottom-4 z-10 flex max-w-[calc(100vw-32px)] items-center gap-3 rounded-xl border border-(--border) bg-(--menu) px-4 py-3 text-sm shadow-(--menu-shadow)' role='alert'>
-		Couldn't sync your Simkl library.
-		<button class='rounded-md px-2 py-1 font-medium text-(--accent) hover:bg-(--active)' onclick={() => sync({ force: true })}>Retry</button>
-	</div>
-{:else if showSyncStatus}
-	<div class='fixed right-4 bottom-4 z-10 flex max-w-[calc(100vw-32px)] items-center gap-3 rounded-xl border border-(--border) bg-(--menu) px-4 py-3 text-sm shadow-(--menu-shadow)' role='status'>
-		Syncing your Simkl library…
+<!-- A failed sync with something on screen, or a sync worth announcing; both share one fixed chip -->
+{#if (failed && $hasData) || showSyncStatus}
+	<div class='fixed right-4 bottom-4 z-10 flex max-w-[calc(100vw-32px)] items-center gap-3 rounded-xl border border-(--border) bg-(--menu) px-4 py-3 text-sm shadow-(--menu-shadow)' role={failed ? 'alert' : 'status'}>
+		{#if failed}
+			<span class='min-w-0'>
+				Couldn't sync your Simkl library.
+				{#if $syncState.message}<span class='mt-1 block text-xs leading-relaxed text-(--muted)'>{$syncState.message}</span>{/if}
+			</span>
+			<button class='shrink-0 rounded-md px-2 py-1 font-medium text-(--accent) hover:bg-(--active)' onclick={() => sync({ force: true })}>Retry</button>
+		{:else}
+			Syncing your Simkl library…
+		{/if}
 	</div>
 {/if}
 

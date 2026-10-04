@@ -44,7 +44,7 @@
 			{/each}
 		{/if}
 	</Grid>
-{:else if $syncState === 'error' && !$hasSynced}
+{:else if $syncState.status === 'error' && !$hasSynced}
 	<div class='mx-auto max-w-md py-24 text-center' role='alert'>
 		<h2 class='text-lg font-medium'>Couldn’t load your library</h2>
 		<p class='mt-2 text-sm leading-relaxed text-(--muted)'>Your Simkl library is unavailable right now. Try syncing again.</p>

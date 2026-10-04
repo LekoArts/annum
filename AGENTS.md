@@ -13,7 +13,7 @@ Done means pnpm test:ci && pnpm check && pnpm typecheck && pnpm lint && pnpm bui
 ## Rules
 
 - Read-only Simkl client: never call a write endpoint, never call /users/{id}/stats. Counts come from the cached library (src/lib/store/library.ts), never from an API.
-- Sync is event-driven, never polled: automatic checks are throttled by SYNC_INTERVAL_MS, claimed through navigator.locks('annum-sync') across tabs, and always bypassable with sync({ force: true }). The cache is scoped to the claimed Simkl account id — never render it before the claim matches, and clear it on sign-out.
+- Sync is event-driven, never polled: automatic checks are throttled by SYNC_INTERVAL_MS, claimed across tabs through navigator.locks('annum-sync') or, without Web Locks, a 30-second localStorage lease, and always bypassable with sync({ force: true }). The cache is scoped to the claimed Simkl account id — never render it before the claim matches, and clear it on sign-out.
 - src/hooks.server.ts gates (protected). The dashboard subtree is client-rendered (ssr = false) because its data lives in the browser.
 - /dashboard is the whole subtree: one mixed poster grid, browsing state in the query string, canonicalized by src/lib/utils/dashboard.ts. The old /dashboard/{type}/{year} URLs are gone and stay gone — no redirects.
 - Pure logic belongs in src/lib/utils/*.ts, covered by src/**/__tests__/*.ts. Change it with tests.

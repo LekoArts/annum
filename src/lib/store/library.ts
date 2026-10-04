@@ -4,7 +4,11 @@ import { isSyncFresh } from '#lib/utils/sync.js'
 import { derived, get, writable } from 'svelte/store'
 import { persisted } from './persisted'
 
-export type SyncState = 'idle' | 'syncing' | 'error'
+export interface SyncState {
+	status: 'idle' | 'syncing' | 'error'
+	/** Why the last sync failed, as the server explained it; shown beside the retry controls. */
+	message: string | null
+}
 
 /** The cache: the normalized library, its `activities` anchor and the account it belongs to. */
 export interface CachedLibrary extends SimklLibrary {
@@ -49,7 +53,7 @@ export function clearLibrary(): void {
 	cache.set(EMPTY_LIBRARY)
 }
 
-export const syncState = writable<SyncState>('idle')
+export const syncState = writable<SyncState>({ status: 'idle', message: null })
 
 /** Whether a sync completed for the claimed account; the "nothing watched" copy waits for this. */
 export const hasSynced = derived(library, $library => $library.lastSyncedAt !== null)
@@ -59,24 +63,70 @@ export const hasData = derived(library, $library =>
 	$library.movies.length + $library.shows.length + $library.anime.length > 0)
 
 const SYNC_LOCK = 'annum-sync'
+/** Browsers without the Web Locks API coordinate through a lease that expires on its own. */
+const SYNC_LEASE_KEY = 'annum-simkl-sync-lease'
+/** Long enough for a full pull, short enough that a tab that died mid-sync does not block the others. */
+const SYNC_LEASE_MS = 30_000
 
 let syncing = false
 
-/** One tab syncs at a time; the other skips and picks the result up through the `storage` event. */
+/**
+ * One tab syncs at a time; the other skips and picks the result up through the `storage` event. Web
+ * Locks does that atomically; the lease is best effort, so a second tab can still slip through, which
+ * only costs a duplicate request that the throttle bounds.
+ */
 async function withSyncLock<T>(run: () => Promise<T>): Promise<T | null> {
-	if (!navigator.locks)
-		return await run()
+	if (navigator.locks)
+		return await navigator.locks.request(SYNC_LOCK, { ifAvailable: true }, async lock => lock ? await run() : null)
 
-	return await navigator.locks.request(SYNC_LOCK, { ifAvailable: true }, async lock => lock ? await run() : null)
+	if (!claimSyncLease())
+		return null
+
+	try {
+		return await run()
+	}
+	finally {
+		releaseSyncLease()
+	}
 }
 
+function claimSyncLease(): boolean {
+	try {
+		const claimedAt = Number(localStorage.getItem(SYNC_LEASE_KEY) ?? 0)
+
+		if (Number.isFinite(claimedAt) && Date.now() - claimedAt < SYNC_LEASE_MS)
+			return false
+
+		localStorage.setItem(SYNC_LEASE_KEY, String(Date.now()))
+
+		return true
+	}
+	catch {
+		// Unavailable storage means there is nothing to coordinate with, so syncing beats never syncing
+		return true
+	}
+}
+
+function releaseSyncLease(): void {
+	try {
+		localStorage.removeItem(SYNC_LEASE_KEY)
+	}
+	catch {
+		// The lease is an optimisation; failing to clear it only delays another tab by its expiry
+	}
+}
+
+/** SvelteKit sends route errors as JSON, so Simkl's own explanation reaches the UI instead of a status. */
 async function requestSync(): Promise<SimklSyncResponse> {
 	const saved = get(library)
 	const query = encodeURIComponent(JSON.stringify(saved.activities ?? {}))
 	const response = await fetch(`/api/simkl/sync?activities=${query}`)
 
-	if (!response.ok)
-		throw new Error(`Sync request failed with HTTP ${response.status}`)
+	if (!response.ok) {
+		const body = await response.json().catch(() => null) as { message?: unknown } | null
+
+		throw new Error(typeof body?.message === 'string' ? body.message : `Sync request failed with HTTP ${response.status}`)
+	}
 
 	return await response.json() as SimklSyncResponse
 }
@@ -109,7 +159,7 @@ export async function sync({ force = false }: { force?: boolean } = {}): Promise
 
 	try {
 		const result = await withSyncLock(async () => {
-			syncState.set('syncing')
+			syncState.set({ status: 'syncing', message: null })
 
 			const response = await requestSync()
 
@@ -135,11 +185,13 @@ export async function sync({ force = false }: { force?: boolean } = {}): Promise
 
 		// A skipped sync leaves the state alone: the other tab owns the spinner
 		if (result !== null)
-			syncState.set('idle')
+			syncState.set({ status: 'idle', message: null })
 	}
 	catch (e) {
-		console.warn(`Simkl sync failed: ${e}`)
-		syncState.set('error')
+		const message = e instanceof Error ? e.message : String(e)
+
+		console.warn(`Simkl sync failed: ${message}`)
+		syncState.set({ status: 'error', message })
 	}
 	finally {
 		syncing = false
