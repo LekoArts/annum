@@ -6,7 +6,7 @@
 		align?: 'start' | 'end'
 		width?: string
 		trigger: Snippet<[boolean, (event: MouseEvent) => void, string]>
-		children: Snippet<[() => void]>
+		children: Snippet<[() => void, boolean]>
 	}
 
 	let { label, align = 'start', width = 'w-60', trigger, children }: Props = $props()
@@ -96,5 +96,5 @@
 	ontoggle={handleToggle}
 	onkeydown={keyboard}
 	class={`fixed inset-auto m-0 max-w-[calc(100vw-24px)] overflow-y-auto overscroll-contain rounded-[15px] border border-(--border) bg-(--menu) p-1.5 text-sm text-(--ink) shadow-(--menu-shadow) ${width}`}>
-	{@render children(close)}
+	{@render children(close, open)}
 </div>

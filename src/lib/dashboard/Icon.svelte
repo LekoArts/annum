@@ -9,6 +9,7 @@
 		exit: 'M9 4H4v16h5m6-13 5 5-5 5M9 12h11',
 		info: 'M12 11v6m0-10v.01M22 12a10 10 0 1 1-20 0 10 10 0 0 1 20 0',
 		external: 'M14 3h7v7m0-7L10 14m0-9H4v15h15v-6',
+		refresh: 'M21 12a9 9 0 1 1-9-9c2.5 0 4.8 1 6.5 2.7L21 8M21 3v5h-5',
 	}
 
 	interface Props {
