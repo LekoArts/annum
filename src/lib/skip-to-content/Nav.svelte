@@ -10,7 +10,7 @@
 	let { id = SKIP_TO_CONTENT_ID, text, ...rest }: Props = $props()
 </script>
 
-<a {...rest} class='sr-only focus:not-sr-only' href={`#${id}`}>
+<a {...rest} data-sveltekit-reload class='fixed top-3 left-3 z-50 -translate-y-[calc(100%+1rem)] rounded-lg border border-(--border) bg-(--menu) px-4 py-3 text-sm font-medium text-(--ink) shadow-(--menu-shadow) focus:translate-y-0' href={`#${id}`}>
 	{#if text}{@render text()}{:else}
 		Skip to content
 	{/if}

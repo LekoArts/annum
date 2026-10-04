@@ -15,6 +15,7 @@
 	}
 
 	let { types, year }: Props = $props()
+	const descriptionId = $props.id()
 	const countFormatter = new Intl.NumberFormat()
 	const summary = $derived(types.length === 3 ? 'All types' : types.length === 1 ? MEDIA_TYPE_LABELS[types[0]] : '2 types')
 
@@ -25,9 +26,11 @@
 	}
 </script>
 
+<span id={descriptionId} class='sr-only'>Media types: {types.map(type => MEDIA_TYPE_LABELS[type]).join(', ')}</span>
+
 <Popover label='Media types' width='w-60'>
 	{#snippet trigger(open, toggleMenu, id)}
-		<button type='button' data-press onclick={toggleMenu} popovertarget={id} aria-controls={id} aria-expanded={open} aria-haspopup='dialog' aria-label={`Media types: ${types.map(type => MEDIA_TYPE_LABELS[type]).join(', ')}`}
+		<button type='button' data-press onclick={toggleMenu} popovertarget={id} aria-controls={id} aria-expanded={open} aria-haspopup='dialog' aria-describedby={descriptionId}
 			class={`flex h-10 min-w-[4.5rem] min-[360px]:min-w-[6.125rem] items-center justify-center gap-1.5 rounded-full whitespace-nowrap text-sm sm:min-w-[8.25rem] sm:gap-2 ${open ? 'bg-(--active)' : 'hover:bg-(--active)'}`}>
 			<Icon name='filter' class='hidden size-[18px] min-[360px]:block' />
 			<span class='sm:hidden'>{types.length === 1 ? summary : types.length === 2 ? 'Types (2)' : 'Types'}</span>

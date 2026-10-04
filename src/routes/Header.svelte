@@ -41,7 +41,7 @@
 </script>
 
 <header class={`mx-auto flex w-full flex-wrap items-center justify-between gap-2 px-3 pt-4 pb-7 sm:px-6 sm:pt-5 sm:pb-10 lg:px-9 ${dashboard ? 'max-w-[1800px] sm:grid sm:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)]' : 'max-w-5xl'}`}>
-	<a href={dashboard ? '/dashboard' : '/'} aria-label={dashboard ? 'Dashboard' : 'Back to homepage'} class={`w-fit font-(family-name:--font-wordmark) text-[23px] font-semibold tracking-[-0.03em] ${dashboard ? 'hidden sm:block' : ''}`}>{TITLE}</a>
+	<a href={dashboard ? '/dashboard' : '/'} aria-label={dashboard ? `${TITLE} dashboard` : `${TITLE} homepage`} class={`w-fit font-(family-name:--font-wordmark) text-[23px] font-semibold tracking-[-0.03em] ${dashboard ? 'hidden sm:block' : ''}`}>{TITLE}</a>
 	{#if dashboard}<Dock />{/if}
 	<div class='flex shrink-0 justify-end'>
 		{#if user}

@@ -6,6 +6,7 @@
 	import { settings } from '#lib/store/settings.js'
 	import { theme } from '#lib/store/theme.js'
 
+	const descriptionPrefix = $props.id()
 	const themes: Array<{ value: Theme, label: string }> = [{ value: 'system', label: 'System' }, { value: 'light', label: 'Light' }, { value: 'dark', label: 'Dark' }]
 
 	let viewportWidth = $state(0)
@@ -50,8 +51,8 @@
 			<div class='space-y-3 border-t border-(--border) pt-3'>
 				{#each [{ key: 'groupByMonth', label: 'Group by month', description: 'Add month headings' }, { key: 'screenshotMode', label: 'Screenshot mode', description: 'Remove gaps and set columns' }] as option}
 					{@const key = option.key as 'groupByMonth' | 'screenshotMode'}
-					<button type='button' role='switch' aria-checked={$settings[key]} aria-label={option.label} onclick={() => settings.set({ ...$settings, [key]: !$settings[key] })} class='-mx-2 flex min-h-12 w-[calc(100%+1rem)] items-center justify-between gap-4 rounded-lg px-2 text-left hover:bg-(--active)'>
-						<span class='min-w-0 [overflow-wrap:anywhere]'><span class='block text-[0.8125rem] font-medium'>{option.label}</span><span class='mt-1 block text-xs text-(--muted)'>{option.description}</span></span>
+					<button type='button' role='switch' aria-checked={$settings[key]} aria-label={option.label} aria-describedby={`${descriptionPrefix}-${key}-description`} onclick={() => settings.set({ ...$settings, [key]: !$settings[key] })} class='-mx-2 flex min-h-12 w-[calc(100%+1rem)] items-center justify-between gap-4 rounded-lg px-2 text-left hover:bg-(--active)'>
+						<span class='min-w-0 [overflow-wrap:anywhere]'><span class='block text-[0.8125rem] font-medium'>{option.label}</span><span id={`${descriptionPrefix}-${key}-description`} class='mt-1 block text-xs text-(--muted)'>{option.description}</span></span>
 						<span aria-hidden='true' class={`flex h-5.5 w-9.5 shrink-0 items-center rounded-full p-[3px] transition-colors ${$settings[key] ? 'bg-(--accent)' : 'bg-(--switch-track)'}`}><span class={`size-4 rounded-full shadow-sm transition-transform motion-reduce:transition-none ${$settings[key] ? 'translate-x-4 bg-(--on-accent)' : 'bg-white'}`}></span></span>
 					</button>
 				{/each}

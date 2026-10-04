@@ -10,6 +10,6 @@
 	let { id = SKIP_TO_CONTENT_ID, children, ...rest }: Props = $props()
 </script>
 
-<main {...rest} {id}>
+<main {...rest} {id} tabindex='-1'>
 	{@render children?.()}
 </main>
