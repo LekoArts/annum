@@ -101,6 +101,23 @@ describe('the simkl sync route', () => {
 		expect(body.currentIds).toEqual({ movies: [1], shows: [], anime: [] })
 	})
 
+	it('surfaces the Simkl failure in the route error the client reads', async () => {
+		vi.spyOn(console, 'warn').mockImplementation(() => {})
+		vi.stubGlobal('fetch', async () => Response.json({ error: 'user_limit_exceeded' }, { status: 429, headers: { 'retry-after': '3600' } }))
+
+		let caught: unknown
+
+		try {
+			await GET(event(activitiesParam({ all: SAVED_ALL })))
+		}
+		catch (cause) {
+			caught = cause
+		}
+
+		expect(caught).toMatchObject({ status: 429 })
+		expect((caught as { body: { message: string } }).body.message).toContain('Try again in 3600 seconds')
+	})
+
 	it('never makes two activities calls for one sync', async () => {
 		activities = { all: MOVED_ALL }
 

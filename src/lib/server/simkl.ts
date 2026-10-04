@@ -126,6 +126,9 @@ export async function withRetry(url: string, accessToken?: string): Promise<Resp
 			? RATE_LIMIT_PAUSE_MS + Math.random() * RATE_LIMIT_JITTER_MS
 			: Math.min(2 ** attempt * 1000 + Math.random() * 1000, MAX_BACKOFF_MS)
 
+		// Retries are otherwise invisible in the logs, which made the earlier 429 investigation guesswork
+		console.warn(`Simkl request retrying in ${Math.round(waitMs)}ms (attempt ${attempt}/${MAX_ATTEMPTS}) after HTTP ${response.status}${code ? ` (${code})` : ''} ${url}`)
+
 		await sleep(waitMs)
 	}
 }

@@ -102,6 +102,29 @@ describe('simkl retry handling', () => {
 		await pending
 	})
 
+	it('logs each retry pause with the attempt and the request URL', async () => {
+		vi.useFakeTimers()
+		const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
+		let requests = 0
+
+		vi.stubGlobal('fetch', async () => {
+			requests += 1
+
+			return requests === 1
+				? new Response(JSON.stringify({ error: 'rate_limit' }), { status: 429, headers: { 'content-type': 'application/json' } })
+				: new Response('{}', { status: 200, headers: { 'content-type': 'application/json' } })
+		})
+
+		const pending = fetchSimklActivities(TOKEN)
+
+		await vi.advanceTimersByTimeAsync(1_300)
+		await pending
+
+		expect(warn).toHaveBeenCalledWith(expect.stringContaining('retrying'))
+		expect(warn).toHaveBeenCalledWith(expect.stringContaining('attempt 1/5'))
+		expect(warn).toHaveBeenCalledWith(expect.stringContaining('/sync/activities'))
+	})
+
 	it('fails a daily quota 429 immediately, keeping Retry-After for the message', async () => {
 		vi.spyOn(console, 'warn').mockImplementation(() => {})
 		let requests = 0
