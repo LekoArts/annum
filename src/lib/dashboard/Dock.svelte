@@ -10,7 +10,7 @@
 	import { page } from '$app/state'
 
 	const years = $derived(availableYears($library, CURRENT_YEAR))
-	const year = $derived(resolveYear(page.url.searchParams, years, CURRENT_YEAR))
+	const year = $derived(resolveYear(page.url.searchParams, CURRENT_YEAR))
 	const types = $derived(resolveSelectedTypes(page.url.searchParams))
 </script>
 

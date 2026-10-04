@@ -31,14 +31,14 @@
 			{#each Object.entries(grouped) as [month, monthItems]}
 				<h2 class='col-span-full pt-6 pb-2 text-lg font-medium text-(--muted) first:pt-0'>{month}</h2>
 				{#each monthItems as item, index (`${item.type}:${item.simklId}`)}
-					<GridItem index={index} href={simklItemUrl(item.type, item.simklId, item.slug)}>
+					<GridItem href={simklItemUrl(item.type, item.simklId, item.slug)}>
 						<Image poster={item.poster} alt={item.title} loading={index === 0 ? 'eager' : 'lazy'} />
 					</GridItem>
 				{/each}
 			{/each}
 		{:else}
 			{#each items as item, index (`${item.type}:${item.simklId}`)}
-				<GridItem index={index} href={simklItemUrl(item.type, item.simklId, item.slug)}>
+				<GridItem href={simklItemUrl(item.type, item.simklId, item.slug)}>
 					<Image poster={item.poster} alt={item.title} loading={index === 0 ? 'eager' : 'lazy'} />
 				</GridItem>
 			{/each}

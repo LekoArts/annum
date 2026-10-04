@@ -30,13 +30,6 @@ export const MEDIA_TYPE_LABELS = {
 	anime: 'Anime',
 } as const satisfies Record<SimklMediaType, string>
 
-/** The `static/icons.svg` symbol for each media type: `shows` -> `tv`. */
-export const MEDIA_TYPE_ICONS = {
-	movies: 'movie',
-	shows: 'tv',
-	anime: 'anime',
-} as const satisfies Record<SimklMediaType, 'movie' | 'tv' | 'anime'>
-
 const SIMKL_ITEM_BASE_URL = 'https://simkl.com'
 const SIMKL_POSTER_BASE_URL = 'https://simkl.in/posters'
 const SIMKL_AVATAR_BASE_URL = 'https://simkl.in/avatars'
@@ -217,12 +210,10 @@ export interface SimklYearItem extends SimklMediaItem {
 }
 
 /** Project the items of a type with watching activity in a year, newest first. */
-export function itemsForYear(library: SimklLibrary, type: SimklMediaType, year: number | string): Array<SimklYearItem> {
-	const y = typeof year === 'string' ? Number.parseInt(year) : year
-
+export function itemsForYear(library: SimklLibrary, type: SimklMediaType, year: number): Array<SimklYearItem> {
 	return library[type]
 		.map((item) => {
-			const entry = item.watched.find(watched => watched.year === y)
+			const entry = item.watched.find(watched => watched.year === year)
 
 			return entry ? { ...item, month: entry.month, watchedAt: entry.watchedAt } : null
 		})
@@ -231,10 +222,8 @@ export function itemsForYear(library: SimklLibrary, type: SimklMediaType, year: 
 }
 
 /** Number of items of a type with watching activity in a year. */
-export function countForYear(library: SimklLibrary, type: SimklMediaType, year: number | string): number {
-	const y = typeof year === 'string' ? Number.parseInt(year) : year
-
-	return library[type].filter(item => item.watched.some(watched => watched.year === y)).length
+export function countForYear(library: SimklLibrary, type: SimklMediaType, year: number): number {
+	return library[type].filter(item => item.watched.some(watched => watched.year === year)).length
 }
 
 export interface SimklTypedYearItem extends SimklYearItem {
@@ -242,7 +231,7 @@ export interface SimklTypedYearItem extends SimklYearItem {
 }
 
 /** Several types in one newest-first list, each item tagged with the `type` its Simkl link needs. */
-export function itemsForTypes(library: SimklLibrary, types: ReadonlyArray<SimklMediaType>, year: number | string): Array<SimklTypedYearItem> {
+export function itemsForTypes(library: SimklLibrary, types: ReadonlyArray<SimklMediaType>, year: number): Array<SimklTypedYearItem> {
 	return types
 		.flatMap(type => itemsForYear(library, type, year).map(item => ({ ...item, type })))
 		.sort((a, b) => Date.parse(b.watchedAt) - Date.parse(a.watchedAt))

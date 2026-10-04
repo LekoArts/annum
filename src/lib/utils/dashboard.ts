@@ -22,13 +22,20 @@ export function resolveSelectedTypes(searchParams: SearchParamsReader): Array<Si
 	return canonical.length === 0 ? [...SIMKL_MEDIA_TYPES] : canonical
 }
 
-/** Validated year from `?year=`: anything outside the offered range falls back to `currentYear`. */
-export function resolveYear(searchParams: SearchParamsReader, availableYears: ReadonlyArray<number>, currentYear: number): number {
+/** Simkl treats timestamps before 2000-01-01 as "watched, date unknown", so no earlier year has items. */
+const EARLIEST_YEAR = 2000
+
+/**
+ * Validated year from `?year=`. Deliberately independent of the cached library: the load function runs once
+ * per navigation while the controls re-derive on every store write, so a library-dependent range would let
+ * a deep link resolve to one year in the grid and another in the header after the first sync.
+ */
+export function resolveYear(searchParams: SearchParamsReader, currentYear: number): number {
 	const raw = searchParams.get('year')
 	// Base 10 explicitly: `parseInt` would otherwise read a `0x`-prefixed value as hexadecimal
 	const year = raw === null ? Number.NaN : Number.parseInt(raw, 10)
 
-	return Number.isInteger(year) && availableYears.includes(year) ? year : currentYear
+	return Number.isInteger(year) && year >= EARLIEST_YEAR && year <= currentYear ? year : currentYear
 }
 
 /** Canonical search string for a selection, or `''` when the URL already implies it (`/dashboard`). */

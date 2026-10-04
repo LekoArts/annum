@@ -1,7 +1,5 @@
 <script lang='ts'>
-	import { authClient } from '#lib/auth-client.js'
 	import { hasData, sync, syncState } from '#lib/store/library.js'
-	import { goto } from '$app/navigation'
 	import { untrack } from 'svelte'
 
 	interface Props {
@@ -9,11 +7,6 @@
 	}
 
 	let { children }: Props = $props()
-	const session = authClient.useSession()
-
-	if (!session) {
-		goto('/sign-in')
-	}
 
 	/** Grace period before a warm cache shows the chip, so a reload that syncs quickly stays still. */
 	const SYNC_STATUS_DELAY = 400

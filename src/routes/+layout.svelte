@@ -14,6 +14,19 @@
 	}
 
 	let { children }: Props = $props()
+
+	const proseShell = 'max-w-5xl px-3 sm:px-6 lg:px-9'
+
+	// The dashboard grid wants the full viewport, the homepage spreads wider than prose; everything else reads at prose width.
+	const shellWidth = $derived.by(() => {
+		if (page.error)
+			return proseShell
+		if (page.url.pathname === '/')
+			return 'max-w-[1600px]'
+		if (page.url.pathname.startsWith('/dashboard'))
+			return 'max-w-[1800px] px-3 sm:px-6 lg:px-9'
+		return proseShell
+	})
 </script>
 
 <svelte:window
@@ -28,7 +41,7 @@
 <div class='flex min-h-dvh flex-col'>
 	<Header />
 
-	<Content class={`mx-auto w-full grow ${page.url.pathname === '/' && !page.error ? 'max-w-[1600px]' : page.url.pathname === '/dashboard' && !page.error ? 'max-w-[1800px] px-3 sm:px-6 lg:px-9' : 'max-w-5xl px-3 sm:px-6 lg:px-9'}`}>
+	<Content class={`mx-auto w-full grow ${shellWidth}`}>
 		{@render children?.()}
 	</Content>
 

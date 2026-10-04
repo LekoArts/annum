@@ -1,6 +1,6 @@
 <script lang='ts'>
 	import type { Snippet } from 'svelte'
-	import { faqs, homepageStructuredData, HOMEPAGE_URL } from '#lib/homepage/content.js'
+	import { faqs, HOMEPAGE_URL, homepageStructuredDataTag } from '#lib/homepage/content.js'
 
 	interface Props {
 		children: Snippet
@@ -11,8 +11,8 @@
 
 <svelte:head>
 	<link rel='canonical' href={HOMEPAGE_URL} />
-	<!-- eslint-disable-next-line svelte/no-at-html-tags -- JSON-LD comes from authored content and escapes HTML delimiters. -->
-	{@html `<script type="application/ld+json">${JSON.stringify(homepageStructuredData).replaceAll('<', '\\u003c')}</script>`}
+	<!-- eslint-disable-next-line svelte/no-at-html-tags -- authored JSON-LD, escaped in content.ts. -->
+	{@html homepageStructuredDataTag}
 </svelte:head>
 
 <section aria-labelledby='how-it-works' class='home-typography mx-auto mt-36 max-w-[1040px] px-6 sm:mt-48 sm:px-9'>
@@ -48,6 +48,8 @@
 			<svg viewBox='0 0 24 24' class='size-5' fill='none' stroke='currentColor' stroke-width='1.6' stroke-linecap='round' aria-hidden='true'><path d='m6 6 12 12M18 6 6 18' /></svg>
 		</button>
 	</div>
+	<!-- Focusable scroll region: the preview overflows the dialog at narrow widths, so keyboard users need to pan it. -->
+	<!-- svelte-ignore a11y_no_noninteractive_tabindex -->
 	<div tabindex='0' role='region' aria-label='Scrollable enlarged dashboard image' class='overflow-auto rounded-lg'>
 		<img src='/dashboard-preview.svg' alt='Enlarged illustrative dashboard with a year selector and a six-column cover grid.' width='960' height='576' loading='lazy' class='block h-auto w-full min-w-[960px]' />
 	</div>

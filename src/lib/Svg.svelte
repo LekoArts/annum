@@ -1,6 +1,8 @@
 <script lang='ts'>
+	import { SVG_ICON_IDS } from '#const'
+
 	interface Props {
-		'id': 'movie' | 'tv' | 'anime' | 'chevron-right' | 'simkl' | 'arrow-right'
+		'id': (typeof SVG_ICON_IDS)[number]
 		'aria-label'?: string
 		[key: string]: unknown
 	}

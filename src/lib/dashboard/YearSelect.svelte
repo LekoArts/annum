@@ -14,7 +14,10 @@
 	}
 
 	let { year, years, types }: Props = $props()
-	const index = $derived(years.indexOf(year))
+	// Bounds come from the offered range rather than the index, so a deep link to a year with no items is
+	// still steppable instead of disabling both arrows.
+	const newest = $derived(years.at(0) ?? year)
+	const oldest = $derived(years.at(-1) ?? year)
 
 	function choose(next: number, close?: () => void): void {
 		goto(`/dashboard${dashboardSearch({ year: next, types, currentYear: CURRENT_YEAR })}`, { reset: false })
@@ -23,7 +26,7 @@
 </script>
 
 <div class='flex items-center'>
-	<button class='flex size-8 shrink-0 items-center justify-center rounded-full text-(--muted) hover:bg-(--active) hover:text-(--ink) disabled:cursor-default disabled:opacity-35' type='button' data-press aria-label='Previous year' disabled={index < 0 || index >= years.length - 1} onclick={() => choose(years[index + 1])}>
+	<button class='flex size-8 shrink-0 items-center justify-center rounded-full text-(--muted) hover:bg-(--active) hover:text-(--ink) disabled:cursor-default disabled:opacity-35' type='button' data-press aria-label='Previous year' disabled={year <= oldest} onclick={() => choose(year - 1)}>
 		<Icon name='left' class='size-[18px]' />
 	</button>
 	<Popover label='Select year' width='w-44'>
@@ -44,7 +47,7 @@
 			</div>
 		{/snippet}
 	</Popover>
-	<button class='flex size-8 shrink-0 items-center justify-center rounded-full text-(--muted) hover:bg-(--active) hover:text-(--ink) disabled:cursor-default disabled:opacity-35' type='button' data-press aria-label='Next year' disabled={index <= 0} onclick={() => choose(years[index - 1])}>
+	<button class='flex size-8 shrink-0 items-center justify-center rounded-full text-(--muted) hover:bg-(--active) hover:text-(--ink) disabled:cursor-default disabled:opacity-35' type='button' data-press aria-label='Next year' disabled={year >= newest} onclick={() => choose(year + 1)}>
 		<Icon name='right' class='size-[18px]' />
 	</button>
 </div>

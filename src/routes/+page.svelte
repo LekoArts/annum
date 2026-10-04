@@ -1,6 +1,5 @@
 <script lang='ts'>
 	import { authClient } from '#lib/auth-client.js'
-	import HomeDetails from '#lib/homepage/HomeDetails.svelte'
 	import akira from '#lib/homepage/assets/akira.svg?raw'
 	import blade_runner from '#lib/homepage/assets/blade-runner.svg?raw'
 	import breaking_bad from '#lib/homepage/assets/breaking-bad.svg?raw'
@@ -15,6 +14,7 @@
 	import stranger_things from '#lib/homepage/assets/stranger-things.svg?raw'
 	import the_matrix from '#lib/homepage/assets/the-matrix.svg?raw'
 	import twin_peaks from '#lib/homepage/assets/twin-peaks.svg?raw'
+	import HomeDetails from '#lib/homepage/HomeDetails.svelte'
 	import { homepageMotionPaused } from '#lib/store/homepage-motion.js'
 	import { pa } from '#lib/store/plausible.js'
 	import '#lib/homepage/illustrations.css'

@@ -80,3 +80,6 @@ export const homepageStructuredData = {
 		},
 	],
 }
+
+/** Built here because a literal `<script>` inside a Svelte expression is parsed as a script block. */
+export const homepageStructuredDataTag = `<script type="application/ld+json">${JSON.stringify(homepageStructuredData).replaceAll('<', '\\u003c')}</script>`
