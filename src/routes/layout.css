@@ -1,10 +1,11 @@
-@import '@fontsource-variable/inter';
-@import '@fontsource-variable/bricolage-grotesque';
+@import '@fontsource-variable/inter/opsz.css';
+@import '@fontsource-variable/bricolage-grotesque/opsz.css';
 @import 'tailwindcss';
 
 :root {
 	font-family: 'Inter Variable', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 	font-synthesis: none;
+	font-optical-sizing: none;
 	--font-wordmark: 'Bricolage Grotesque Variable', ui-sans-serif, sans-serif;
 	--ease-out: cubic-bezier(0.23, 1, 0.32, 1);
 	--gap: 12px;
@@ -55,6 +56,10 @@
 	--home-guide: #414654;
 	--home-marker: #858ba9;
 	color-scheme: dark;
+}
+
+.home-typography {
+	font-optical-sizing: auto;
 }
 
 ::selection {
@@ -176,6 +181,137 @@ button:not(:disabled), a {
 		transition: none;
 	}
 	[popover], :root[data-input='pointer'] [data-press]:not(:disabled):active {
+		transform: none;
+	}
+}
+
+#dashboard-preview {
+	transform: scale(0.97);
+	transform-origin: center;
+	transition: opacity 160ms var(--ease-out), transform 160ms var(--ease-out), display 160ms allow-discrete, overlay 160ms allow-discrete;
+}
+
+#dashboard-preview:popover-open {
+	transform: none;
+	transition-duration: 220ms;
+}
+
+#dashboard-preview::backdrop {
+	opacity: 0;
+	transition: opacity 160ms var(--ease-out), display 160ms allow-discrete, overlay 160ms allow-discrete;
+}
+
+#dashboard-preview:popover-open::backdrop {
+	opacity: 1;
+	transition-duration: 220ms;
+}
+
+@starting-style {
+	#dashboard-preview:popover-open {
+		opacity: 0;
+		transform: scale(0.97);
+	}
+
+	#dashboard-preview:popover-open::backdrop {
+		opacity: 0;
+	}
+}
+
+.home-faq-indicator {
+	transform-box: fill-box;
+	transform-origin: center;
+	transform: scaleY(1);
+	opacity: 1;
+	transition: transform 160ms var(--ease-out), opacity 160ms var(--ease-out);
+}
+
+.home-faq[open] .home-faq-indicator {
+	transform: scaleY(0);
+	opacity: 0;
+}
+
+@supports selector(::details-content) and (interpolate-size: allow-keywords) {
+	.home-faq {
+		interpolate-size: allow-keywords;
+	}
+
+	.home-faq::details-content {
+		block-size: 0;
+		content-visibility: hidden;
+		overflow: clip;
+		transition: block-size 220ms var(--ease-out), content-visibility 220ms allow-discrete;
+	}
+
+	.home-faq[open]::details-content {
+		block-size: auto;
+		content-visibility: visible;
+	}
+}
+
+:root[data-input='keyboard'] #dashboard-preview,
+:root[data-input='keyboard'] #dashboard-preview::backdrop,
+:root[data-input='keyboard'] .home-faq-indicator {
+	transition: none;
+}
+
+:root[data-input='keyboard'] .home-faq::details-content {
+	transition: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	#dashboard-preview,
+	#dashboard-preview::backdrop,
+	.home-faq-indicator {
+		transition: none;
+	}
+
+	#dashboard-preview {
+		transform: none;
+	}
+
+	.home-faq::details-content {
+		transition: none;
+	}
+}
+
+.home-cta {
+	background-color: color-mix(in srgb, var(--accent) 94%, var(--ink));
+	background-image: linear-gradient(to bottom, rgb(255 255 255 / 8%), transparent 45%, rgb(0 0 0 / 10%));
+	box-shadow: inset 0 1px 0 rgb(255 255 255 / 36%), inset 0 2px 4px rgb(255 255 255 / 12%), inset 0 -1px 0 rgb(0 0 0 / 20%), inset 0 -3px 5px rgb(0 0 0 / 9%), 0 2px 3px -1px color-mix(in srgb, var(--accent) 28%, transparent), 0 7px 14px -5px color-mix(in srgb, var(--accent) 32%, transparent);
+	transition: transform 120ms var(--ease-out), box-shadow 180ms var(--ease-out), background-color 180ms ease;
+}
+
+.home-cta-icon {
+	transition: transform 160ms var(--ease-out);
+}
+
+@media (hover: hover) and (pointer: fine) {
+	.home-cta:not(:disabled):hover {
+		background-color: var(--accent);
+		box-shadow: inset 0 1px 0 rgb(255 255 255 / 42%), inset 0 2px 4px rgb(255 255 255 / 16%), inset 0 -1px 0 rgb(0 0 0 / 20%), inset 0 -3px 5px rgb(0 0 0 / 10%), 0 3px 5px -2px color-mix(in srgb, var(--accent) 35%, transparent), 0 10px 20px -6px color-mix(in srgb, var(--accent) 42%, transparent);
+	}
+
+	.home-cta:not(:disabled):hover .home-cta-icon {
+		transform: rotate(-8deg);
+	}
+}
+
+.home-cta:not(:disabled):active {
+	box-shadow: inset 0 1px 0 rgb(255 255 255 / 12%), inset 0 2px 4px rgb(0 0 0 / 15%), inset 0 -1px 0 rgb(0 0 0 / 12%), inset 0 -1px 2px rgb(0 0 0 / 5%), 0 1px 2px -1px color-mix(in srgb, var(--accent) 20%, transparent), 0 3px 6px -3px color-mix(in srgb, var(--accent) 25%, transparent);
+}
+
+:root[data-input='keyboard'] .home-cta,
+:root[data-input='keyboard'] .home-cta-icon {
+	transition: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.home-cta,
+	.home-cta-icon {
+		transition: none;
+	}
+
+	.home-cta:not(:disabled):hover .home-cta-icon {
 		transform: none;
 	}
 }
