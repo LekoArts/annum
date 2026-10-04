@@ -7,18 +7,16 @@
 </p>
 
 <p align="center">
-  Display your watched movies, shows and anime in a poster grid, year by year. Powered by:
-</p>
-
-<p align="center">
-  <a href="https://simkl.com">Simkl</a>
+  Display your watched movies, shows and anime in a poster grid, year by year. Powered by: <a href="https://simkl.com">Simkl</a>
 </p>
 
 <h2 align="center">
-  <a href="https://www.annum.app">🍿 Website</a>
+  <a href="https://www.annum.app">Visit annum.app</a>
 </h2>
 
 This website was created by [LekoArts](https://www.lekoarts.de?utm_source=annum_readme) as a christmas project to try out SvelteKit. LekoArts loves watching movies and shows ⸺ so why not have a great overview?
+
+![Illustrative dashboard preview](./static/dashboard-preview.svg)
 
 ## Development
 

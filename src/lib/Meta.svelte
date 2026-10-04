@@ -6,7 +6,7 @@
 
 	let meta = $derived({
 		description: 'Visualize your Simkl history. Display your watched movies, shows and anime in a poster grid. Easily switch between years and categories to browse everything you watched.',
-		image: `${page.url.protocol}//${page.url.host}/og-image.png?v1`,
+		image: `${page.url.protocol}//${page.url.host}/og-image.png?v2`,
 		title,
 		...page.data.meta,
 	})
