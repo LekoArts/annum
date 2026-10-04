@@ -334,6 +334,21 @@ describe('library sync lease without Web Locks', () => {
 		expect(fetchMock).toHaveBeenCalledTimes(1)
 	})
 
+	it('syncs anyway when storage cannot be read or written', async () => {
+		claimLibrary(ACCOUNT)
+		const fetchMock = vi.fn(async (_input: RequestInfo | URL) => new Response(JSON.stringify(UP_TO_DATE), { status: 200 }))
+		vi.stubGlobal('fetch', fetchMock)
+		vi.stubGlobal('localStorage', {
+			getItem: () => { throw new Error('storage blocked') },
+			setItem: () => { throw new Error('storage blocked') },
+			removeItem: () => { throw new Error('storage blocked') },
+		})
+
+		await sync()
+
+		expect(fetchMock).toHaveBeenCalledTimes(1)
+	})
+
 	it('hands the lease back when the sync ends, however it ends', async () => {
 		claimLibrary(ACCOUNT)
 
