@@ -3,6 +3,7 @@
 	import Icon from '#lib/dashboard/Icon.svelte'
 
 	import Popover from '#lib/dashboard/Popover.svelte'
+	import SyncControl from '#lib/dashboard/SyncControl.svelte'
 	import { settings } from '#lib/store/settings.js'
 	import { theme } from '#lib/store/theme.js'
 
@@ -28,13 +29,13 @@
 
 <svelte:window bind:innerWidth={viewportWidth} />
 
-<Popover label='Display settings' align='end' width='w-[19rem]'>
+<Popover label='Dashboard settings' align='end' width='w-[19rem]'>
 	{#snippet trigger(open, toggle, id)}
-		<button class={`flex size-10 items-center justify-center rounded-full ${open ? 'bg-(--active)' : 'hover:bg-(--active)'}`} type='button' data-press onclick={toggle} aria-label='Display settings' popovertarget={id} aria-controls={id} aria-expanded={open} aria-haspopup='dialog'>
+		<button class={`flex size-10 items-center justify-center rounded-full ${open ? 'bg-(--active)' : 'hover:bg-(--active)'}`} type='button' data-press onclick={toggle} aria-label='Dashboard settings' popovertarget={id} aria-controls={id} aria-expanded={open} aria-haspopup='dialog'>
 			<Icon name='sliders' class='size-5' />
 		</button>
 	{/snippet}
-	{#snippet children()}
+	{#snippet children(_close, expanded)}
 		<div class='p-2.5'>
 			<h2 class='mb-4 font-medium'>Display</h2>
 			<div class='mb-4 flex flex-wrap items-center justify-between gap-3'>
@@ -68,6 +69,10 @@
 					<button type='button' onclick={() => settings.set({ ...$settings, columns: 0 })} class='min-h-8 rounded-md px-2 text-xs text-(--muted) hover:bg-(--active)'>Match screen · {screenColumns} columns</button>
 					<p class='text-xs leading-relaxed text-(--muted)'>Controls stay above the grid. Take a screenshot using your device.</p>
 				{/if}
+			</div>
+			<div class='mt-3 border-t border-(--border) pt-3'>
+				<h2 class='mb-2 font-medium'>Library</h2>
+				<SyncControl open={expanded} />
 			</div>
 		</div>
 	{/snippet}

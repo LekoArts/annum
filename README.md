@@ -79,11 +79,15 @@ On Netlify deploy previews the origin differs from the registered one, so `oAuth
 - **Later syncs:** `/sync/activities` first, stopping when `activities.all` has not moved. Otherwise one multi-type `/sync/all-items?date_from=<saved activities.all>` delta is **merged** into the cache, never replacing it.
 - **Deletions** never appear in a delta: when a domain's `removed_from_list` moves, the endpoint refetches `extended=simkl_ids_only` and diffs the ids.
 
+Simkl asks for sync to be driven by user-visible events, not a timer. The dashboard therefore checks on mount, but only when the cache is older than `SYNC_INTERVAL_MS` (15 minutes) or belongs to another account; the check is claimed through `navigator.locks` (`annum-sync`) so a second tab skips while one is already syncing. "Refresh now" in the settings popover forces a check regardless.
+
 Every request sends `client_id`, `app-name` and `app-version` plus a bearer token for user data. Per-second `rate_limit` 429s and transient 5xx retry with exponential backoff; daily-quota 429s (`user_limit_exceeded`/`app_limit_exceeded`) and `412` are surfaced instead.
 
 ### Library cache
 
-`src/lib/store/library.ts` keeps the normalized library and the last activities snapshot in one `localStorage` key (`annum-simkl-library`). The cache is deliberately small — Simkl id, title, year, poster and one watch entry per year — so year grids filter it locally: no per-year requests, no server-side state.
+`src/lib/store/library.ts` keeps the normalized library, the last activities snapshot, the owning account and the last successful sync time in one `localStorage` key (`annum-simkl-library`). The cache is deliberately small — Simkl id, title, year, poster and one watch entry per year — so year grids filter it locally: no per-year requests, no server-side state.
+
+The cache is scoped to the signed-in Simkl account id: the dashboard claims it once the session is known, and nothing is read until the claim matches, so a shared browser can never show one account another's library. Signing out clears it.
 
 Movies are atomic and appear in the year of their latest watch. Shows and anime take their per-episode `watched_at`, so they appear in every year they have activity for. Timestamps before `2000-01-01` are Simkl's "watched, date unknown" placeholder and are dropped.
 

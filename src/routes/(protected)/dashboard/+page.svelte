@@ -5,7 +5,7 @@
 	import GridItem from '#lib/grid/Item.svelte'
 	import GridSkeleton from '#lib/grid/Skeleton.svelte'
 	import Image from '#lib/Image.svelte'
-	import { library, sync, syncCompleted, syncState } from '#lib/store/library.js'
+	import { hasSynced, library, sync, syncState } from '#lib/store/library.js'
 	import { settings } from '#lib/store/settings.js'
 	import { dashboardSearch } from '#lib/utils/dashboard.js'
 	import { groupBy } from '#lib/utils/index.js'
@@ -44,15 +44,15 @@
 			{/each}
 		{/if}
 	</Grid>
-{:else if $syncState === 'error' && !$syncCompleted}
+{:else if $syncState === 'error' && !$hasSynced}
 	<div class='mx-auto max-w-md py-24 text-center' role='alert'>
 		<h2 class='text-lg font-medium'>Couldn’t load your library</h2>
 		<p class='mt-2 text-sm leading-relaxed text-(--muted)'>Your Simkl library is unavailable right now. Try syncing again.</p>
-		<button type='button' onclick={() => sync()} class='mt-5 min-h-10 rounded-full bg-(--ink) px-4 text-sm font-medium text-(--page)'>Retry sync</button>
+		<button type='button' onclick={() => sync({ force: true })} class='mt-5 min-h-10 rounded-full bg-(--ink) px-4 text-sm font-medium text-(--page)'>Retry sync</button>
 	</div>
-{:else if !$syncCompleted}
+{:else if !$hasSynced}
 	<GridSkeleton screenshotMode={$settings.screenshotMode} columns={$settings.columns} />
-{:else if $syncCompleted}
+{:else}
 	<div class='mx-auto max-w-md py-24 text-center'><h2 class='text-lg font-medium'>No posters for {year}</h2><p class='mt-2 text-sm leading-relaxed text-(--muted)'>Try another year or include more media types. Your watched titles will appear here when you track them on Simkl.</p>
 		{#if types.length < 3}<a class='mt-5 inline-flex min-h-10 items-center rounded-full bg-(--ink) px-4 text-sm font-medium text-(--page)' href={`/dashboard${dashboardSearch({ year, types: ['movies', 'shows', 'anime'], currentYear: CURRENT_YEAR })}`}>Show all types</a>{/if}
 	</div>
