@@ -111,7 +111,7 @@
 			</div>
 		</div>
 		<div class='absolute top-[35%] left-1/4 z-2 w-1/2 text-center max-[1050px]:top-[36%] max-[1050px]:left-[24%] max-[1050px]:w-[52%] max-[600px]:top-[235px] max-[600px]:left-0 max-[600px]:w-full max-[600px]:px-[7px]'>
-			<h1 class='m-0 font-(family-name:--font-wordmark) text-[clamp(34px,4.15vw,60px)] leading-[1.06] font-[750] tracking-[-0.035em] text-balance max-[1050px]:text-[38px] max-[600px]:text-[36px] max-[600px]:leading-[1.09]'><span class='block'>Everything you</span><span class='block'>watched. Collected.</span></h1>
+			<h1 class='m-0 font-(family-name:--font-wordmark) text-[clamp(34px,4.15vw,60px)] leading-[1.06] font-[750] tracking-[-0.035em] text-balance max-[1050px]:text-[38px] max-[600px]:text-[36px] max-[600px]:leading-[1.09]'><span class='block'>Everything you </span><span class='block'>watched. Collected.</span></h1>
 			<p class='mx-auto mt-6 mb-7 max-w-[530px] text-[clamp(16px,1.4vw,20px)] leading-[1.55] text-balance text-(--muted) max-[1050px]:text-base max-[600px]:mt-[22px] max-[600px]:mb-[26px] max-[600px]:max-w-[330px] max-[600px]:leading-normal'>Explore your Simkl history as a yearly collection of movies, shows, and anime.</p>
 			{@render connectAction('hero')}
 		</div>

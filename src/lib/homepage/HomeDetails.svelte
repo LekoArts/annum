@@ -23,10 +23,10 @@
 	</div>
 
 	<figure class='mt-10 sm:mt-12'>
-		<button type='button' popovertarget='dashboard-preview' aria-label='Enlarge dashboard preview' class='group relative block w-full cursor-zoom-in overflow-hidden rounded-xl shadow-(--menu-shadow)'>
+		<button type='button' popovertarget='dashboard-preview' aria-label='Enlarge dashboard preview' class='home-preview group relative block w-full overflow-hidden rounded-xl shadow-(--menu-shadow)'>
 			<img src='/dashboard-preview.svg' alt='Illustrative dashboard preview: a compact year and media selector above a grid of cover artwork.' width='960' height='576' loading='lazy' decoding='async' class='block h-auto w-full' />
-			<span aria-hidden='true' class='absolute right-3 bottom-3 flex size-10 items-center justify-center rounded-full bg-(--menu) text-(--ink) shadow-(--dock-shadow) group-hover:bg-(--active) sm:right-5 sm:bottom-5'>
-				<svg viewBox='0 0 24 24' class='size-5' fill='none' stroke='currentColor' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'><path d='M14 4h6v6m0-6-7 7M10 20H4v-6m0 6 7-7' /></svg>
+			<span aria-hidden='true' class='absolute right-2 bottom-2 flex size-8 items-center justify-center rounded-full bg-(--menu) text-(--ink) shadow-(--dock-shadow) group-hover:bg-(--active) sm:right-5 sm:bottom-5 sm:size-10'>
+				<svg viewBox='0 0 24 24' class='size-4 sm:size-5' fill='none' stroke='currentColor' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'><path d='M14 4h6v6m0-6-7 7M10 20H4v-6m0 6 7-7' /></svg>
 			</span>
 		</button>
 		<figcaption class='mt-4 text-center text-sm leading-6 text-(--muted)'>Illustrative preview. Your collection uses the posters from your Simkl history.</figcaption>
@@ -59,9 +59,9 @@
 	<div class='border-t border-(--border)'>
 		{#each faqs as faq (faq.question)}
 			<details class='home-faq border-b border-(--border)'>
-				<summary class='flex cursor-pointer list-none items-center justify-between gap-6 py-5 text-base leading-6 font-medium hover:text-(--accent) sm:py-6 sm:text-lg sm:leading-7 [&::-webkit-details-marker]:hidden'>
+				<summary class='flex cursor-pointer list-none items-start justify-between gap-6 py-5 text-base leading-6 font-medium hover:text-(--accent) sm:py-6 sm:text-lg sm:leading-7 [&::-webkit-details-marker]:hidden'>
 					{faq.question}
-					<svg viewBox='0 0 24 24' class='size-5 shrink-0 text-(--muted)' fill='none' stroke='currentColor' stroke-width='1.6' stroke-linecap='round' aria-hidden='true'><path d='M5 12h14' /><path d='M12 5v14' class='home-faq-indicator' /></svg>
+					<svg viewBox='0 0 24 24' class='mt-0.5 size-5 shrink-0 text-(--muted) sm:mt-1' fill='none' stroke='currentColor' stroke-width='1.6' stroke-linecap='round' aria-hidden='true'><path d='M5 12h14' /><path d='M12 5v14' class='home-faq-indicator' /></svg>
 				</summary>
 				<p class='max-w-[65ch] pb-6 pr-6 text-base leading-7 text-pretty text-(--muted) sm:pr-12'>{faq.answer}</p>
 			</details>

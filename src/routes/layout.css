@@ -315,3 +315,7 @@ button:not(:disabled), a {
 		transform: none;
 	}
 }
+
+.home-preview:not(:disabled) {
+	cursor: zoom-in;
+}
