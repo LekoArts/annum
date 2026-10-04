@@ -36,7 +36,10 @@ const accountId = writable<string | null>(null)
 export const library = derived([cache, accountId], ([$cache, $accountId]) =>
 	$accountId !== null && $cache.accountId === $accountId ? $cache : EMPTY_LIBRARY)
 
-/** Point the store at the signed-in account, or at nothing while the session is unknown. */
+/**
+ * Point the store at the signed-in account, or at nothing while the session is unknown. The id is the
+ * Simkl account id, because `getUserInfo` builds the Better Auth user out of `account.id`.
+ */
 export function claimLibrary(id: string | null): void {
 	accountId.set(id)
 }
