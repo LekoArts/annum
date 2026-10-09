@@ -169,3 +169,106 @@ describe('simkl retry handling', () => {
 		expect(warn).toHaveBeenCalledWith(expect.stringContaining('/sync/activities'))
 	})
 })
+
+function maxItems(): Response {
+	return Response.json({ error: 'max_items', code: 400, message: 'Too many episodes: ...' }, { status: 400 })
+}
+
+/** Stubs fetch per request so a single call can be made to fail; anything unhandled succeeds with `{}`. */
+function stubFetchMatching(handle: (path: string) => Response | undefined): void {
+	vi.stubGlobal('fetch', async (input: RequestInfo | URL) => {
+		const href = typeof input === 'string' ? input : input.toString()
+		calls.push(href)
+
+		return handle(new URL(href).pathname) ?? new Response('{}', { status: 200, headers: { 'content-type': 'application/json' } })
+	})
+}
+
+describe('simkl max_items fallback', () => {
+	it('makes a single call per type while a pull fits', async () => {
+		await fetchSimklAllItems({ type: 'shows', token: TOKEN })
+
+		expect(calls.map(call => new URL(call).pathname)).toEqual(['/sync/all-items/shows'])
+	})
+
+	it('retries an oversized type one status per call and merges the buckets', async () => {
+		const simklIds: Record<string, number> = { watching: 1, plantowatch: 2, hold: 3, completed: 4, dropped: 5 }
+
+		vi.spyOn(console, 'warn').mockImplementation(() => {})
+
+		stubFetchMatching((path) => {
+			const status = path.match(/^\/sync\/all-items\/shows\/(\w+)$/)?.[1]
+
+			if (!status)
+				return maxItems()
+
+			return Response.json({ shows: [{ status, show: { title: status, ids: { simkl: simklIds[status] } } }] })
+		})
+
+		const result = await fetchSimklAllItems({ type: 'shows', token: TOKEN })
+
+		expect(calls.map(call => new URL(call).pathname)).toEqual([
+			'/sync/all-items/shows',
+			'/sync/all-items/shows/watching',
+			'/sync/all-items/shows/plantowatch',
+			'/sync/all-items/shows/hold',
+			'/sync/all-items/shows/completed',
+			'/sync/all-items/shows/dropped',
+		])
+		expect(result.shows?.map(item => item.show?.ids?.simkl)).toEqual([1, 2, 3, 4, 5])
+	})
+
+	// Movies only have plantowatch, completed and dropped, so the split must not invent the other two
+	it('splits movies across only the statuses movies have', async () => {
+		vi.spyOn(console, 'warn').mockImplementation(() => {})
+		stubFetchMatching(path => path === '/sync/all-items/movies' ? maxItems() : Response.json({}))
+
+		await fetchSimklAllItems({ type: 'movies', token: TOKEN })
+
+		expect(calls.map(call => new URL(call).pathname)).toEqual([
+			'/sync/all-items/movies',
+			'/sync/all-items/movies/plantowatch',
+			'/sync/all-items/movies/completed',
+			'/sync/all-items/movies/dropped',
+		])
+	})
+
+	it('splits an oversized delta across all three types with the same params', async () => {
+		vi.spyOn(console, 'warn').mockImplementation(() => {})
+		stubFetchMatching(path => path === '/sync/all-items' ? maxItems() : Response.json({}))
+
+		await fetchSimklDelta({ dateFrom: '2026-10-03T14:28:11Z', token: TOKEN })
+
+		const split = calls.slice(1)
+		expect(split).toHaveLength(13)
+		expect(split.map(call => new URL(call).pathname)).toContain('/sync/all-items/anime/dropped')
+		expect(split.map(call => new URL(call).pathname)).toContain('/sync/all-items/movies/completed')
+
+		for (const call of split) {
+			const url = new URL(call)
+			expect(url.searchParams.get('date_from')).toBe('2026-10-03T14:28:11Z')
+			expect(url.searchParams.get('extended')).toBe('full')
+			expect(url.searchParams.get('episode_watched_at')).toBe('yes')
+			expect(url.searchParams.get('include_all_episodes')).toBe('original')
+		}
+	})
+
+	it('does not split when the refusal is something other than max_items', async () => {
+		stubFetchMatching(path => path === '/sync/all-items/shows' ? Response.json({ error: 'client_id_failed' }, { status: 412 }) : undefined)
+
+		await expect(fetchSimklAllItems({ type: 'shows', token: TOKEN })).rejects.toMatchObject({ status: 412, code: 'client_id_failed' })
+		expect(calls).toHaveLength(1)
+	})
+
+	it('gives up after one status still refuses, with a message that explains why', async () => {
+		vi.spyOn(console, 'warn').mockImplementation(() => {})
+		stubFetchMatching(path => path.startsWith('/sync/all-items/shows') ? maxItems() : undefined)
+
+		const error = await fetchSimklAllItems({ type: 'shows', token: TOKEN }).catch((cause: unknown) => cause)
+
+		expect(error).toBeInstanceOf(SimklError)
+		expect((error as SimklError).message).toContain('too large to sync')
+		expect((error as SimklError).code).toBe('max_items')
+		expect(calls).toHaveLength(2)
+	})
+})
