@@ -374,6 +374,42 @@ describe('mergeSyncResponse', () => {
 		expect(result.shows.map(item => item.simklId)).toEqual([10, 11])
 		expect(result.anime).toEqual([])
 	})
+
+	// A delta row arrives normalized from the API. When Simkl re-sends the episode rows, the replacement must
+	// carry every year the cached item had, not just the latest one.
+	it('keeps every year when a delta row re-sends the full episode history', () => {
+		const library: SimklLibrary = { movies: [], shows: [media(10, [watch(2019), watch(2021, 'May', '2021-05-05T10:00:00Z'), watch(2023, 'June', '2023-06-01T10:00:00Z')])], anime: [] }
+		const normalized = normalizeSimklItem({
+			last_watched_at: '2023-06-01T10:00:00Z',
+			show: { title: 'A Show', ids: { simkl: 10, slug: 'a-show' } },
+			seasons: [
+				{ number: 1, episodes: [{ number: 1, watched_at: '2019-03-01T10:00:00Z' }] },
+				{ number: 2, episodes: [{ number: 1, watched_at: '2021-05-05T10:00:00Z' }] },
+				{ number: 3, episodes: [{ number: 1, watched_at: '2023-06-01T10:00:00Z' }] },
+			],
+		})
+
+		const result = mergeSyncResponse(library, syncResponse({ shows: [normalized!] }))
+
+		expect(result.shows[0].watched.map(entry => entry.year)).toEqual([2023, 2021, 2019])
+	})
+
+	// A cached item can only hold several years if Simkl had episode rows for it, and those rows are what
+	// `include_all_episodes=original` returns. This pins the seasons-less shape to the safe branch: it must be
+	// replaced on the strength of `last_watched_at`, never treated as an unwatch and deleted.
+	it('keeps a delta row that has no episode rows but a last-watched date', () => {
+		const library: SimklLibrary = { movies: [], shows: [media(10, [watch(2019), watch(2021, 'May', '2021-05-05T10:00:00Z')])], anime: [] }
+		const normalized = normalizeSimklItem({
+			last_watched_at: '2021-05-05T10:00:00Z',
+			status: 'completed',
+			show: { title: 'A Show', ids: { simkl: 10, slug: 'a-show' } },
+		})
+
+		const result = mergeSyncResponse(library, syncResponse({ shows: [normalized!] }))
+
+		expect(result.shows.map(item => item.simklId)).toEqual([10])
+		expect(result.shows[0].watched.map(entry => entry.year)).toEqual([2021])
+	})
 })
 
 describe('itemsForTypes', () => {
