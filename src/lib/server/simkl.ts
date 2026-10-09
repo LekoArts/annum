@@ -8,11 +8,16 @@ export const SIMKL_USER_AGENT = 'annum/1.0'
 export const SIMKL_APP_NAME = 'annum'
 export const SIMKL_APP_VERSION = '1.0'
 
-/** Episode-level data needs `extended=full`; `include_all_episodes` covers the completed/dropped buckets. */
+/**
+ * Episode-level data needs `extended=full`; `include_all_episodes` covers the completed/dropped
+ * buckets. `original` is the lighter of its two values: `yes` adds a row for every episode of every
+ * completed show, and those synthesized rows only ever carry the show's last-watched time, which
+ * `last_watched_at` already provides.
+ */
 const EPISODE_ENRICHMENT = {
 	extended: 'full',
 	episode_watched_at: 'yes',
-	include_all_episodes: 'yes',
+	include_all_episodes: 'original',
 } as const
 
 const MAX_ATTEMPTS = 5

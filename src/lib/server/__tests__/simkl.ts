@@ -52,8 +52,17 @@ describe('simkl sync request shapes', () => {
 		expect(params(calls[0]).has('extended')).toBe(false)
 		expect(params(calls[1]).get('extended')).toBe('full')
 		expect(params(calls[1]).get('episode_watched_at')).toBe('yes')
-		expect(params(calls[1]).get('include_all_episodes')).toBe('yes')
 		expect(params(calls[2]).get('extended')).toBe('full')
+	})
+
+	// `original` is the lighter value: `yes` synthesizes a row per watched episode, all stamped at
+	// `last_watched_at`, which the normalizer already folds in
+	it('asks for only the recorded episodes, not every episode of a completed show', async () => {
+		await fetchSimklAllItems({ type: 'shows', token: TOKEN })
+		await fetchSimklDelta({ dateFrom: '2026-10-03T14:28:11Z', token: TOKEN })
+
+		expect(params(calls[0]).get('include_all_episodes')).toBe('original')
+		expect(params(calls[1]).get('include_all_episodes')).toBe('original')
 	})
 
 	// The dev-visible contract: Phase 2 deltas carry the timestamp exactly as `/sync/activities` returned it
@@ -66,7 +75,7 @@ describe('simkl sync request shapes', () => {
 		expect(url.searchParams.get('date_from')).toBe(saved)
 		expect(url.searchParams.get('extended')).toBe('full')
 		expect(url.searchParams.get('episode_watched_at')).toBe('yes')
-		expect(url.searchParams.get('include_all_episodes')).toBe('yes')
+		expect(url.searchParams.get('include_all_episodes')).toBe('original')
 	})
 
 	it('diffs deletions with an unfiltered ids-only call', async () => {
