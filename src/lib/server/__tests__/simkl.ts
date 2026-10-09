@@ -55,8 +55,8 @@ describe('simkl sync request shapes', () => {
 		expect(params(calls[2]).get('extended')).toBe('full')
 	})
 
-	// `original` is the lighter of the two `include_all_episodes` values: `yes` adds a row for every
-	// episode of every completed show, which this app never reads
+	// `original` is the lighter value: `yes` synthesizes a row per watched episode, all stamped at
+	// `last_watched_at`, which the normalizer already folds in
 	it('asks for only the recorded episodes, not every episode of a completed show', async () => {
 		await fetchSimklAllItems({ type: 'shows', token: TOKEN })
 		await fetchSimklDelta({ dateFrom: '2026-10-03T14:28:11Z', token: TOKEN })
