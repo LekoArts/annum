@@ -153,6 +153,20 @@ describe('normalizeSimklItem', () => {
 		])
 	})
 
+	// What `include_all_episodes=original` returns for a show the user marked complete in one action:
+	// no episode rows at all, so the year comes from `last_watched_at` alone
+	it('places a bulk-completed show in its last-watched year without any episode rows', () => {
+		const result = normalizeSimklItem({
+			last_watched_at: '2016-03-01T20:00:00Z',
+			status: 'completed',
+			show: { title: 'Bulk Completed', ids: { simkl: 2, slug: 'bulk-completed' } },
+		})
+
+		expect(result?.watched).toEqual([
+			{ year: 2016, month: 'March', watchedAt: '2016-03-01T20:00:00Z' },
+		])
+	})
+
 	it('normalizes an anime entry, which uses the show block', () => {
 		const result = normalizeSimklItem({
 			last_watched_at: '2022-04-01T00:00:00Z',
