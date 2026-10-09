@@ -85,6 +85,8 @@ Simkl asks for sync to be driven by user-visible events, not a timer. The dashbo
 
 Every request sends `client_id`, `app-name` and `app-version` plus a bearer token for user data. Per-second `rate_limit` 429s and transient 5xx retry with exponential backoff, and every retry logs why it is waiting and for how long; daily-quota 429s (`user_limit_exceeded`/`app_limit_exceeded`) and `412` are surfaced instead. A failed sync shows Simkl's own reason — e.g. the daily quota's "try again in N seconds" — in the dashboard status chip.
 
+A pull whose response is too large for Simkl to build comes back as `400 max_items`, and retrying it gets the same refusal. Either `all-items` call therefore falls back to Simkl's documented split, one status per call (`/sync/all-items/{type}/{status}`, which movies only define for `plantowatch`, `completed` and `dropped`), merging the buckets back into one response. The split repeats the original query params verbatim so the merged payload is the same as the single call would have returned, and it runs only after a `max_items` refusal — a library that syncs normally makes exactly the same number of requests as before.
+
 ### Library cache
 
 `src/lib/store/library.ts` keeps the normalized library, the last activities snapshot, the owning account and the last successful sync time in one `localStorage` key (`annum-simkl-library`). The cache is deliberately small — Simkl id, title, year, poster and one watch entry per year — so year grids filter it locally: no per-year requests, no server-side state.

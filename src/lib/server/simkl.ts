@@ -1,6 +1,7 @@
 import type { SimklActivities, SimklAllItemsResponse, SimklMediaType } from '#lib/types.js'
 import type { RequestEvent } from '@sveltejs/kit'
 import { auth } from '#lib/auth.js'
+import { SIMKL_MEDIA_TYPES } from '#lib/utils/simkl.js'
 import { PUBLIC_SIMKL_CLIENT_ID } from '$app/env/public'
 
 export const SIMKL_API_BASE_URL = 'https://api.simkl.com'
@@ -28,6 +29,15 @@ const RATE_LIMIT_JITTER_MS = 250
 const TRANSIENT_STATUSES = new Set([500, 502, 503])
 const RATE_LIMIT_ERROR = 'rate_limit'
 const DAILY_QUOTA_ERRORS = new Set(['user_limit_exceeded', 'app_limit_exceeded'])
+const MAX_ITEMS_ERROR = 'max_items'
+/** One status per call is the finest split Simkl offers, so a library that still refuses has no way back. */
+const TOO_LARGE_MESSAGE = 'Your Simkl library is too large to sync. Simkl refuses to return it even one status at a time.'
+/** The split buckets of `/sync/all-items/{type}/{status}`; movies have no `watching` or `hold`. */
+const TYPE_STATUSES: Record<SimklMediaType, ReadonlyArray<string>> = {
+	movies: ['plantowatch', 'completed', 'dropped'],
+	shows: ['watching', 'plantowatch', 'hold', 'completed', 'dropped'],
+	anime: ['watching', 'plantowatch', 'hold', 'completed', 'dropped'],
+}
 
 export class SimklError extends Error {
 	readonly status: number
@@ -144,6 +154,50 @@ export async function simklJson<T>(url: string, accessToken?: string): Promise<T
 	return await response.json() as T
 }
 
+function isMaxItemsError(e: unknown): boolean {
+	return e instanceof SimklError && e.code === MAX_ITEMS_ERROR
+}
+
+/** A split response keeps the `{ type: [...] }` envelope and omits empty buckets, so only non-empty keys merge. */
+function mergeAllItemsResponses(responses: Array<SimklAllItemsResponse>): SimklAllItemsResponse {
+	const merged: SimklAllItemsResponse = {}
+
+	for (const response of responses) {
+		for (const type of SIMKL_MEDIA_TYPES) {
+			const items = response[type]
+
+			if (items?.length)
+				merged[type] = [...(merged[type] ?? []), ...items]
+		}
+	}
+
+	return merged
+}
+
+/**
+ * Simkl's remedy for `400 max_items`: a retry returns the same refusal, so the request has to change to one
+ * status per call. The params are replayed verbatim to keep the merged payload identical to the single call,
+ * and only libraries Simkl refuses outright ever pay for these extra requests.
+ */
+async function fetchAllItemsByStatus({ types, params, token }: { types: ReadonlyArray<SimklMediaType>, params: Record<string, string> | undefined, token: string }): Promise<SimklAllItemsResponse> {
+	const responses: Array<SimklAllItemsResponse> = []
+
+	try {
+		for (const type of types) {
+			for (const status of TYPE_STATUSES[type])
+				responses.push(await simklJson<SimklAllItemsResponse>(simklUrl(`/sync/all-items/${type}/${status}`, params), token))
+		}
+	}
+	catch (e) {
+		if (!isMaxItemsError(e))
+			throw e
+
+		throw new SimklError(400, TOO_LARGE_MESSAGE, { code: MAX_ITEMS_ERROR })
+	}
+
+	return mergeAllItemsResponses(responses)
+}
+
 /** Resolve (and refresh) the signed-in user's Simkl token from Better Auth's stateless account cookie. */
 export async function getSimklAccessToken(event: RequestEvent): Promise<string | null> {
 	try {
@@ -167,15 +221,38 @@ export function fetchSimklActivities(token: string): Promise<SimklActivities> {
 }
 
 /** `GET /sync/all-items/{type}` - the full pull for one type; only shows and anime need episode data. */
-export function fetchSimklAllItems({ type, token }: { type: SimklMediaType, token: string }): Promise<SimklAllItemsResponse> {
+export async function fetchSimklAllItems({ type, token }: { type: SimklMediaType, token: string }): Promise<SimklAllItemsResponse> {
 	const params = type === 'movies' ? undefined : { ...EPISODE_ENRICHMENT }
 
-	return simklJson<SimklAllItemsResponse>(simklUrl(`/sync/all-items/${type}`, params), token)
+	try {
+		return await simklJson<SimklAllItemsResponse>(simklUrl(`/sync/all-items/${type}`, params), token)
+	}
+	catch (e) {
+		if (!isMaxItemsError(e))
+			throw e
+
+		console.warn(`Simkl refused /sync/all-items/${type} with max_items; retrying one status per call`)
+
+		return await fetchAllItemsByStatus({ types: [type], params, token })
+	}
 }
 
 /** `GET /sync/all-items?date_from=...` - the delta across all three types. */
-export function fetchSimklDelta({ dateFrom, token }: { dateFrom: string, token: string }): Promise<SimklAllItemsResponse> {
-	return simklJson<SimklAllItemsResponse>(simklUrl('/sync/all-items', { date_from: dateFrom, ...EPISODE_ENRICHMENT }), token)
+export async function fetchSimklDelta({ dateFrom, token }: { dateFrom: string, token: string }): Promise<SimklAllItemsResponse> {
+	const params = { date_from: dateFrom, ...EPISODE_ENRICHMENT }
+
+	try {
+		return await simklJson<SimklAllItemsResponse>(simklUrl('/sync/all-items', params), token)
+	}
+	catch (e) {
+		if (!isMaxItemsError(e))
+			throw e
+
+		// A delta after a long gap is the same oversized response, so it splits the same way
+		console.warn('Simkl refused the date_from delta with max_items; retrying one status per call')
+
+		return await fetchAllItemsByStatus({ types: SIMKL_MEDIA_TYPES, params, token })
+	}
 }
 
 /** `GET /sync/all-items?extended=simkl_ids_only` - the ID-only payload used to diff deletions. */
