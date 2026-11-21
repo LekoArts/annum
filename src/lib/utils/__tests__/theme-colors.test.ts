@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs'
+import { describe, expect, it } from 'vitest'
 import { SVG_ICON_IDS } from '#const'
 import { THEME_STORAGE_KEY } from '#lib/store/theme.js'
-import { describe, expect, it } from 'vitest'
 
 // The pre-paint script in app.html has to repeat both background colours: it runs before any stylesheet, so it
 // cannot read `--page`. These tests fail if the copies drift apart.

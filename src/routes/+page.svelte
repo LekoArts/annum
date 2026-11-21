@@ -1,4 +1,5 @@
 <script lang='ts'>
+	import { resolve } from '$app/paths'
 	import { authClient } from '#lib/auth-client.js'
 	import akira from '#lib/homepage/assets/akira.svg?raw'
 	import blade_runner from '#lib/homepage/assets/blade-runner.svg?raw'
@@ -60,7 +61,7 @@
 		<svg class='home-cta-icon size-5' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round' aria-hidden='true'><path d='m10 13 4-4m-6 2-2 2a4 4 0 0 0 6 6l2-2m-4-10 2-2a4 4 0 0 1 6 6l-2 2' /></svg>
 	{/snippet}
 	{#if $session.data}
-		<a data-press class='home-cta inline-flex min-h-12 items-center justify-center gap-3 rounded-full bg-(--accent) px-[27px] py-[13px] text-base font-semibold text-(--on-accent) max-[600px]:min-h-[46px] max-[600px]:text-[15px]' href='/dashboard'>Dashboard</a>
+		<a data-press class='home-cta inline-flex min-h-12 items-center justify-center gap-3 rounded-full bg-(--accent) px-[27px] py-[13px] text-base font-semibold text-(--on-accent) max-[600px]:min-h-[46px] max-[600px]:text-[15px]' href={resolve('/(protected)/dashboard')}>Dashboard</a>
 	{:else}
 		<button type='button' disabled={signingIn || $session.isPending} onclick={() => signIn(position)} data-press class='home-cta inline-flex min-h-12 items-center justify-center gap-3 rounded-full bg-(--accent) pr-[27px] pl-6 py-[13px] text-base font-semibold text-(--on-accent) disabled:cursor-wait disabled:opacity-60 max-[600px]:min-h-[46px] max-[600px]:text-[15px]'>{@render actionIcon()}{signingIn ? 'Connecting…' : 'Connect with Simkl'}</button>
 	{/if}
@@ -90,10 +91,10 @@
 			<svg class='absolute right-[-1%] top-[35%] h-5 w-5 text-(--home-marker) opacity-35 max-[600px]:hidden' viewBox='0 0 20 20' fill='none' stroke='currentColor'><path d='M6 19h13V6' /></svg>
 			<svg class='absolute left-[23.5%] top-[97%] h-5 w-5 text-(--home-marker) opacity-30 max-[600px]:hidden' viewBox='0 0 20 20' fill='none' stroke='currentColor'><path d='M1 6v13h13' /></svg>
 			<svg class='absolute left-[51%] top-[8%] h-8 w-5 text-(--home-marker) opacity-30 max-[600px]:left-[8%] max-[600px]:top-[220px]' viewBox='0 0 20 32' fill='currentColor'>
-				{#each [4, 12, 20, 28] as y}<circle cx='6' cy={y} r='1' /><circle cx='14' cy={y} r='1' />{/each}
+				{#each [4, 12, 20, 28] as y (y)}<circle cx='6' cy={y} r='1' /><circle cx='14' cy={y} r='1' />{/each}
 			</svg>
 			<svg class='absolute left-[5%] top-[87%] h-5 w-8 text-(--home-marker) opacity-30 max-[600px]:left-[78%] max-[600px]:top-[530px]' viewBox='0 0 32 20' fill='currentColor'>
-				{#each [4, 12, 20, 28] as x}<circle cx={x} cy='6' r='1' /><circle cx={x} cy='14' r='1' />{/each}
+				{#each [4, 12, 20, 28] as x (x)}<circle cx={x} cy='6' r='1' /><circle cx={x} cy='14' r='1' />{/each}
 			</svg>
 			<div class='absolute inset-0 hidden min-[1440px]:block'>
 				<span class='home-guide absolute left-[30%] top-[12%] opacity-40' style='--line-x:68px;--line-y:106px'><i></i></span>
@@ -103,10 +104,10 @@
 				<span class='home-guide absolute left-[47%] top-[96%] opacity-40' style='--line-x:112px;--line-y:52px'><i></i></span>
 				<span class='home-guide absolute left-[83%] top-[86%] opacity-35' style='--line-x:56px;--line-y:78px'><i></i></span>
 				<svg class='absolute left-[35%] top-[72%] h-5 w-8 text-(--home-marker) opacity-30' viewBox='0 0 32 20' fill='currentColor'>
-					{#each [4, 12, 20, 28] as x}<circle cx={x} cy='6' r='1' /><circle cx={x} cy='14' r='1' />{/each}
+					{#each [4, 12, 20, 28] as x (x)}<circle cx={x} cy='6' r='1' /><circle cx={x} cy='14' r='1' />{/each}
 				</svg>
 				<svg class='absolute left-[68%] top-[74%] h-8 w-5 text-(--home-marker) opacity-30' viewBox='0 0 20 32' fill='currentColor'>
-					{#each [4, 12, 20, 28] as y}<circle cx='6' cy={y} r='1' /><circle cx='14' cy={y} r='1' />{/each}
+					{#each [4, 12, 20, 28] as y (y)}<circle cx='6' cy={y} r='1' /><circle cx='14' cy={y} r='1' />{/each}
 				</svg>
 			</div>
 		</div>

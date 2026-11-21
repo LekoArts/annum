@@ -12,6 +12,7 @@
 		</section>
 		<section aria-labelledby='about-source'>
 			<h2 id='about-source' class='mb-3 font-(family-name:--font-wordmark) text-2xl leading-tight font-semibold tracking-[-0.02em] text-(--ink)'>Open source</h2>
+			<!-- eslint-disable-next-line svelte/no-navigation-without-resolve -- absolute URL; the rule cannot follow an imported constant -->
 			<p>It’s open source and available on GitHub at <a href={GITHUB_REPO_URL}>LekoArts/annum</a>. Contributions welcome!</p>
 		</section>
 		<section aria-labelledby='about-simkl'>

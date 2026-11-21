@@ -8,9 +8,9 @@ import type {
 	SimklSyncResponse,
 } from '#lib/types.js'
 import type { RequestHandler } from './$types'
+import { error } from '@sveltejs/kit'
 import { fetchSimklActivities, fetchSimklAllItems, fetchSimklDelta, fetchSimklIdSets, getSimklAccessToken, SimklError } from '#lib/server/simkl.js'
 import { collectSimklIds, normalizeSimklItem, SIMKL_MEDIA_TYPES } from '#lib/utils/simkl.js'
-import { error } from '@sveltejs/kit'
 
 function parseActivities(value: string | null): SimklActivities | null {
 	if (!value)

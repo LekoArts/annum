@@ -1,8 +1,8 @@
 import type { Handle } from '@sveltejs/kit/hooks'
-import { auth } from '#lib/auth.js'
 import { building } from '$app/env'
 import { redirect } from '@sveltejs/kit'
 import { svelteKitHandler } from 'better-auth/svelte-kit'
+import { auth } from '#lib/auth.js'
 
 export const handle: Handle = async ({ event, resolve }) => {
 	if (event.route.id?.startsWith('/(protected)/')) {

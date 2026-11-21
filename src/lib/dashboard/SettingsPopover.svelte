@@ -41,7 +41,7 @@
 			<div class='mb-4 flex flex-wrap items-center justify-between gap-3'>
 				<span class='text-[0.8125rem]'>Theme</span>
 				<div class='flex max-w-full flex-wrap rounded-lg border border-(--border) bg-(--page) p-0.5' role='radiogroup' aria-label='Theme'>
-					{#each themes as option}
+					{#each themes as option (option.value)}
 						<label class='relative flex cursor-pointer items-center'>
 							<input type='radio' name='dashboard-theme' value={option.value} checked={($theme ?? 'system') === option.value} onchange={() => theme.set(option.value)} class='peer sr-only' />
 							<span class='flex min-h-7 items-center rounded-[5px] px-2.5 text-xs text-(--muted) peer-not-checked:hover:bg-(--active) peer-checked:bg-(--accent) peer-checked:text-(--on-accent) peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-(--accent)'>{option.label}</span>
@@ -50,7 +50,7 @@
 				</div>
 			</div>
 			<div class='space-y-3 border-t border-(--border) pt-3'>
-				{#each [{ key: 'groupByMonth', label: 'Group by month', description: 'Add month headings' }, { key: 'screenshotMode', label: 'Screenshot mode', description: 'Remove gaps and set columns' }] as option}
+				{#each [{ key: 'groupByMonth', label: 'Group by month', description: 'Add month headings' }, { key: 'screenshotMode', label: 'Screenshot mode', description: 'Remove gaps and set columns' }] as option (option.key)}
 					{@const key = option.key as 'groupByMonth' | 'screenshotMode'}
 					<button type='button' role='switch' aria-checked={$settings[key]} aria-label={option.label} aria-describedby={`${descriptionPrefix}-${key}-description`} onclick={() => settings.set({ ...$settings, [key]: !$settings[key] })} class='-mx-2 flex min-h-12 w-[calc(100%+1rem)] items-center justify-between gap-4 rounded-lg px-2 text-left hover:bg-(--active)'>
 						<span class='min-w-0 [overflow-wrap:anywhere]'><span class='block text-[0.8125rem] font-medium'>{option.label}</span><span id={`${descriptionPrefix}-${key}-description`} class='mt-1 block text-xs text-(--muted)'>{option.description}</span></span>

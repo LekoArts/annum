@@ -1,8 +1,8 @@
-import type { SimklActivities, SimklAllItemsResponse, SimklMediaType } from '#lib/types.js'
 import type { RequestEvent } from '@sveltejs/kit'
+import type { SimklActivities, SimklAllItemsResponse, SimklMediaType } from '#lib/types.js'
+import { PUBLIC_SIMKL_CLIENT_ID } from '$app/env/public'
 import { auth } from '#lib/auth.js'
 import { SIMKL_MEDIA_TYPES } from '#lib/utils/simkl.js'
-import { PUBLIC_SIMKL_CLIENT_ID } from '$app/env/public'
 
 export const SIMKL_API_BASE_URL = 'https://api.simkl.com'
 export const SIMKL_USER_AGENT = 'annum/1.0'

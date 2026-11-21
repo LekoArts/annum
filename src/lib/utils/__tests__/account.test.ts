@@ -1,5 +1,5 @@
-import { accountInitials, accountName, membershipLabel } from '#lib/utils/account.js'
 import { describe, expect, it } from 'vitest'
+import { accountInitials, accountName, membershipLabel } from '#lib/utils/account.js'
 
 describe('account display', () => {
 	it('normalizes empty and repeated whitespace', () => {
