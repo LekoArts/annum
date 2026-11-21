@@ -66,3 +66,23 @@ test('an expired session offers a sign-in instead of a retry', async ({ page }) 
 	await signInAgain.click()
 	await expect(page.getByRole('button', { name: 'Reconnect Simkl' })).toBeVisible()
 })
+
+test('an empty library still surfaces an expired session', async ({ page }) => {
+	const sync = await stubSync(page, { movies: [], shows: [], anime: [] })
+
+	await signIn(page)
+	await page.goto('/dashboard?year=2022&types=movies,shows')
+
+	// A successful sync of nothing means `hasSynced` is true, which must not hide a later failure
+	await expect(page.getByRole('heading', { name: 'No posters for' })).toBeVisible()
+
+	sync.failWith(401, 'Your session expired. Sign in again to continue syncing.')
+
+	await page.getByRole('button', { name: 'Dashboard settings' }).click()
+	await page.getByRole('button', { name: 'Refresh now' }).click()
+
+	const alert = page.getByRole('alert')
+
+	await expect(alert).toContainText('Your session expired')
+	await expect(alert.getByRole('link', { name: 'Sign in again' })).toHaveAttribute('href', '/sign-in?reconnect')
+})

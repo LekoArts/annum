@@ -166,15 +166,21 @@ describe('library account scoping', () => {
 			.mockImplementationOnce(async () => new Response(JSON.stringify({ accountId: OTHER_ACCOUNT, status: 'full', activities: { all: '2026-10-04T09:00:00Z' }, movies: [media(7)], shows: [], anime: [] }), { status: 200 }))
 		vi.stubGlobal('fetch', fetchMock)
 
+		const seen: Array<{ status: string }> = []
+		const unsubscribe = syncState.subscribe(state => seen.push(state))
+
 		claimLibrary(ACCOUNT)
 		const pending = sync()
 		claimLibrary(OTHER_ACCOUNT)
 		rejectFirst(new Error('connection reset'))
 		await pending
 
+		unsubscribe()
+
+		// The failure belonged to the account that left, so it is never published as the new one's state
+		expect(seen.filter(state => state.status === 'error')).toEqual([])
 		expect(fetchMock).toHaveBeenCalledTimes(2)
 		expect(get(library).movies.map(item => item.simklId)).toEqual([7])
-		// The failure belonged to the account that left, so the new one sees no error
 		expect(get(syncState)).toMatchObject({ status: 'idle', message: null })
 	})
 
@@ -488,5 +494,28 @@ describe('library sync session expiry', () => {
 		await sync()
 
 		expect(get(syncState)).toMatchObject({ status: 'error', message: 'Simkl is down' })
+	})
+})
+
+describe('library cache validation', () => {
+	it('ignores a cache whose watch entries are malformed', async () => {
+		localStorage.setItem(STORAGE_KEY, JSON.stringify({ accountId: ACCOUNT, activities: null, lastSyncedAt: 1, movies: [{ ...media(1), watched: [{ year: 2020 }] }], shows: [], anime: [] }))
+		vi.resetModules()
+
+		const fresh = await import('../library')
+		fresh.claimLibrary(ACCOUNT)
+
+		// A malformed entry would reach rendering, so the whole payload falls back to the initial value
+		expect(get(fresh.library).movies).toEqual([])
+	})
+
+	it('reports an unexpected non-JSON body as a retryable failure', async () => {
+		claimLibrary(ACCOUNT)
+		vi.stubGlobal('fetch', async () => new Response('<!doctype html><h1>Maintenance</h1>', { status: 200, headers: { 'content-type': 'text/html' } }))
+		vi.spyOn(console, 'warn').mockImplementation(() => {})
+
+		await sync()
+
+		expect(get(syncState)).toMatchObject({ status: 'error', message: 'The sync endpoint returned an unexpected response.' })
 	})
 })

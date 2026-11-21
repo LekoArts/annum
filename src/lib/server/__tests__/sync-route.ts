@@ -92,6 +92,26 @@ describe('the simkl sync route', () => {
 		const body = await (await GET(event())).json()
 
 		expect(body.activities.all).toBe(before)
+
+		// The change made during the pull is newer than the anchor, so the next sync sees it
+		const deltas: Array<string> = []
+		vi.stubGlobal('fetch', async (input: RequestInfo | URL) => {
+			const url = new URL(typeof input === 'string' ? input : input.toString())
+
+			if (url.pathname === '/sync/activities')
+				return Response.json({ all: duringPull })
+
+			deltas.push(url.searchParams.get('date_from') ?? '')
+			activities = { all: '2026-10-03T12:00:00Z' }
+
+			return Response.json({ movies: [{ ids: { simkl: 42 } }], shows: [], anime: [] })
+		})
+
+		const delta = await (await GET(event(activitiesParam(body.activities)))).json()
+
+		expect(deltas).toEqual([before])
+		expect(delta.status).toBe('delta')
+		expect(delta.movies).toHaveLength(1)
 	})
 
 	// The endpoint the Simkl dev asked about: an unchanged library costs exactly one cheap call

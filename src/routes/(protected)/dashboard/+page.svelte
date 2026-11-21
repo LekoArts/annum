@@ -47,14 +47,14 @@
 			{/each}
 		{/if}
 	</Grid>
-{:else if $syncState.status === 'auth' && !$hasSynced}
+{:else if $syncState.status === 'auth'}
 	<div class='mx-auto max-w-md py-24 text-center' role='alert'>
 		<h2 class='text-lg font-medium'>Your session expired</h2>
 		<p class='mt-2 text-sm leading-relaxed text-(--muted)'>{$syncState.message}</p>
 		<!-- eslint-disable-next-line svelte/no-navigation-without-resolve -- query string is appended at runtime -->
 		<a href={`${resolve('/sign-in')}?reconnect`} class='mt-5 inline-flex min-h-10 items-center rounded-full bg-(--ink) px-4 text-sm font-medium text-(--page)'>Sign in again</a>
 	</div>
-{:else if $syncState.status === 'error' && !$hasSynced}
+{:else if $syncState.status === 'error'}
 	<div class='mx-auto max-w-md py-24 text-center' role='alert'>
 		<h2 class='text-lg font-medium'>Couldn’t load your library</h2>
 		<p class='mt-2 text-sm leading-relaxed text-(--muted)'>{$syncState.message}</p>

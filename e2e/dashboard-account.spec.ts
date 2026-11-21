@@ -58,11 +58,47 @@ test('a tab opened during a cold sync waits for the running one', async ({ page,
 	const second = await context.newPage()
 	const secondSync = await stubSync(second, LIBRARY)
 
+	// Record the lock attempts, so the test proves the second tab asked and was turned away rather than
+	// merely being throttled by the freshness check
+	await second.addInitScript(() => {
+		const calls: Array<{ name: string, ifAvailable: boolean }> = []
+		const request = navigator.locks.request.bind(navigator.locks)
+
+		Object.defineProperty(window, '__syncLockCalls', { value: calls })
+		Object.defineProperty(navigator.locks, 'request', {
+			configurable: true,
+			value: (name: string, options: { ifAvailable?: boolean }, callback: (lock: unknown) => Promise<unknown>) => {
+				calls.push({ name, ifAvailable: options?.ifAvailable === true })
+
+				return request(name, options, callback)
+			},
+		})
+	})
+
 	await second.goto('/dashboard?year=2022&types=movies,shows')
-	await expect(second.getByText('Loading your library…')).toBeAttached()
+	await expect.poll(() => second.evaluate(() => (window as unknown as { __syncLockCalls: Array<{ name: string }> }).__syncLockCalls.some(call => call.name === 'annum-sync'))).toBe(true)
+	expect(await second.evaluate(() => (window as unknown as { __syncLockCalls: Array<{ ifAvailable: boolean }> }).__syncLockCalls[0].ifAvailable)).toBe(true)
+	// Still only the first tab's request exists while the second has already tried
+	expect(sync.requests).toHaveLength(1)
+	expect(secondSync.requests).toHaveLength(0)
 
 	sync.release()
 
 	await expect.poll(async () => await posterNames(second)).toEqual(['The Bear', 'Everything Everywhere'])
 	expect(secondSync.requests).toHaveLength(0)
+})
+
+test('signing out in one tab empties the library in another', async ({ page, context }) => {
+	const sync = await openDashboard(page)
+
+	const second = await context.newPage()
+	await second.goto('/dashboard?year=2022&types=movies,shows')
+	await expect.poll(async () => await posterNames(second)).toEqual(['The Bear', 'Everything Everywhere'])
+
+	sync.failWith(401, 'Your session expired. Sign in again to continue syncing.')
+	await signOut(page)
+
+	// The other tab shares the storage, so the dropped cache has to reach its grid as well
+	await expect.poll(async () => JSON.parse((await cachedLibrary(second)) ?? '{}')).toMatchObject({ accountId: null, movies: [] })
+	await expect.poll(async () => await posterNames(second)).toEqual([])
 })
