@@ -1,5 +1,6 @@
 <script lang='ts'>
 	import type { PageData } from './$types'
+	import { resolve } from '$app/paths'
 	import { CURRENT_YEAR } from '#const'
 	import Grid from '#lib/grid/Grid.svelte'
 	import GridItem from '#lib/grid/Item.svelte'
@@ -21,6 +22,8 @@
 	const types = $derived(data.types)
 	const items = $derived(itemsForTypes($library, types, year))
 	const grouped = $derived(groupBy(items, 'month'))
+	// Only the first tile in the whole grid is eager; every month heading would otherwise earn one
+	const eagerKey = $derived(items.length > 0 ? `${items[0].type}:${items[0].simklId}` : null)
 </script>
 
 <h1 class='sr-only'>{data.meta.title}</h1>
@@ -30,20 +33,26 @@
 		{#if $settings.groupByMonth}
 			{#each Object.entries(grouped) as [month, monthItems] (month)}
 				<h2 class='col-span-full pt-6 pb-2 text-lg font-medium text-(--muted) first:pt-0'>{month}</h2>
-				{#each monthItems as item, index (`${item.type}:${item.simklId}`)}
+				{#each monthItems as item (`${item.type}:${item.simklId}`)}
 					<GridItem href={simklItemUrl(item.type, item.simklId, item.slug)}>
-						<Image poster={item.poster} alt={item.title} loading={index === 0 ? 'eager' : 'lazy'} />
+						<Image poster={item.poster} alt={item.title} loading={`${item.type}:${item.simklId}` === eagerKey ? 'eager' : 'lazy'} />
 					</GridItem>
 				{/each}
 			{/each}
 		{:else}
-			{#each items as item, index (`${item.type}:${item.simklId}`)}
+			{#each items as item (`${item.type}:${item.simklId}`)}
 				<GridItem href={simklItemUrl(item.type, item.simklId, item.slug)}>
-					<Image poster={item.poster} alt={item.title} loading={index === 0 ? 'eager' : 'lazy'} />
+					<Image poster={item.poster} alt={item.title} loading={`${item.type}:${item.simklId}` === eagerKey ? 'eager' : 'lazy'} />
 				</GridItem>
 			{/each}
 		{/if}
 	</Grid>
+{:else if $syncState.status === 'auth' && !$hasSynced}
+	<div class='mx-auto max-w-md py-24 text-center' role='alert'>
+		<h2 class='text-lg font-medium'>Your session expired</h2>
+		<p class='mt-2 text-sm leading-relaxed text-(--muted)'>{$syncState.message}</p>
+		<a href={resolve('/sign-in')} class='mt-5 inline-flex min-h-10 items-center rounded-full bg-(--ink) px-4 text-sm font-medium text-(--page)'>Sign in again</a>
+	</div>
 {:else if $syncState.status === 'error' && !$hasSynced}
 	<div class='mx-auto max-w-md py-24 text-center' role='alert'>
 		<h2 class='text-lg font-medium'>Couldn’t load your library</h2>

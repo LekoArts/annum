@@ -12,8 +12,8 @@
 
 	const src = $derived(simklPosterUrl(poster))
 	const srcset = $derived(simklPosterSrcset(poster))
-	// `auto` is only legal on lazy images, so the eager first poster keeps no `sizes` (100vw, i.e. the largest)
-	const sizes = $derived(loading === 'lazy' ? 'auto' : undefined)
+	// `auto` is only legal on lazy images, so an eager poster states the grid column width instead of 100vw
+	const sizes = $derived(loading === 'lazy' ? 'auto' : '(min-width: 1536px) 16vw, (min-width: 1024px) 20vw, (min-width: 768px) 25vw, (min-width: 640px) 33vw, 50vw')
 	let failed = $state(false)
 
 	// Stale poster paths (Simkl merges titles) fall back to the placeholder with its `srcset` dropped;

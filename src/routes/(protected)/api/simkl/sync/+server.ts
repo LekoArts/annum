@@ -79,14 +79,17 @@ export const GET: RequestHandler = async (event) => {
 
 		// Without a saved `activities.all` there is no delta anchor, so this is the first sync
 		if (!saved || savedAll === null) {
+			// Anchored before the pulls: a change that lands mid-pull stays newer than the saved anchor, so
+			// the next sync picks it up as a delta instead of losing it behind a post-pull timestamp
+			const activities = await fetchSimklActivities(token)
+
 			// Simkl asks for the three types sequentially, never in parallel
 			const movies = await fetchSimklAllItems({ type: 'movies', token })
 			const shows = await fetchSimklAllItems({ type: 'shows', token })
 			const anime = await fetchSimklAllItems({ type: 'anime', token })
-			// The bootstrap timestamp is read *after* the pulls, so nothing that lands mid-pull is missed
-			const activities = await fetchSimklActivities(token)
 
 			return Response.json({
+				accountId: event.locals.user.id,
 				status: 'full',
 				activities,
 				movies: normalizeItems(movies.movies, { dropUnwatched: true }),
@@ -100,6 +103,7 @@ export const GET: RequestHandler = async (event) => {
 		// Nothing moved - skip `/sync/all-items` entirely
 		if (activitiesAll(activities) === savedAll) {
 			return Response.json({
+				accountId: event.locals.user.id,
 				status: 'up-to-date',
 				activities,
 				movies: [],
@@ -110,6 +114,7 @@ export const GET: RequestHandler = async (event) => {
 
 		const delta = await fetchSimklDelta({ dateFrom: savedAll, token })
 		const response: SimklSyncResponse = {
+			accountId: event.locals.user.id,
 			status: 'delta',
 			activities,
 			movies: normalizeItems(delta.movies, { dropUnwatched: false }),

@@ -56,17 +56,40 @@ afterEach(() => {
 })
 
 describe('the simkl sync route', () => {
-	it('runs the initial pull once, sequentially, then reads the activities baseline', async () => {
+	it('reads the activities baseline before the initial pulls, sequentially', async () => {
 		const response = await GET(event())
 		const body = await response.json()
 
 		expect(body.status).toBe('full')
 		expect(requested).toEqual([
+			'/sync/activities',
 			'/sync/all-items/movies',
 			'/sync/all-items/shows',
 			'/sync/all-items/anime',
-			'/sync/activities',
 		])
+	})
+
+	// A change landing between the pulls must stay newer than the saved anchor, or it is skipped forever
+	it('anchors the bootstrap on the snapshot taken before the pulls', async () => {
+		const before = '2026-10-03T10:00:00Z'
+		const duringPull = '2026-10-03T11:00:00Z'
+
+		activities = { all: before }
+		vi.stubGlobal('fetch', async (input: RequestInfo | URL) => {
+			const url = new URL(typeof input === 'string' ? input : input.toString())
+
+			if (url.pathname === '/sync/activities')
+				return Response.json(activities)
+
+			// A watch lands while the media pulls are still running
+			activities = { all: duringPull }
+
+			return Response.json({ movies: [], shows: [], anime: [] })
+		})
+
+		const body = await (await GET(event())).json()
+
+		expect(body.activities.all).toBe(before)
 	})
 
 	// The endpoint the Simkl dev asked about: an unchanged library costs exactly one cheap call

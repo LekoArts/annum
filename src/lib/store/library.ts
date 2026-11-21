@@ -5,7 +5,8 @@ import { isSyncFresh } from '#lib/utils/sync.js'
 import { persisted } from './persisted'
 
 export interface SyncState {
-	status: 'idle' | 'syncing' | 'error'
+	/** `auth`: the session is gone, so retrying cannot help until the user signs in again. */
+	status: 'idle' | 'syncing' | 'error' | 'auth'
 	/** Why the last sync failed, as the server explained it; shown beside the retry controls. */
 	message: string | null
 }
@@ -26,12 +27,30 @@ const EMPTY_LIBRARY: CachedLibrary = {
 	anime: [],
 }
 
+/** A stored payload from an older release must not be read as the current shape. */
+function isCachedLibrary(value: unknown): value is CachedLibrary {
+	if (typeof value !== 'object' || value === null)
+		return false
+
+	const candidate = value as Record<string, unknown>
+
+	return (candidate.accountId === null || typeof candidate.accountId === 'string')
+		&& (candidate.lastSyncedAt === null || typeof candidate.lastSyncedAt === 'number')
+		&& Array.isArray(candidate.movies)
+		&& Array.isArray(candidate.shows)
+		&& Array.isArray(candidate.anime)
+}
+
 /** The raw stored cache, which may still belong to the previous account until it is claimed. */
 const cache = persisted<CachedLibrary>('annum-simkl-library', EMPTY_LIBRARY, {
+	isValid: isCachedLibrary,
 	onError: e => console.warn('Failed to persist the Simkl library', e),
 })
 
 const accountId = writable<string | null>(null)
+
+/** Bumped by `clearLibrary`, so a sync that started before a sign-out cannot write the cache back. */
+let cacheGeneration = 0
 
 /**
  * Accounts share a browser, so the cache is only readable once claimed by the signed-in one. Another
@@ -50,6 +69,7 @@ export function claimLibrary(id: string | null): void {
 
 /** Signing out drops the cached library with it. */
 export function clearLibrary(): void {
+	cacheGeneration += 1
 	cache.set(EMPTY_LIBRARY)
 }
 
@@ -142,11 +162,19 @@ function readSyncLease(): { expiresAt: number, token: string } | null {
 	return { expiresAt: claimedAt + SYNC_LEASE_MS, token }
 }
 
+/** The session is gone rather than Simkl failing, so the UI asks for a sign-in instead of a retry. */
+export class SyncAuthError extends Error {}
+
 /** SvelteKit sends route errors as JSON, so Simkl's own explanation reaches the UI instead of a status. */
 async function requestSync(): Promise<SimklSyncResponse> {
 	const saved = get(library)
 	const query = encodeURIComponent(JSON.stringify(saved.activities ?? {}))
 	const response = await fetch(`/api/simkl/sync?activities=${query}`)
+	const type = response.headers.get('content-type') ?? ''
+
+	// An expired session is redirected to /sign-in, which fetch follows into HTML with a 200
+	if (response.status === 401 || response.status === 403 || type.includes('text/html'))
+		throw new SyncAuthError('Your session expired. Sign in again to continue syncing.')
 
 	if (!response.ok) {
 		const body = await response.json().catch(() => null) as { message?: unknown } | null
@@ -183,6 +211,10 @@ export async function sync({ force = false }: { force?: boolean } = {}): Promise
 
 	syncing = true
 
+	// Set when the claim moved while the request was in flight, so the new account still owes a sync
+	let switched = false
+	const generation = cacheGeneration
+
 	try {
 		const result = await withSyncLock(async () => {
 			syncState.set({ status: 'syncing', message: null })
@@ -190,14 +222,19 @@ export async function sync({ force = false }: { force?: boolean } = {}): Promise
 			const response = await requestSync()
 
 			cache.update((current) => {
-				// A sign-out or account switch landed while the request was in flight, so this response
-				// belongs to nobody: keeping it would leave an empty library marked as freshly synced
-				if (get(accountId) !== account)
+				// A stale cookie can return another account's history after a switch in another tab, so
+				// the response must carry the account it belongs to, not just match the local claim;
+				// a sign-out in between means the rows belong to a library that no longer exists
+				if (get(accountId) !== account || response.accountId !== account || generation !== cacheGeneration) {
+					switched = get(accountId) !== account
+
 					return current
+				}
 
 				// Another account's cache is replaced rather than merged, so its anchor cannot leak
 				const base = current.accountId === account ? current : EMPTY_LIBRARY
 
+				// On `up-to-date` the item arrays keep their identity, so only the wrapper and the timestamp change
 				return {
 					...mergeSyncResponse(base, response),
 					accountId: account,
@@ -216,10 +253,20 @@ export async function sync({ force = false }: { force?: boolean } = {}): Promise
 	catch (e) {
 		const message = e instanceof Error ? e.message : String(e)
 
+		if (e instanceof SyncAuthError) {
+			syncState.set({ status: 'auth', message })
+
+			return
+		}
+
 		console.warn(`Simkl sync failed: ${message}`)
 		syncState.set({ status: 'error', message })
 	}
 	finally {
 		syncing = false
 	}
+
+	// The new account's own `sync()` bailed out while this one held the flag, so it runs now
+	if (switched && get(accountId) !== null)
+		await sync()
 }

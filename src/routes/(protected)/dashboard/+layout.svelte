@@ -1,4 +1,5 @@
 <script lang='ts'>
+	import { resolve } from '$app/paths'
 	import { untrack } from 'svelte'
 	import { authClient } from '#lib/auth-client.js'
 	import { claimLibrary, hasData, sync, syncState } from '#lib/store/library.js'
@@ -9,7 +10,7 @@
 
 	let { children }: Props = $props()
 	const session = authClient.useSession()
-	const failed = $derived($syncState.status === 'error')
+	const failed = $derived($syncState.status === 'error' || $syncState.status === 'auth')
 
 	/** Grace period before a warm cache shows the chip, so a reload that syncs quickly stays still. */
 	const SYNC_STATUS_DELAY = 400
@@ -53,7 +54,10 @@
 <!-- A failed sync with something on screen, or a sync worth announcing; both share one fixed chip -->
 {#if (failed && $hasData) || showSyncStatus}
 	<div class='fixed right-4 bottom-4 z-10 flex max-w-[calc(100vw-32px)] items-center gap-3 rounded-xl border border-(--border) bg-(--menu) px-4 py-3 text-sm shadow-(--menu-shadow)' role={failed ? 'alert' : 'status'}>
-		{#if failed}
+		{#if $syncState.status === 'auth'}
+			<span class='min-w-0'>{$syncState.message}</span>
+			<a href={resolve('/sign-in')} class='shrink-0 rounded-md px-2 py-1 font-medium text-(--accent) hover:bg-(--active)'>Sign in again</a>
+		{:else if failed}
 			<span class='min-w-0'>
 				Couldn't sync your Simkl library.
 				{#if $syncState.message}<span class='mt-1 block text-xs leading-relaxed text-(--muted)'>{$syncState.message}</span>{/if}
