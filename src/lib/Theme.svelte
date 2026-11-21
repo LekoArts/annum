@@ -1,6 +1,6 @@
 <script lang='ts'>
-	import { theme } from '#lib/store/theme.js'
 	import { onMount } from 'svelte'
+	import { theme } from '#lib/store/theme.js'
 
 	onMount(() => {
 		const media = window.matchMedia('(prefers-color-scheme: dark)')

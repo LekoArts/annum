@@ -1,7 +1,9 @@
 <script lang='ts'>
+	import { resolve } from '$app/paths'
+	import { page } from '$app/state'
+
 	import { TITLE } from '#const'
 	import { authClient } from '#lib/auth-client.js'
-
 	import Dock from '#lib/dashboard/Dock.svelte'
 	import Icon from '#lib/dashboard/Icon.svelte'
 	import Popover from '#lib/dashboard/Popover.svelte'
@@ -9,7 +11,6 @@
 	import { pa } from '#lib/store/plausible.js'
 	import { accountInitials, accountName, membershipLabel } from '#lib/utils/account.js'
 	import { simklAvatarUrl } from '#lib/utils/simkl.js'
-	import { page } from '$app/state'
 
 	const session = authClient.useSession()
 	const user = $derived($session.data?.user)
@@ -46,7 +47,7 @@
 </script>
 
 <header class={homepage ? 'mx-auto flex h-[106px] w-full max-w-[1600px] items-start px-9 pt-8 max-[1050px]:h-[100px] max-[1050px]:px-6 max-[600px]:h-[94px] max-[600px]:px-[22px] max-[600px]:pt-7' : `mx-auto flex w-full flex-wrap items-center justify-between gap-2 px-3 pt-4 pb-7 sm:px-6 sm:pt-5 sm:pb-10 lg:px-9 ${dashboard ? 'max-w-[1800px] sm:grid sm:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)]' : 'max-w-5xl'}`}>
-	<a href={dashboard ? '/dashboard' : '/'} aria-label={dashboard ? `${TITLE} dashboard` : `${TITLE} homepage`} class={`w-fit font-(family-name:--font-wordmark) font-semibold tracking-[-0.03em] ${homepage ? 'text-[26px] max-[600px]:text-2xl' : 'text-[23px]'} ${dashboard ? 'hidden sm:block' : ''}`}>{TITLE}</a>
+	<a href={dashboard ? resolve('/(protected)/dashboard') : resolve('/')} aria-label={dashboard ? `${TITLE} dashboard` : `${TITLE} homepage`} class={`w-fit font-(family-name:--font-wordmark) font-semibold tracking-[-0.03em] ${homepage ? 'text-[26px] max-[600px]:text-2xl' : 'text-[23px]'} ${dashboard ? 'hidden sm:block' : ''}`}>{TITLE}</a>
 	{#if dashboard}<Dock />{/if}
 	{#if !homepage}
 		<div class='flex shrink-0 justify-end'>
@@ -70,7 +71,7 @@
 						{#if joinedLabel}
 							<p class='px-3 pt-1 pb-3 text-xs leading-relaxed text-(--muted)'>Member since <time datetime={joinedAt}>{joinedLabel}</time></p>
 						{/if}
-						{#if !dashboard}<a href='/dashboard' onclick={close} class='flex min-h-11 items-center gap-3 rounded-lg px-3 hover:bg-(--active)'><Icon name='filter' />Dashboard</a>{/if}
+						{#if !dashboard}<a href={resolve('/(protected)/dashboard')} onclick={close} class='flex min-h-11 items-center gap-3 rounded-lg px-3 hover:bg-(--active)'><Icon name='filter' />Dashboard</a>{/if}
 						<div class='border-t border-(--border)'>
 							<button type='button' disabled={signingOut} onclick={signOut} class='mt-1 flex min-h-11 w-full items-center gap-3 rounded-lg px-3 text-left hover:bg-(--active) disabled:opacity-50'><Icon name='exit' />{signingOut ? 'Signing out…' : 'Sign out'}</button>
 						</div>

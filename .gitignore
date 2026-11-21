@@ -11,6 +11,8 @@ vite.config.ts.timestamp-*
 .netlify
 .vercel
 coverage
+test-results
+playwright-report
 .mastracode
 debug-vector-index.jsonl
 .impeccable

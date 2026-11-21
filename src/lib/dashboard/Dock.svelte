@@ -1,13 +1,13 @@
 <script lang='ts'>
+	import { page } from '$app/state'
 	import { CURRENT_YEAR } from '#const'
-	import SettingsPopover from '#lib/dashboard/SettingsPopover.svelte'
 
+	import SettingsPopover from '#lib/dashboard/SettingsPopover.svelte'
 	import TypeToggles from '#lib/dashboard/TypeToggles.svelte'
 	import YearSelect from '#lib/dashboard/YearSelect.svelte'
 	import { library } from '#lib/store/library.js'
 	import { resolveSelectedTypes, resolveYear } from '#lib/utils/dashboard.js'
 	import { availableYears } from '#lib/utils/simkl.js'
-	import { page } from '$app/state'
 
 	const years = $derived(availableYears($library, CURRENT_YEAR))
 	const year = $derived(resolveYear(page.url.searchParams, CURRENT_YEAR))

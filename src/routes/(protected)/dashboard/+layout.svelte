@@ -1,7 +1,7 @@
 <script lang='ts'>
+	import { untrack } from 'svelte'
 	import { authClient } from '#lib/auth-client.js'
 	import { claimLibrary, hasData, sync, syncState } from '#lib/store/library.js'
-	import { untrack } from 'svelte'
 
 	interface Props {
 		children?: import('svelte').Snippet

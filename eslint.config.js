@@ -25,6 +25,9 @@ export default antfu({
 		'ts/array-type': ['error', { default: 'generic' }],
 		'svelte/valid-compile': 'warn',
 		'svelte/mustache-spacing': 'off',
+		// This rule breaks single-line ternaries that fit the column budget into three lines; the codebase
+		// reads better compact.
+		'antfu/reasonable-newline': 'off',
 		'no-unused-vars': 'off',
 		'node/prefer-global/process': 'off',
 		'prefer-const': 'off',

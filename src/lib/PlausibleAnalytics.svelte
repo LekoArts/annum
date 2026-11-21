@@ -10,15 +10,15 @@
 <script
 	lang='ts'
 >
-	import { pa } from '#lib/store/plausible.js'
-
 	/**
 	 * Adjusted from https://github.com/accuser/svelte-plausible-analytics/blob/main/src/lib/PlausibleAnalytics.svelte
 	 * LICENSE: MIT
 	 */
 	import { dev } from '$app/env'
+
 	import { page } from '$app/state'
 	import { onMount } from 'svelte'
+	import { pa } from '#lib/store/plausible.js'
 
 	onMount(() => {
 		pa.subscribe((events) => {

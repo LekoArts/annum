@@ -1,11 +1,11 @@
 <script lang='ts'>
 	import type { SimklMediaType } from '#lib/types.js'
-	import { CURRENT_YEAR } from '#const'
+	import { goto } from '$app/navigation'
 
+	import { CURRENT_YEAR } from '#const'
 	import Icon from '#lib/dashboard/Icon.svelte'
 	import Popover from '#lib/dashboard/Popover.svelte'
 	import { dashboardSearch } from '#lib/utils/dashboard.js'
-	import { goto } from '$app/navigation'
 
 	interface Props {
 		year: number
@@ -20,6 +20,7 @@
 	const oldest = $derived(years.at(-1) ?? year)
 
 	function choose(next: number, close?: () => void): void {
+		// eslint-disable-next-line svelte/no-navigation-without-resolve -- the query string is built at runtime
 		goto(`/dashboard${dashboardSearch({ year: next, types, currentYear: CURRENT_YEAR })}`, { reset: false })
 		close?.()
 	}
@@ -38,7 +39,7 @@
 		{#snippet children(close)}
 			<p class='px-3 pt-2 pb-1.5 text-xs text-(--muted)'>Year</p>
 			<div class='max-h-80 space-y-px overflow-y-auto overscroll-contain [scrollbar-width:thin] [scrollbar-color:var(--border)_color-mix(in_srgb,var(--active)_40%,transparent)]'>
-				{#each years as option}
+				{#each years as option (option)}
 					<button type='button' aria-current={option === year ? 'true' : undefined} onclick={() => choose(option, close)} class={`flex min-h-11 w-full items-center justify-between rounded-lg px-3 text-left tabular-nums focus-visible:outline-offset-[-2px] ${option === year ? 'bg-(--active)' : 'hover:bg-(--active)'}`}>
 						{option}
 						{#if option === year}<Icon name='check' class='size-4 text-(--accent)' />{/if}

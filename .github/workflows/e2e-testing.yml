@@ -1,0 +1,39 @@
+name: E2E Testing
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
+
+jobs:
+  e2e-testing:
+    runs-on: ubuntu-latest
+    env:
+      # The suite never talks to Simkl: the authorize redirect is intercepted, so these only need to be
+      # well-formed enough for the auth handler to start a sign-in.
+      PUBLIC_SIMKL_CLIENT_ID: e2e-client-id
+      PUBLIC_BETTER_AUTH_URL: http://localhost:5173
+      PRIVATE_BETTER_AUTH_SECRET: e2e-only-secret-value-at-least-32-characters
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Install dependencies
+        uses: ./.github/actions/pnpm-install
+      - name: Install Playwright browser
+        run: pnpm exec playwright install --with-deps chromium
+      - name: Run Playwright
+        run: pnpm run test:e2e
+      - name: Upload traces
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-results
+          path: test-results/
+          retention-days: 7

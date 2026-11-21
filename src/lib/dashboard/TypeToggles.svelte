@@ -1,13 +1,13 @@
 <script lang='ts'>
 	import type { SimklMediaType } from '#lib/types.js'
-	import { CURRENT_YEAR } from '#const'
+	import { goto } from '$app/navigation'
 
+	import { CURRENT_YEAR } from '#const'
 	import Icon from '#lib/dashboard/Icon.svelte'
 	import Popover from '#lib/dashboard/Popover.svelte'
 	import { library } from '#lib/store/library.js'
 	import { dashboardSearch } from '#lib/utils/dashboard.js'
 	import { countForYear, MEDIA_TYPE_LABELS, SIMKL_MEDIA_TYPES } from '#lib/utils/simkl.js'
-	import { goto } from '$app/navigation'
 
 	interface Props {
 		types: Array<SimklMediaType>
@@ -21,8 +21,10 @@
 
 	function toggle(type: SimklMediaType): void {
 		const next = types.includes(type) ? types.filter(selected => selected !== type) : [...types, type]
-		if (next.length)
+		if (next.length) {
+			// eslint-disable-next-line svelte/no-navigation-without-resolve -- the query string is built at runtime
 			goto(`/dashboard${dashboardSearch({ year, types: next, currentYear: CURRENT_YEAR })}`, { reset: false })
+		}
 	}
 </script>
 
@@ -38,17 +40,15 @@
 			<Icon name='down' class={`size-3.5 text-(--muted) transition-transform duration-150 ease-(--ease-out) motion-reduce:transition-none [[data-input=keyboard]_&]:transition-none ${open ? '[transform:rotate(180deg)]' : ''}`} />
 		</button>
 	{/snippet}
-	{#snippet children()}
-		<div role='group' aria-label='Include media types'>
-			{#each SIMKL_MEDIA_TYPES as type}
-				{@const selected = types.includes(type)}
-				<label class='flex min-h-11 cursor-pointer items-center gap-3 rounded-lg px-3 hover:bg-(--active) has-disabled:cursor-default has-disabled:hover:bg-transparent has-disabled:opacity-60'>
-					<input class='size-4.5 shrink-0 accent-(--accent)' type='checkbox' checked={selected} disabled={selected && types.length === 1} onchange={() => toggle(type)} />
-					<span class='text-[0.9375rem]'>{MEDIA_TYPE_LABELS[type]}</span>
-					<span class='ml-auto text-[0.8125rem] text-(--muted) tabular-nums'>{countFormatter.format(countForYear($library, type, year))}</span>
-				</label>
-			{/each}
-		</div>
-		{#if types.length === 1}<p class='px-3 pt-2 pb-1 text-xs text-(--muted)'>Keep at least one type selected.</p>{/if}
-	{/snippet}
+	<div role='group' aria-label='Include media types'>
+		{#each SIMKL_MEDIA_TYPES as type (type)}
+			{@const selected = types.includes(type)}
+			<label class='flex min-h-11 cursor-pointer items-center gap-3 rounded-lg px-3 hover:bg-(--active) has-disabled:cursor-default has-disabled:hover:bg-transparent has-disabled:opacity-60'>
+				<input class='size-4.5 shrink-0 accent-(--accent)' type='checkbox' checked={selected} disabled={selected && types.length === 1} onchange={() => toggle(type)} />
+				<span class='text-[0.9375rem]'>{MEDIA_TYPE_LABELS[type]}</span>
+				<span class='ml-auto text-[0.8125rem] text-(--muted) tabular-nums'>{countFormatter.format(countForYear($library, type, year))}</span>
+			</label>
+		{/each}
+	</div>
+	{#if types.length === 1}<p class='px-3 pt-2 pb-1 text-xs text-(--muted)'>Keep at least one type selected.</p>{/if}
 </Popover>
