@@ -59,6 +59,8 @@ pnpm build
 
 Preview that build locally with `pnpm preview`.
 
+TypeScript is held on 6.x: SvelteKit needs the JavaScript compiler API that TypeScript 7 removed, and `svelte-check` and `@typescript-eslint` still declare peers below 7. Bump it once those support 7.
+
 ## How it works
 
 **Stack:** [SvelteKit](https://svelte.dev/docs/kit) 3 with Svelte 5 runes, TypeScript in strict mode, Tailwind CSS v4 through `@tailwindcss/vite`, [Better Auth](https://better-auth.com) for sessions, and `@sveltejs/adapter-netlify` for deploys.

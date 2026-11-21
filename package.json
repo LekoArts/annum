@@ -3,7 +3,7 @@
 	"type": "module",
 	"version": "0.0.1",
 	"private": true,
-	"packageManager": "pnpm@9.15.1",
+	"packageManager": "pnpm@12.21.0",
 	"license": "MIT",
 	"imports": {
 		"#lib/*": "./src/lib/*",
@@ -50,10 +50,5 @@
 		"vite": "^8.3.8",
 		"vite-plugin-devtools-json": "^1.1.2",
 		"vitest": "^5.1.1"
-	},
-	"pnpm": {
-		"onlyBuiltDependencies": [
-			"esbuild"
-		]
 	}
 }

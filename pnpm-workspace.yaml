@@ -1,0 +1,17 @@
+# pnpm 12 reads these here; the `pnpm` field in package.json is no longer read.
+# pnpm 12 rejects packages younger than 24h by default; keep installs behaving as before.
+minimumReleaseAge: 0
+minimumReleaseAgeExcludePrune: true
+
+trustPolicy: no-downgrade
+# chokidar 4.0.3 is a dev-only transitive dep from its long-standing maintainer (paulmillr).
+trustPolicyExclude:
+  - chokidar@4.0.3
+
+shellEmulator: true
+
+# esbuild verifies its binary in a postinstall; prisma is an unused optional peer of Better Auth.
+allowBuilds:
+  '@prisma/engines': false
+  esbuild: true
+  prisma: false
