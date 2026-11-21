@@ -1,6 +1,10 @@
+import { resolve } from 'node:path'
+import { pathToFileURL } from 'node:url'
 import { defineConfig, devices } from '@playwright/test'
 
 const PORT = 5173
+const MOCK_PORT = 5199
+const preload = pathToFileURL(resolve(import.meta.dirname, 'e2e/fixtures/intercept-fetch.mjs')).href
 
 export default defineConfig({
 	testDir: './e2e',
@@ -16,10 +20,24 @@ export default defineConfig({
 	projects: [{ name: 'chromium', use: { ...devices['Desktop Chrome'] } }],
 	// The Netlify adapter has no `vite preview`, and these checks are about routing, SSR and the auth
 	// handshake rather than build output, so the dev server is the server under test.
-	webServer: {
-		command: `pnpm dev --port ${PORT}`,
-		url: `http://localhost:${PORT}`,
-		reuseExistingServer: !process.env.CI,
-		timeout: 120_000,
-	},
+	webServer: [
+		{
+			command: 'node e2e/fixtures/simkl-mock.mjs',
+			url: `http://127.0.0.1:${MOCK_PORT}/health`,
+			env: { SIMKL_MOCK_PORT: String(MOCK_PORT) },
+			reuseExistingServer: !process.env.CI,
+			timeout: 30_000,
+		},
+		{
+			command: `pnpm dev --port ${PORT}`,
+			url: `http://localhost:${PORT}`,
+			// Sign-in completes through the mock, so the suite needs a real session but never Simkl itself
+			env: {
+				NODE_OPTIONS: [process.env.NODE_OPTIONS, `--import=${preload}`].filter(Boolean).join(' '),
+				SIMKL_MOCK_PORT: String(MOCK_PORT),
+			},
+			reuseExistingServer: !process.env.CI,
+			timeout: 120_000,
+		},
+	],
 })
