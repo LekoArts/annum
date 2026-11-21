@@ -86,3 +86,21 @@ test('an empty library still surfaces an expired session', async ({ page }) => {
 	await expect(alert).toContainText('Your session expired')
 	await expect(alert.getByRole('link', { name: 'Sign in again' })).toHaveAttribute('href', '/sign-in?reconnect')
 })
+
+test('a failed refresh over an empty year keeps a single alert', async ({ page }) => {
+	const sync = await stubSync(page, LIBRARY)
+
+	await signIn(page)
+	// The library has items, but 2025 has none: the chip owns the failure, not the page
+	await page.goto('/dashboard?year=2025&types=movies,shows')
+	await expect(page.getByRole('heading', { name: 'No posters for' })).toBeVisible()
+
+	sync.failWith(401, 'Your session expired. Sign in again to continue syncing.')
+
+	await page.getByRole('button', { name: 'Dashboard settings' }).click()
+	await page.getByRole('button', { name: 'Refresh now' }).click()
+
+	await expect(page.getByRole('alert')).toHaveCount(1)
+	await expect(page.getByRole('alert')).toContainText('Your session expired')
+	await expect(page.getByRole('heading', { name: 'Your session expired' })).toHaveCount(0)
+})
