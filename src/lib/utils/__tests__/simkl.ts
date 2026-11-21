@@ -32,6 +32,7 @@ function movieEntry(simklId: number, lastWatchedAt: string | null): SimklRawItem
 
 function syncResponse(overrides: Partial<SimklSyncResponse>): SimklSyncResponse {
 	return {
+		accountId: '12345',
 		status: 'delta',
 		activities: {},
 		movies: [],
@@ -424,6 +425,18 @@ describe('itemsForTypes', () => {
 			.toEqual(['shows:2', 'anime:3', 'movies:1'])
 	})
 
+	it('keeps the selected type order for items watched at the same moment', () => {
+		const at = '2020-05-05T00:00:00Z'
+		const library: SimklLibrary = {
+			movies: [media(1, [watch(2020, 'May', at)])],
+			shows: [media(2, [watch(2020, 'May', at)])],
+			anime: [media(3, [watch(2020, 'May', at)])],
+		}
+
+		expect(itemsForTypes(library, ['anime', 'movies', 'shows'], 2020).map(item => `${item.type}:${item.simklId}`))
+			.toEqual(['anime:3', 'movies:1', 'shows:2'])
+	})
+
 	it('preserves the year month and watchedAt of each projected item', () => {
 		const library: SimklLibrary = {
 			movies: [],
@@ -495,6 +508,10 @@ describe('availableYears', () => {
 describe('simklAvatarUrl', () => {
 	it('passes a full URL through unchanged', () => {
 		expect(simklAvatarUrl('https://simkl.in/avatars/12/34567_100.jpg')).toBe('https://simkl.in/avatars/12/34567_100.jpg')
+	})
+
+	it('keeps the cache-busting query Simkl appends to its own URLs', () => {
+		expect(simklAvatarUrl('https://simkl.in/avatars/87/8798305_100.jpg?1785154082')).toBe('https://simkl.in/avatars/87/8798305_100.jpg?1785154082')
 	})
 
 	it('appends the documented 100px suffix to a bare path', () => {

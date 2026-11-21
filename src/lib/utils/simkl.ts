@@ -232,21 +232,34 @@ export interface SimklTypedYearItem extends SimklYearItem {
 
 /** Several types in one newest-first list, each item tagged with the `type` its Simkl link needs. */
 export function itemsForTypes(library: SimklLibrary, types: ReadonlyArray<SimklMediaType>, year: number): Array<SimklTypedYearItem> {
-	return types
-		.flatMap(type => itemsForYear(library, type, year).map(item => ({ ...item, type })))
-		.sort((a, b) => Date.parse(b.watchedAt) - Date.parse(a.watchedAt))
+	// The timestamp is parsed once per item and the list is sorted once, instead of per type and comparison
+	const entries: Array<{ item: SimklTypedYearItem, at: number }> = []
+
+	for (const type of types) {
+		for (const item of library[type]) {
+			const watched = item.watched.find(entry => entry.year === year)
+
+			if (watched)
+				entries.push({ at: Date.parse(watched.watchedAt), item: { ...item, month: watched.month, watchedAt: watched.watchedAt, type } })
+		}
+	}
+
+	return entries.sort((a, b) => b.at - a.at).map(entry => entry.item)
 }
 
 /** Every year from `currentYear` down to the earliest watched year; future years would invert the range. */
 export function availableYears(library: SimklLibrary, currentYear: number): Array<number> {
-	const watchedYears = SIMKL_MEDIA_TYPES
-		.flatMap(type => library[type].flatMap(item => item.watched.map(watched => watched.year)))
-		.filter(year => year <= currentYear)
+	// A reduction rather than a spread, so a large library cannot overflow the argument list
+	let earliest = currentYear
 
-	if (watchedYears.length === 0)
-		return [currentYear]
-
-	const earliest = Math.min(...watchedYears)
+	for (const type of SIMKL_MEDIA_TYPES) {
+		for (const item of library[type]) {
+			for (const watched of item.watched) {
+				if (watched.year <= currentYear && watched.year < earliest)
+					earliest = watched.year
+			}
+		}
+	}
 
 	return Array.from({ length: currentYear - earliest + 1 }, (_, index) => currentYear - index)
 }

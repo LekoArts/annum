@@ -38,6 +38,8 @@ export type SimklActivities = Record<string, unknown> & {
 }
 
 export interface SimklSyncResponse {
+	/** The account the server produced this for; the client drops a response that does not match its claim. */
+	accountId: string
 	status: 'up-to-date' | 'delta' | 'full'
 	activities: SimklActivities
 	/** `delta`: only the changed items; `full`: the entire type. */

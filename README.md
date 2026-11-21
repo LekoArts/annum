@@ -77,7 +77,7 @@ On Netlify deploy previews the origin differs from the registered one, so `oAuth
 
 `/api/simkl/sync` follows the two phases Simkl documents:
 
-- **First sync:** `/sync/all-items` for movies, shows and anime sequentially, then `/sync/activities` to store the bootstrap `activities.all`.
+- **First sync:** `/sync/activities` is read first and its `activities.all` becomes the saved anchor, then `/sync/all-items` for movies, shows and anime runs sequentially. Anchoring before the pull means anything that changes mid-pull is newer than the anchor, so the next delta picks it up instead of the change being skipped.
 - **Later syncs:** `/sync/activities` first, stopping when `activities.all` has not moved. Otherwise one multi-type `/sync/all-items?date_from=<saved activities.all>` delta is **merged** into the cache, never replacing it.
 - **Deletions** never appear in a delta: when a domain's `removed_from_list` moves, the endpoint refetches `extended=simkl_ids_only` and diffs the ids.
 

@@ -1,10 +1,13 @@
 <script lang='ts'>
 	import { resolve } from '$app/paths'
+	import { page } from '$app/state'
 	import { GITHUB_REPO_URL } from '#const'
 	import { authClient } from '#lib/auth-client.js'
 	import { pa } from '#lib/store/plausible.js'
 
 	const session = authClient.useSession()
+	// `?reconnect` keeps the button reachable when the session is fine but the Simkl grant is not
+	const reconnect = $derived(page.url.searchParams.has('reconnect'))
 	let signingIn = $state(false)
 	let signInError = $state(false)
 
@@ -28,12 +31,12 @@
 	<h1 id='sign-in-heading' class='font-(family-name:--font-wordmark) text-[40px] leading-[1.1] font-bold tracking-[-0.03em] text-balance sm:text-[48px]'>Your collection starts here.</h1>
 	<p class='mt-6 max-w-[55ch] text-base leading-7 text-pretty text-(--muted) sm:text-lg sm:leading-relaxed'>Connect your Simkl account to see the movies, shows, and anime you’ve watched, collected year by year.</p>
 	<div class='mt-8'>
-		{#if $session.data}
+		{#if $session.data && !reconnect}
 			<a href={resolve('/(protected)/dashboard')} data-press class='home-cta inline-flex min-h-12 items-center justify-center rounded-full bg-(--accent) px-7 py-3 text-base font-semibold text-(--on-accent)'>Dashboard</a>
 		{:else}
 			<button type='button' onclick={signIn} disabled={signingIn || $session.isPending} data-press class='home-cta inline-flex min-h-12 items-center justify-center gap-3 rounded-full bg-(--accent) px-7 py-3 text-base font-semibold text-(--on-accent) disabled:cursor-wait disabled:opacity-60'>
 				<svg class='home-cta-icon size-5' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round' aria-hidden='true'><path d='m10 13 4-4m-6 2-2 2a4 4 0 0 0 6 6l2-2m-4-10 2-2a4 4 0 0 1 6 6l-2 2' /></svg>
-				{signingIn ? 'Connecting…' : 'Connect with Simkl'}
+				{signingIn ? 'Connecting…' : reconnect ? 'Reconnect Simkl' : 'Connect with Simkl'}
 			</button>
 		{/if}
 		{#if signInError}<p role='alert' class='mt-4 max-w-[55ch] text-base leading-7 text-(--ink)'>Couldn’t connect to Simkl. Please try again.</p>{/if}

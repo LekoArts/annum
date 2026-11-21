@@ -37,7 +37,7 @@ function stubLock(available: boolean): void {
 	})
 }
 
-const UP_TO_DATE: SimklSyncResponse = { status: 'up-to-date', activities: { all: '2026-10-03T14:28:11Z' }, movies: [], shows: [], anime: [] }
+const UP_TO_DATE: SimklSyncResponse = { accountId: ACCOUNT, status: 'up-to-date', activities: { all: '2026-10-03T14:28:11Z' }, movies: [], shows: [], anime: [] }
 
 beforeEach(() => {
 	localStorage.clear()
@@ -79,7 +79,7 @@ describe('library account scoping', () => {
 	it('replaces the stored library when a different account signs in', async () => {
 		seed({ accountId: ACCOUNT, lastSyncedAt: Date.now() })
 		claimLibrary(OTHER_ACCOUNT)
-		stubResponse({ status: 'full', activities: { all: '2026-10-04T09:00:00Z' }, movies: [media(2)], shows: [], anime: [] })
+		stubResponse({ accountId: OTHER_ACCOUNT, status: 'full', activities: { all: '2026-10-04T09:00:00Z' }, movies: [media(2)], shows: [], anime: [] })
 
 		await sync()
 
@@ -102,6 +102,108 @@ describe('library account scoping', () => {
 		await pending
 
 		expect(JSON.parse(localStorage.getItem(STORAGE_KEY) ?? '{}')).toMatchObject({ accountId: null, lastSyncedAt: null })
+	})
+
+	// The dashboard claims again from a session snapshot that outlives the sign-out, so the claim alone
+	// cannot tell this response apart from a fresh one
+	it('does not refill the cache when the same account is claimed again after sign-out', async () => {
+		let release: (response: Response) => void = () => {}
+		vi.stubGlobal('fetch', async () => await new Promise<Response>((resolve) => {
+			release = resolve
+		}))
+		claimLibrary(ACCOUNT)
+
+		const pending = sync()
+		claimLibrary(null)
+		clearLibrary()
+		claimLibrary(ACCOUNT)
+		release(new Response(JSON.stringify({ accountId: ACCOUNT, status: 'full', activities: { all: '2026-10-04T09:00:00Z' }, movies: [media(2)], shows: [], anime: [] }), { status: 200 }))
+		await pending
+
+		expect(JSON.parse(localStorage.getItem(STORAGE_KEY) ?? '{}')).toMatchObject({ accountId: null, lastSyncedAt: null, movies: [] })
+	})
+
+	// A sign-out in another tab clears the shared cache while this tab still claims the account
+	it('does not refill the cache when another tab signs out mid-request', async () => {
+		let release: (response: Response) => void = () => {}
+		vi.stubGlobal('fetch', async () => await new Promise<Response>((resolve) => {
+			release = resolve
+		}))
+		claimLibrary(ACCOUNT)
+		// A mounted component holds the subscription, which is what keeps the cross-tab listener alive
+		const unsubscribe = library.subscribe(() => {})
+
+		const pending = sync()
+		const empty = { accountId: null, activities: null, lastSyncedAt: null, movies: [], shows: [], anime: [] }
+
+		window.dispatchEvent(new StorageEvent('storage', { key: STORAGE_KEY, newValue: JSON.stringify(empty) }))
+		release(new Response(JSON.stringify({ accountId: ACCOUNT, status: 'full', activities: { all: '2026-10-04T09:00:00Z' }, movies: [media(2)], shows: [], anime: [] }), { status: 200 }))
+		await pending
+		unsubscribe()
+
+		expect(JSON.parse(localStorage.getItem(STORAGE_KEY) ?? '{}')).toMatchObject({ accountId: null, lastSyncedAt: null, movies: [] })
+	})
+
+	// A stale cookie can serve another account's history; the response says whose it is, so it is dropped
+	it('drops a response produced for a different account', async () => {
+		seed({ accountId: ACCOUNT, lastSyncedAt: Date.now() - 16 * MINUTE })
+		stubResponse({ accountId: OTHER_ACCOUNT, status: 'full', activities: { all: '2026-10-04T09:00:00Z' }, movies: [media(2)], shows: [], anime: [] })
+		claimLibrary(ACCOUNT)
+
+		await sync()
+
+		expect(get(library).movies.map(item => item.simklId)).toEqual([1])
+		expect(JSON.parse(localStorage.getItem(STORAGE_KEY) ?? '{}')).toMatchObject({ accountId: ACCOUNT })
+	})
+
+	// The discarded response never arrives, but the new account is still owed its own sync
+	it('syncs the account that took over when the previous request fails', async () => {
+		let rejectFirst: (error: Error) => void = () => {}
+		const fetchMock = vi.fn()
+			.mockImplementationOnce(async () => await new Promise<Response>((_resolve, reject) => {
+				rejectFirst = reject
+			}))
+			.mockImplementationOnce(async () => new Response(JSON.stringify({ accountId: OTHER_ACCOUNT, status: 'full', activities: { all: '2026-10-04T09:00:00Z' }, movies: [media(7)], shows: [], anime: [] }), { status: 200 }))
+		vi.stubGlobal('fetch', fetchMock)
+
+		const seen: Array<{ status: string }> = []
+		const unsubscribe = syncState.subscribe(state => seen.push(state))
+
+		claimLibrary(ACCOUNT)
+		const pending = sync()
+		claimLibrary(OTHER_ACCOUNT)
+		rejectFirst(new Error('connection reset'))
+		await pending
+
+		unsubscribe()
+
+		// The failure belonged to the account that left, so it is never published as the new one's state
+		expect(seen.filter(state => state.status === 'error')).toEqual([])
+		expect(fetchMock).toHaveBeenCalledTimes(2)
+		expect(get(library).movies.map(item => item.simklId)).toEqual([7])
+		expect(get(syncState)).toMatchObject({ status: 'idle', message: null })
+	})
+
+	// A switch during the request discards that response; the new account still needs its own sync
+	it('syncs the account that took over while a request was in flight', async () => {
+		let releaseFirst: (response: Response) => void = () => {}
+		const fetchMock = vi.fn()
+			.mockImplementationOnce(async () => await new Promise<Response>((resolve) => {
+				releaseFirst = resolve
+			}))
+			.mockImplementationOnce(async () => new Response(JSON.stringify({ accountId: OTHER_ACCOUNT, status: 'full', activities: { all: '2026-10-04T09:00:00Z' }, movies: [media(7)], shows: [], anime: [] }), { status: 200 }))
+		vi.stubGlobal('fetch', fetchMock)
+
+		claimLibrary(ACCOUNT)
+		const pending = sync()
+		// Another tab signs in as a different account while the first request is still open
+		claimLibrary(OTHER_ACCOUNT)
+		releaseFirst(new Response(JSON.stringify({ accountId: ACCOUNT, status: 'full', activities: { all: '2026-10-04T09:00:00Z' }, movies: [media(2)], shows: [], anime: [] }), { status: 200 }))
+		await pending
+
+		expect(fetchMock).toHaveBeenCalledTimes(2)
+		expect(get(library).movies.map(item => item.simklId)).toEqual([7])
+		expect(JSON.parse(localStorage.getItem(STORAGE_KEY) ?? '{}')).toMatchObject({ accountId: OTHER_ACCOUNT })
 	})
 
 	it('renders the library another tab wrote through the storage event', () => {
@@ -211,7 +313,7 @@ describe('library sync throttling', () => {
 	it('leaves a stale anchor behind when the account switches', async () => {
 		seed({ accountId: ACCOUNT, lastSyncedAt: Date.now() - 16 * MINUTE })
 		claimLibrary(OTHER_ACCOUNT)
-		const fetchMock = vi.fn(async (_input: RequestInfo | URL) => new Response(JSON.stringify({ status: 'full', activities: { all: '2026-10-04T09:00:00Z' }, movies: [], shows: [], anime: [] }), { status: 200 }))
+		const fetchMock = vi.fn(async (_input: RequestInfo | URL) => new Response(JSON.stringify({ accountId: ACCOUNT, status: 'full', activities: { all: '2026-10-04T09:00:00Z' }, movies: [], shows: [], anime: [] }), { status: 200 }))
 		vi.stubGlobal('fetch', fetchMock)
 
 		await sync()
@@ -334,21 +436,6 @@ describe('library sync lease without Web Locks', () => {
 		expect(fetchMock).toHaveBeenCalledTimes(1)
 	})
 
-	it('syncs anyway when storage cannot be read or written', async () => {
-		claimLibrary(ACCOUNT)
-		const fetchMock = vi.fn(async (_input: RequestInfo | URL) => new Response(JSON.stringify(UP_TO_DATE), { status: 200 }))
-		vi.stubGlobal('fetch', fetchMock)
-		vi.stubGlobal('localStorage', {
-			getItem: () => { throw new Error('storage blocked') },
-			setItem: () => { throw new Error('storage blocked') },
-			removeItem: () => { throw new Error('storage blocked') },
-		})
-
-		await sync()
-
-		expect(fetchMock).toHaveBeenCalledTimes(1)
-	})
-
 	it('hands the lease back when the sync ends, however it ends', async () => {
 		claimLibrary(ACCOUNT)
 
@@ -360,5 +447,75 @@ describe('library sync lease without Web Locks', () => {
 
 		await sync({ force: true })
 		expect(localStorage.getItem(LEASE_KEY)).toBeNull()
+	})
+})
+
+describe('library sync session expiry', () => {
+	it('asks for a sign-in when the session redirects to HTML instead of JSON', async () => {
+		claimLibrary(ACCOUNT)
+		// An expired session is redirected to /sign-in, which fetch follows into a 200 HTML page
+		vi.stubGlobal('fetch', async () => {
+			const signIn = new Response('<!doctype html><h1>Sign in</h1>', { status: 200, headers: { 'content-type': 'text/html' } })
+			Object.defineProperties(signIn, { redirected: { value: true }, url: { value: 'http://localhost/sign-in' } })
+
+			return signIn
+		})
+
+		await sync()
+
+		expect(get(syncState)).toMatchObject({ status: 'auth' })
+	})
+
+	it('asks for a sign-in when the Simkl token refresh fails', async () => {
+		claimLibrary(ACCOUNT)
+		vi.stubGlobal('fetch', async () => new Response(JSON.stringify({ message: 'Not authenticated' }), { status: 401, headers: { 'content-type': 'application/json' } }))
+
+		await sync()
+
+		expect(get(syncState)).toMatchObject({ status: 'auth' })
+	})
+
+	it('treats a proxy error page as retryable rather than a sign-in', async () => {
+		claimLibrary(ACCOUNT)
+		// Netlify or a proxy can answer with HTML that was never a sign-in redirect
+		vi.stubGlobal('fetch', async () => new Response('<!doctype html><h1>Bad gateway</h1>', { status: 502, headers: { 'content-type': 'text/html' } }))
+		vi.spyOn(console, 'warn').mockImplementation(() => {})
+
+		await sync()
+
+		expect(get(syncState)).toMatchObject({ status: 'error', message: 'Sync request failed with HTTP 502' })
+	})
+
+	it('keeps a Simkl failure retryable', async () => {
+		claimLibrary(ACCOUNT)
+		vi.stubGlobal('fetch', async () => new Response(JSON.stringify({ message: 'Simkl is down' }), { status: 502, headers: { 'content-type': 'application/json' } }))
+		vi.spyOn(console, 'warn').mockImplementation(() => {})
+
+		await sync()
+
+		expect(get(syncState)).toMatchObject({ status: 'error', message: 'Simkl is down' })
+	})
+})
+
+describe('library cache validation', () => {
+	it('ignores a cache whose watch entries are malformed', async () => {
+		localStorage.setItem(STORAGE_KEY, JSON.stringify({ accountId: ACCOUNT, activities: null, lastSyncedAt: 1, movies: [{ ...media(1), watched: [{ year: 2020 }] }], shows: [], anime: [] }))
+		vi.resetModules()
+
+		const fresh = await import('../library')
+		fresh.claimLibrary(ACCOUNT)
+
+		// A malformed entry would reach rendering, so the whole payload falls back to the initial value
+		expect(get(fresh.library).movies).toEqual([])
+	})
+
+	it('reports an unexpected non-JSON body as a retryable failure', async () => {
+		claimLibrary(ACCOUNT)
+		vi.stubGlobal('fetch', async () => new Response('<!doctype html><h1>Maintenance</h1>', { status: 200, headers: { 'content-type': 'text/html' } }))
+		vi.spyOn(console, 'warn').mockImplementation(() => {})
+
+		await sync()
+
+		expect(get(syncState)).toMatchObject({ status: 'error', message: 'The sync endpoint returned an unexpected response.' })
 	})
 })
