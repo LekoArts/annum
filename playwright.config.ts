@@ -25,7 +25,8 @@ export default defineConfig({
 			command: 'node e2e/fixtures/simkl-mock.mjs',
 			url: `http://127.0.0.1:${MOCK_PORT}/health`,
 			env: { SIMKL_MOCK_PORT: String(MOCK_PORT) },
-			reuseExistingServer: !process.env.CI,
+			// A reused mock would carry the previous run's account state into the next one
+			reuseExistingServer: false,
 			timeout: 30_000,
 		},
 		{
@@ -36,7 +37,8 @@ export default defineConfig({
 				NODE_OPTIONS: [process.env.NODE_OPTIONS, `--import=${preload}`].filter(Boolean).join(' '),
 				SIMKL_MOCK_PORT: String(MOCK_PORT),
 			},
-			reuseExistingServer: !process.env.CI,
+			// Only the server started here gets the interception preload, so a stray `pnpm dev` must not be reused
+			reuseExistingServer: false,
 			timeout: 120_000,
 		},
 	],

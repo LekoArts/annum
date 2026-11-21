@@ -56,7 +56,8 @@
 	<div class='fixed right-4 bottom-4 z-10 flex max-w-[calc(100vw-32px)] items-center gap-3 rounded-xl border border-(--border) bg-(--menu) px-4 py-3 text-sm shadow-(--menu-shadow)' role={failed ? 'alert' : 'status'}>
 		{#if $syncState.status === 'auth'}
 			<span class='min-w-0'>{$syncState.message}</span>
-			<a href={resolve('/sign-in')} class='shrink-0 rounded-md px-2 py-1 font-medium text-(--accent) hover:bg-(--active)'>Sign in again</a>
+			<!-- eslint-disable-next-line svelte/no-navigation-without-resolve -- query string is appended at runtime -->
+			<a href={`${resolve('/sign-in')}?reconnect`} class='shrink-0 rounded-md px-2 py-1 font-medium text-(--accent) hover:bg-(--active)'>Sign in again</a>
 		{:else if failed}
 			<span class='min-w-0'>
 				Couldn't sync your Simkl library.

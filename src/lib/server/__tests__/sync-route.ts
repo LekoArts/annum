@@ -61,6 +61,8 @@ describe('the simkl sync route', () => {
 		const body = await response.json()
 
 		expect(body.status).toBe('full')
+		// The client drops any response that is not stamped with the account it claimed
+		expect(body.accountId).toBe('user-1')
 		expect(requested).toEqual([
 			'/sync/activities',
 			'/sync/all-items/movies',
@@ -98,6 +100,7 @@ describe('the simkl sync route', () => {
 		const body = await response.json()
 
 		expect(body.status).toBe('up-to-date')
+		expect(body.accountId).toBe('user-1')
 		expect(requested).toEqual(['/sync/activities'])
 	})
 
@@ -107,6 +110,7 @@ describe('the simkl sync route', () => {
 		const body = await response.json()
 
 		expect(body.status).toBe('delta')
+		expect(body.accountId).toBe('user-1')
 		expect(requested).toEqual(['/sync/activities', '/sync/all-items?date_from'])
 	})
 
@@ -120,6 +124,7 @@ describe('the simkl sync route', () => {
 		const body = await response.json()
 
 		expect(body.status).toBe('delta')
+		expect(body.accountId).toBe('user-1')
 		expect(requested).toEqual(['/sync/activities', '/sync/all-items?date_from', '/sync/all-items&ids_only'])
 		expect(body.currentIds).toEqual({ movies: [1], shows: [], anime: [] })
 	})

@@ -123,6 +123,27 @@ describe('library account scoping', () => {
 		expect(JSON.parse(localStorage.getItem(STORAGE_KEY) ?? '{}')).toMatchObject({ accountId: null, lastSyncedAt: null, movies: [] })
 	})
 
+	// A sign-out in another tab clears the shared cache while this tab still claims the account
+	it('does not refill the cache when another tab signs out mid-request', async () => {
+		let release: (response: Response) => void = () => {}
+		vi.stubGlobal('fetch', async () => await new Promise<Response>((resolve) => {
+			release = resolve
+		}))
+		claimLibrary(ACCOUNT)
+		// A mounted component holds the subscription, which is what keeps the cross-tab listener alive
+		const unsubscribe = library.subscribe(() => {})
+
+		const pending = sync()
+		const empty = { accountId: null, activities: null, lastSyncedAt: null, movies: [], shows: [], anime: [] }
+
+		window.dispatchEvent(new StorageEvent('storage', { key: STORAGE_KEY, newValue: JSON.stringify(empty) }))
+		release(new Response(JSON.stringify({ accountId: ACCOUNT, status: 'full', activities: { all: '2026-10-04T09:00:00Z' }, movies: [media(2)], shows: [], anime: [] }), { status: 200 }))
+		await pending
+		unsubscribe()
+
+		expect(JSON.parse(localStorage.getItem(STORAGE_KEY) ?? '{}')).toMatchObject({ accountId: null, lastSyncedAt: null, movies: [] })
+	})
+
 	// A stale cookie can serve another account's history; the response says whose it is, so it is dropped
 	it('drops a response produced for a different account', async () => {
 		seed({ accountId: ACCOUNT, lastSyncedAt: Date.now() - 16 * MINUTE })
@@ -133,6 +154,28 @@ describe('library account scoping', () => {
 
 		expect(get(library).movies.map(item => item.simklId)).toEqual([1])
 		expect(JSON.parse(localStorage.getItem(STORAGE_KEY) ?? '{}')).toMatchObject({ accountId: ACCOUNT })
+	})
+
+	// The discarded response never arrives, but the new account is still owed its own sync
+	it('syncs the account that took over when the previous request fails', async () => {
+		let rejectFirst: (error: Error) => void = () => {}
+		const fetchMock = vi.fn()
+			.mockImplementationOnce(async () => await new Promise<Response>((_resolve, reject) => {
+				rejectFirst = reject
+			}))
+			.mockImplementationOnce(async () => new Response(JSON.stringify({ accountId: OTHER_ACCOUNT, status: 'full', activities: { all: '2026-10-04T09:00:00Z' }, movies: [media(7)], shows: [], anime: [] }), { status: 200 }))
+		vi.stubGlobal('fetch', fetchMock)
+
+		claimLibrary(ACCOUNT)
+		const pending = sync()
+		claimLibrary(OTHER_ACCOUNT)
+		rejectFirst(new Error('connection reset'))
+		await pending
+
+		expect(fetchMock).toHaveBeenCalledTimes(2)
+		expect(get(library).movies.map(item => item.simklId)).toEqual([7])
+		// The failure belonged to the account that left, so the new one sees no error
+		expect(get(syncState)).toMatchObject({ status: 'idle', message: null })
 	})
 
 	// A switch during the request discards that response; the new account still needs its own sync
@@ -405,7 +448,12 @@ describe('library sync session expiry', () => {
 	it('asks for a sign-in when the session redirects to HTML instead of JSON', async () => {
 		claimLibrary(ACCOUNT)
 		// An expired session is redirected to /sign-in, which fetch follows into a 200 HTML page
-		vi.stubGlobal('fetch', async () => new Response('<!doctype html><h1>Sign in</h1>', { status: 200, headers: { 'content-type': 'text/html' } }))
+		vi.stubGlobal('fetch', async () => {
+			const signIn = new Response('<!doctype html><h1>Sign in</h1>', { status: 200, headers: { 'content-type': 'text/html' } })
+			Object.defineProperties(signIn, { redirected: { value: true }, url: { value: 'http://localhost/sign-in' } })
+
+			return signIn
+		})
 
 		await sync()
 
@@ -419,6 +467,17 @@ describe('library sync session expiry', () => {
 		await sync()
 
 		expect(get(syncState)).toMatchObject({ status: 'auth' })
+	})
+
+	it('treats a proxy error page as retryable rather than a sign-in', async () => {
+		claimLibrary(ACCOUNT)
+		// Netlify or a proxy can answer with HTML that was never a sign-in redirect
+		vi.stubGlobal('fetch', async () => new Response('<!doctype html><h1>Bad gateway</h1>', { status: 502, headers: { 'content-type': 'text/html' } }))
+		vi.spyOn(console, 'warn').mockImplementation(() => {})
+
+		await sync()
+
+		expect(get(syncState)).toMatchObject({ status: 'error', message: 'Sync request failed with HTTP 502' })
 	})
 
 	it('keeps a Simkl failure retryable', async () => {

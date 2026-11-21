@@ -72,6 +72,36 @@ describe('persisted', () => {
 		expect(seen.at(-1)).toEqual({ value: 1 })
 	})
 
+	it('restores the initial value when another tab clears storage', async () => {
+		const { persisted } = await import('../persisted')
+		const store = persisted(KEY, { value: 1 })
+		const seen: Array<Counter> = []
+		const unsubscribe = store.subscribe((value) => {
+			seen.push(value)
+		})
+
+		store.set({ value: 2 })
+		// `clear()` reports one event with a null key rather than one per removed key
+		localStorage.clear()
+		window.dispatchEvent(new StorageEvent('storage', { key: null, newValue: null }))
+		unsubscribe()
+
+		expect(seen.at(-1)).toEqual({ value: 1 })
+	})
+
+	it('reports a value another tab wrote so callers can invalidate stale work', async () => {
+		const { persisted } = await import('../persisted')
+		const changes: Array<Counter> = []
+		const store = persisted(KEY, { value: 1 }, { onExternalChange: value => changes.push(value) })
+		const unsubscribe = store.subscribe(() => {})
+
+		window.dispatchEvent(new StorageEvent('storage', { key: KEY, newValue: JSON.stringify({ value: 5 }) }))
+		window.dispatchEvent(new StorageEvent('storage', { key: KEY, newValue: null }))
+		unsubscribe()
+
+		expect(changes).toEqual([{ value: 5 }, { value: 1 }])
+	})
+
 	it('rejects an obsolete payload shape', async () => {
 		localStorage.setItem(KEY, JSON.stringify({ legacy: true }))
 		const { persisted } = await import('../persisted')

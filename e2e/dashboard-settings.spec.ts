@@ -27,6 +27,11 @@ test('settings survive a reload and the popover closes on Escape', async ({ page
 	await expect(columns).toHaveValue('3')
 	await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark')
 
+	// The column setting has to reach the actual grid, not just the control
+	const grid = page.getByRole('main').locator('div.grid').first()
+
+	await expect.poll(() => grid.evaluate(el => getComputedStyle(el).gridTemplateColumns.split(' ').length)).toBe(3)
+
 	// Escape closes the popover and hands focus back to its trigger
 	await page.keyboard.press('Escape')
 	await expect(page.getByRole('dialog', { name: 'Dashboard settings' })).toBeHidden()

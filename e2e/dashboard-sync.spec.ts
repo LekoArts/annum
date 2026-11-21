@@ -57,6 +57,12 @@ test('an expired session offers a sign-in instead of a retry', async ({ page }) 
 
 	const alert = page.getByRole('alert')
 
-	await expect(alert.getByRole('link', { name: 'Sign in again' })).toHaveAttribute('href', '/sign-in')
+	const signInAgain = alert.getByRole('link', { name: 'Sign in again' })
+
+	await expect(signInAgain).toHaveAttribute('href', '/sign-in?reconnect')
 	await expect(alert.getByRole('button', { name: 'Retry' })).toHaveCount(0)
+
+	// The Better Auth session survives a dead Simkl grant, so the page must still offer the handshake
+	await signInAgain.click()
+	await expect(page.getByRole('button', { name: 'Reconnect Simkl' })).toBeVisible()
 })

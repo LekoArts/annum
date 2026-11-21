@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test'
-import { cachedLibrary, LIBRARY, openDashboard, posterNames, signIn, signOut, stubSync } from './fixtures/dashboard'
+import { authenticate, cachedLibrary, LIBRARY, openDashboard, posterNames, signIn, signOut, stubSync } from './fixtures/dashboard'
 
 test('a second tab reuses the fresh cache without another sync', async ({ page, context }) => {
 	await openDashboard(page)
@@ -43,4 +43,26 @@ test('a new account never sees the previous library', async ({ page }) => {
 	await expect.poll(async () => await posterNames(page)).toEqual(['Other Movie'])
 	// The cache was dropped, so the new account gets its own full sync
 	expect(sync.requests).toHaveLength(1)
+})
+
+test('a tab opened during a cold sync waits for the running one', async ({ page, context }) => {
+	const sync = await stubSync(page, LIBRARY)
+
+	await authenticate(page)
+	sync.hold()
+	await page.goto('/dashboard?year=2022&types=movies,shows')
+
+	await expect.poll(() => sync.requests.length).toBe(1)
+
+	// The second tab has no library yet and the lock is held, so it waits for the first tab to write it
+	const second = await context.newPage()
+	const secondSync = await stubSync(second, LIBRARY)
+
+	await second.goto('/dashboard?year=2022&types=movies,shows')
+	await expect(second.getByText('Loading your library…')).toBeAttached()
+
+	sync.release()
+
+	await expect.poll(async () => await posterNames(second)).toEqual(['The Bear', 'Everything Everywhere'])
+	expect(secondSync.requests).toHaveLength(0)
 })

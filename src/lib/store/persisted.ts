@@ -26,6 +26,8 @@ export interface Options<T> {
 	onError?: (e: unknown) => void
 	/** Rejects an obsolete payload so an older stored shape falls back to the initial value. */
 	isValid?: (value: unknown) => value is T
+	/** Reports a value another tab wrote, so callers can invalidate work that predates it. */
+	onExternalChange?: (value: T) => void
 }
 
 export function persisted<T>(key: string, initialValue: T, options?: Options<T>): Writable<T> {
@@ -34,6 +36,7 @@ export function persisted<T>(key: string, initialValue: T, options?: Options<T>)
 	const syncTabs = true
 	const onError = options?.onError ?? (e => console.error(`Error when writing value from persisted store "${key}" to ${storageType}`, e))
 	const isValid = options?.isValid
+	const onExternalChange = options?.onExternalChange
 
 	function readStorage(): Storage | null {
 		try {
@@ -91,11 +94,15 @@ export function persisted<T>(key: string, initialValue: T, options?: Options<T>)
 
 			if (storage !== null && storageType === 'local' && syncTabs) {
 				const handleStorage = (event: StorageEvent) => {
-					if (event.key !== key)
+					// `clear()` reports a null key for every entry, so it counts as this store's removal
+					if (event.key !== key && event.key !== null)
 						return
 
 					// A removed or cleared key means "no stored value", which is the initial value
-					set(event.newValue === null ? initialValue : parse(event.newValue) ?? initialValue)
+					const next = event.newValue === null ? initialValue : parse(event.newValue) ?? initialValue
+
+					set(next)
+					onExternalChange?.(next)
 				}
 
 				window.addEventListener('storage', handleStorage)

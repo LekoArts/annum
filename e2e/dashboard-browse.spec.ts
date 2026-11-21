@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test'
-import { openDashboard, posterNames } from './fixtures/dashboard'
+import { authenticate, LIBRARY, openDashboard, posterNames, stubSync } from './fixtures/dashboard'
 
 test('first sync fills a deep-linked year and browsing issues no further sync', async ({ page }) => {
 	const sync = await openDashboard(page)
@@ -44,4 +44,21 @@ test('locks the last selected media type instead of emptying the grid', async ({
 	await expect(movies).toBeChecked()
 	await expect(movies).toBeDisabled()
 	await expect(page.getByText('Keep at least one type selected.')).toBeVisible()
+})
+test('a cold deep link keeps its year while the first sync lands', async ({ page }) => {
+	const sync = await stubSync(page, LIBRARY)
+
+	// Signing in through the API leaves the dashboard unmounted, so the deep link is the first cold render
+	await authenticate(page)
+	sync.hold()
+	await page.goto('/dashboard?year=2021&types=movies')
+
+	await expect(page.getByText('Loading your library…')).toBeAttached()
+
+	sync.release()
+
+	// The requested year survives a library that arrives after the URL was resolved
+	await expect.poll(async () => await posterNames(page)).toEqual(['Dune'])
+	await expect(page.getByRole('button', { name: 'Select year, 2021' })).toBeVisible()
+	expect(sync.requests).toHaveLength(1)
 })

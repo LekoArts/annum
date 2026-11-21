@@ -88,13 +88,18 @@ export interface SyncStub {
 	/** Make the remaining responses fail, as Simkl or the endpoint would. */
 	failWith: (status: number, message: string) => void
 	restore: () => void
+	/** Hold every response so a test can observe what the page does while a sync is in flight. */
+	hold: () => void
+	release: () => void
 }
 
 /** Answers the dashboard's own sync endpoint, so the browser suite never talks to Simkl. */
 export async function stubSync(page: Page, library: FixtureLibrary | ((accountId: string) => FixtureLibrary)): Promise<SyncStub> {
 	const requests: Array<string> = []
+	const waiting: Array<() => void> = []
 	let failure: { status: number, message: string } | null = null
 	let accountId: string | null = null
+	let holding = false
 
 	async function currentAccountId(): Promise<string> {
 		if (accountId !== null)
@@ -109,6 +114,9 @@ export async function stubSync(page: Page, library: FixtureLibrary | ((accountId
 
 	await page.route('**/api/simkl/sync**', async (route: Route) => {
 		requests.push(route.request().url())
+
+		if (holding)
+			await new Promise<void>(resolve => waiting.push(resolve))
 
 		if (failure !== null) {
 			await route.fulfill({ status: failure.status, contentType: 'application/json', body: JSON.stringify({ message: failure.message }) })
@@ -136,6 +144,13 @@ export async function stubSync(page: Page, library: FixtureLibrary | ((accountId
 		restore() {
 			failure = null
 		},
+		hold() {
+			holding = true
+		},
+		release() {
+			holding = false
+			waiting.splice(0).forEach(resolve => resolve())
+		},
 	}
 }
 
@@ -144,6 +159,15 @@ export async function stubSync(page: Page, library: FixtureLibrary | ((accountId
  * read are intercepted, so the session cookie is issued by the shipped callback handler.
  */
 export async function signIn(page: Page, { account = 8798305 } = {}): Promise<void> {
+	await authenticate(page, account)
+	await page.goto('/dashboard')
+}
+
+/**
+ * Creates the session without mounting the dashboard, so a test can land on a deep link as the very first
+ * dashboard render and see the cold path.
+ */
+export async function authenticate(page: Page, account = 8798305): Promise<void> {
 	let authorize: URL | null = null
 
 	await page.route('https://simkl.com/**', async (route) => {
@@ -158,8 +182,9 @@ export async function signIn(page: Page, { account = 8798305 } = {}): Promise<vo
 	const state = authorize!.searchParams.get('state')!
 
 	// The mock reads the Simkl account out of the code, so parallel tests never share an account
-	await page.goto(`/api/auth/callback/simkl?code=e2e-${account}&state=${encodeURIComponent(state)}`)
-	await page.waitForURL(/\/dashboard/)
+	const callback = await page.request.get(`/api/auth/callback/simkl?code=e2e-${account}&state=${encodeURIComponent(state)}`, { maxRedirects: 0 })
+
+	expect(callback.status()).toBe(302)
 }
 
 /** Signs in, lands on a year the fixture data covers, and waits for the grid to fill. */
